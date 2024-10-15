@@ -1,0 +1,44 @@
+Mooyie License
+
+Mooyie - A Movie Ticket Booking System
+License Agreement
+
+Version 1.0
+1. Introduction
+
+This License Agreement ("Agreement") is a legal agreement between you (the "User") and the authors of the Mooyie project ("Authors"). By using, modifying, or distributing the Mooyie project, you agree to be bound by the terms of this Agreement.
+2. Project Description
+
+Mooyie is a web-based application that enables users to browse movies, view showtimes, and book tickets for their favorite films. The project is built using the following technologies:
+
+    Backend: NestJS with PostgreSQL
+    Frontend: Nuxt.js
+
+3. Grant of License
+
+The Authors grant you a non-exclusive, non-transferable license to use, modify, and distribute the Mooyie project under the following conditions:
+
+    You may use the project for personal, educational, or commercial purposes.
+    You may modify the source code to suit your requirements.
+    You may distribute modified or unmodified copies of the project, provided that you include this License Agreement with your distribution.
+
+4. Restrictions
+
+You may not:
+
+    Use the project for any unlawful purposes or in any manner that could damage, disable, overburden, or impair the project or interfere with any other party's use of the project.
+    Remove or alter any copyright, trademark, or other proprietary notices from the project.
+    Sell or offer the project for sale without prior written consent from the Authors.
+
+5. Disclaimer of Warranty
+
+The Mooyie project is provided "as-is" without any warranty of any kind, either express or implied, including but not limited to the implied warranties of merchantability, fitness for a particular purpose, and non-infringement. The Authors do not warrant that the project will meet your requirements or that its operation will be uninterrupted or error-free.
+6. Limitation of Liability
+
+In no event shall the Authors be liable for any direct, indirect, incidental, special, consequential, or exemplary damages arising from the use or inability to use the Mooyie project, even if the Authors have been advised of the possibility of such damages.
+7. Governing Law
+
+This Agreement shall be governed by and construed in accordance with the laws of the jurisdiction in which the Authors reside, without regard to its conflict of law provisions.
+8. Acceptance
+
+By using, modifying, or distributing the Mooyie project, you acknowledge that you have read this Agreement, understand it, and agree to be bound by its terms.

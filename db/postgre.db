@@ -1,0 +1,94 @@
+-- Drop the database if it already exists
+DROP DATABASE IF EXISTS mooyie;
+
+-- Create the database again
+CREATE DATABASE mooyie;
+
+-- Connect to the new database
+\c mooyie
+
+-- Drop existing tables to prevent "already exists" errors
+DROP TABLE IF EXISTS tickets, customers, showtimes, screens, movies, cinemas;
+
+-- Create the tables
+-- Cinemas table
+CREATE TABLE cinemas (
+    cinema_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    location VARCHAR(255) NOT NULL
+);
+
+-- Movies table
+CREATE TABLE movies (
+    movie_id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    genre VARCHAR(50),
+    duration INTEGER NOT NULL, -- Duration in minutes
+    release_date DATE,
+    rating DECIMAL(2,1) -- Average rating (e.g., 8.5)
+);
+
+-- Screens table
+CREATE TABLE screens (
+    screen_id SERIAL PRIMARY KEY,
+    cinema_id INT REFERENCES cinemas(cinema_id),
+    name VARCHAR(50) NOT NULL,
+    capacity INTEGER NOT NULL -- Number of seats
+);
+
+-- Showtimes table
+CREATE TABLE showtimes (
+    showtime_id SERIAL PRIMARY KEY,
+    screen_id INT REFERENCES screens(screen_id),
+    movie_id INT REFERENCES movies(movie_id),
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP NOT NULL
+);
+
+-- Customers table
+CREATE TABLE customers (
+    customer_id SERIAL PRIMARY KEY,
+    full_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    phone_number VARCHAR(15),
+    registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tickets table
+CREATE TABLE tickets (
+    ticket_id SERIAL PRIMARY KEY,
+    showtime_id INT REFERENCES showtimes(showtime_id),
+    customer_id INT REFERENCES customers(customer_id),
+    seat_number VARCHAR(10) NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    purchased_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert data into the tables
+-- Insert cinemas
+INSERT INTO cinemas (name, location) VALUES ('Rạp A', 'Hà Nội'), ('Rạp B', 'TP Hồ Chí Minh');
+
+-- Insert movies
+INSERT INTO movies (title, genre, duration, release_date, rating) 
+VALUES ('Avengers: Endgame', 'Action', 181, '2019-04-26', 8.4);
+
+-- Insert screens
+INSERT INTO screens (cinema_id, name, capacity) 
+VALUES (1, 'Phòng 1', 150), (1, 'Phòng 2', 100);
+
+-- Insert showtimes
+INSERT INTO showtimes (screen_id, movie_id, start_time, end_time) 
+VALUES (1, 1, '2024-10-20 15:00', '2024-10-20 18:01');
+
+-- Insert customers
+-- Check if the customer already exists to avoid duplicate key violation
+INSERT INTO customers (full_name, email, phone_number) 
+SELECT 'Nguyễn Văn A', 'a@example.com', '0987654321'
+WHERE NOT EXISTS (
+    SELECT 1 FROM customers WHERE email = 'a@example.com'
+);
+
+-- Insert tickets
+INSERT INTO tickets (showtime_id, customer_id, seat_number, price) 
+VALUES (1, 1, 'A1', 100000);
+
