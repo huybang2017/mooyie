@@ -1,94 +1,238 @@
--- Drop the database if it already exists
-DROP DATABASE IF EXISTS mooyie;
-
--- Create the database again
 CREATE DATABASE mooyie;
+\c mooyie;
 
--- Connect to the new database
-\c mooyie
+DO $$ 
+DECLARE 
+    r RECORD;
+BEGIN 
+    FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') 
+    LOOP 
+        EXECUTE 'DROP TABLE IF EXISTS ' || quote_ident(r.tablename) || ' CASCADE';
+    END LOOP; 
+END $$;
 
--- Drop existing tables to prevent "already exists" errors
-DROP TABLE IF EXISTS tickets, customers, showtimes, screens, movies, cinemas;
-
--- Create the tables
--- Cinemas table
-CREATE TABLE cinemas (
-    cinema_id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    location VARCHAR(255) NOT NULL
+CREATE TABLE movie (
+  movie_id INT,
+  director_id INT,
+  status_id INT,
+  title VARCHAR(200),
+  age_rating VARCHAR(5),
+  runtime_min INT,
+  release_date DATE,
+  trailer_link VARCHAR(1000),
+  description VARCHAR(2000),
+  banner_text VARCHAR(1000),
+  header_image VARCHAR(1000),
+  poster_image VARCHAR(1000),
+  synopsis VARCHAR(4000)
 );
 
--- Movies table
-CREATE TABLE movies (
-    movie_id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    genre VARCHAR(50),
-    duration INTEGER NOT NULL, -- Duration in minutes
-    release_date DATE,
-    rating DECIMAL(2,1) -- Average rating (e.g., 8.5)
+CREATE TABLE director (
+  director_id INT,
+  director_name VARCHAR(500)
 );
 
--- Screens table
-CREATE TABLE screens (
-    screen_id SERIAL PRIMARY KEY,
-    cinema_id INT REFERENCES cinemas(cinema_id),
-    name VARCHAR(50) NOT NULL,
-    capacity INTEGER NOT NULL -- Number of seats
+CREATE TABLE cast_member (
+  cast_id INT,
+  cast_name VARCHAR(500)
 );
 
--- Showtimes table
-CREATE TABLE showtimes (
-    showtime_id SERIAL PRIMARY KEY,
-    screen_id INT REFERENCES screens(screen_id),
-    movie_id INT REFERENCES movies(movie_id),
-    start_time TIMESTAMP NOT NULL,
-    end_time TIMESTAMP NOT NULL
+CREATE TABLE movie_cast (
+  movie_id INT,
+  cast_id INT
 );
 
--- Customers table
-CREATE TABLE customers (
-    customer_id SERIAL PRIMARY KEY,
-    full_name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    phone_number VARCHAR(15),
-    registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE genre (
+  genre_id INT,
+  genre_name VARCHAR(100)
 );
 
--- Tickets table
-CREATE TABLE tickets (
-    ticket_id SERIAL PRIMARY KEY,
-    showtime_id INT REFERENCES showtimes(showtime_id),
-    customer_id INT REFERENCES customers(customer_id),
-    seat_number VARCHAR(10) NOT NULL,
-    price DECIMAL(10,2) NOT NULL,
-    purchased_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE movie_genre (
+  movie_id INT,
+  genre_id INT
 );
 
--- Insert data into the tables
--- Insert cinemas
-INSERT INTO cinemas (name, location) VALUES ('Rạp A', 'Hà Nội'), ('Rạp B', 'TP Hồ Chí Minh');
-
--- Insert movies
-INSERT INTO movies (title, genre, duration, release_date, rating) 
-VALUES ('Avengers: Endgame', 'Action', 181, '2019-04-26', 8.4);
-
--- Insert screens
-INSERT INTO screens (cinema_id, name, capacity) 
-VALUES (1, 'Phòng 1', 150), (1, 'Phòng 2', 100);
-
--- Insert showtimes
-INSERT INTO showtimes (screen_id, movie_id, start_time, end_time) 
-VALUES (1, 1, '2024-10-20 15:00', '2024-10-20 18:01');
-
--- Insert customers
--- Check if the customer already exists to avoid duplicate key violation
-INSERT INTO customers (full_name, email, phone_number) 
-SELECT 'Nguyễn Văn A', 'a@example.com', '0987654321'
-WHERE NOT EXISTS (
-    SELECT 1 FROM customers WHERE email = 'a@example.com'
+CREATE TABLE moive_status(
+  status_id INT,
+  status_name VARCHAR(250)
 );
 
--- Insert tickets
-INSERT INTO tickets (showtime_id, customer_id, seat_number, price) 
-VALUES (1, 1, 'A1', 100000);
+CREATE TABLE state (
+  state_id INT,
+  state_name VARCHAR(10)
+);
 
+CREATE TABLE cinema (
+  cinema_id INT,
+  cinema_name VARCHAR(200),
+  state_id INT
+);
+
+CREATE TABLE theatre (
+  theatre_id INT,
+  cinema_id INT,
+  theatre_num INT
+);
+
+CREATE TABLE showing_time (
+  time_id INT,
+  movie_id INT, 
+  theatre_id INT,
+  showing_datetime TIMESTAMP
+);
+
+CREATE TABLE feature_type (
+  type_id INT,
+  type_name VARCHAR(200)
+);
+
+CREATE TABLE feature (
+  feature_id INT,
+  type_id INT,
+  feature_name VARCHAR(200),
+  feature_description TEXT
+);
+
+CREATE TABLE showing_feature (
+  showing_id INT,
+  feature_id INT
+);
+
+CREATE TABLE seat_type (
+  type_id INT,
+  type_name VARCHAR(200)
+);
+
+CREATE TABLE seat (
+  seat_id INT,
+  seat_type_id INT,
+  theatre_id INT,
+  seat_location VARCHAR(5)
+);
+
+CREATE TABLE booking (
+  booking_id INT,
+  showing_id INT,
+  booking_fee INT,
+  email_address VARCHAR(100),
+  created_datetime TIMESTAMP
+);
+
+CREATE TABLE booking_seat (
+  booking_id INT,
+  seat_id INT
+);
+
+CREATE TABLE  booking_ticket(
+  ticket_type_id INT,
+  booking_id INT,
+  ticket_qty INT
+);
+
+CREATE TABLE booking_snack(
+  booking_id INT,
+  snack_id INT,
+  snack_qty INT
+);
+
+CREATE TABLE ticket_type(
+  type_id INT,
+  ticket_type_name VARCHAR(250),
+  ticket_price INT
+);
+
+CREATE TABLE snack(
+  snack_id INT,
+  stack_type_id INT,
+  snack_name VARCHAR(250),
+  price INT
+);
+
+CREATE TABLE snack_type(
+  type_id INT,
+  type_name VARCHAR(250)
+);
+
+ALTER TABLE cast_member ADD PRIMARY KEY(cast_id);
+ALTER TABLE genre ADD PRIMARY KEY(genre_id);
+ALTER TABLE director ADD PRIMARY KEY(director_id);
+ALTER TABLE moive_status ADD PRIMARY KEY(status_id);
+ALTER TABLE movie ADD PRIMARY KEY(movie_id);
+ALTER TABLE movie_cast ADD PRIMARY KEY(movie_id, cast_id);
+ALTER TABLE movie_genre ADD PRIMARY KEY(movie_id, genre_id);
+ALTER TABLE showing_time ADD PRIMARY KEY(time_id);
+ALTER TABLE showing_feature ADD PRIMARY KEY(showing_id,feature_id);
+ALTER TABLE feature_type ADD PRIMARY KEY(type_id);
+ALTER TABLE feature ADD PRIMARY KEY(feature_id);
+ALTER TABLE state ADD PRIMARY KEY(state_id);
+ALTER TABLE cinema ADD PRIMARY KEY(cinema_id);
+ALTER TABLE theatre ADD PRIMARY KEY(theatre_id);
+ALTER TABLE seat_type ADD PRIMARY KEY(type_id);
+ALTER TABLE seat ADD PRIMARY KEY(seat_id);
+ALTER TABLE booking ADD PRIMARY KEY(booking_id);
+ALTER TABLE booking_seat ADD PRIMARY KEY(booking_id, seat_id);
+ALTER TABLE ticket_type ADD PRIMARY KEY(type_id);
+ALTER TABLE booking_ticket ADD PRIMARY KEY(ticket_type_id, booking_id);
+ALTER TABLE snack ADD PRIMARY KEY(snack_id);
+ALTER TABLE snack_type ADD PRIMARY KEY(type_id);
+ALTER TABLE booking_snack ADD PRIMARY KEY(booking_id,snack_id);
+
+ALTER TABLE movie_cast
+ADD FOREIGN KEY (movie_id) REFERENCES movie(movie_id);
+ALTER TABLE movie_cast
+ADD FOREIGN KEY (cast_id) REFERENCES cast_member(cast_id);
+
+ALTER TABLE movie_genre
+ADD FOREIGN KEY (movie_id) REFERENCES movie(movie_id);
+ALTER TABLE movie_genre
+ADD FOREIGN KEY (genre_id) REFERENCES genre(genre_id);
+
+ALTER TABLE movie
+ADD FOREIGN KEY (director_id) REFERENCES director(director_id);
+ALTER TABLE movie
+ADD FOREIGN KEY (status_id) REFERENCES moive_status(status_id);
+
+ALTER TABLE showing_time
+ADD FOREIGN KEY(movie_id) REFERENCES movie(movie_id);
+ALTER TABLE showing_time
+ADD FOREIGN KEY(theatre_id) REFERENCES theatre(theatre_id);
+
+ALTER TABLE showing_feature
+ADD FOREIGN KEY(showing_id) REFERENCES showing_time(time_id);
+ALTER TABLE showing_feature
+ADD FOREIGN KEY(feature_id) REFERENCES feature(feature_id);
+
+ALTER TABLE feature
+ADD FOREIGN KEY(type_id) REFERENCES feature_type(type_id);
+
+ALTER TABLE theatre
+ADD FOREIGN KEY(cinema_id) REFERENCES cinema(cinema_id);
+
+ALTER TABLE cinema
+ADD FOREIGN KEY(state_id) REFERENCES state(state_id);
+
+ALTER TABLE seat
+ADD FOREIGN KEY(seat_type_id) REFERENCES seat_type(type_id);
+ALTER TABLE seat
+ADD FOREIGN KEY(theatre_id) REFERENCES theatre(theatre_id);
+
+ALTER TABLE booking_seat
+ADD FOREIGN KEY(booking_id) REFERENCES booking(booking_id);
+ALTER TABLE booking_seat
+ADD FOREIGN KEY(seat_id) REFERENCES seat(seat_id);
+
+ALTER TABLE booking
+ADD FOREIGN KEY(showing_id) REFERENCES showing_time(time_id);
+
+ALTER TABLE booking_ticket
+ADD FOREIGN KEY(ticket_type_id) REFERENCES ticket_type(type_id);
+ALTER TABLE booking_ticket
+ADD FOREIGN KEY(booking_id) REFERENCES booking(booking_id);
+
+ALTER TABLE booking_snack
+ADD FOREIGN KEY(booking_id) REFERENCES booking(booking_id);
+ALTER TABLE booking_snack
+ADD FOREIGN KEY(snack_id) REFERENCES snack(snack_id);
+ 
+ALTER TABLE snack
+ADD FOREIGN KEY(stack_type_id) REFERENCES snack_type(type_id);
