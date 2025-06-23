@@ -1,6 +1,6 @@
 # Mooyie - Movie Ticket Booking System
 
-Mooyie is a web-based application for booking movie tickets. It allows users to browse movies, view showtimes, and purchase tickets seamlessly. The project is built using **NestJS** for the backend and **Nuxt.js** for the frontend, with a **PostgreSQL** database.
+Mooyie is a web-based application for booking movie tickets. It allows users to browse movies, view showtimes, and purchase tickets seamlessly. The project is built using **NestJS** for the backend and **React.js** for the frontend, with a **PostgreSQL** database.
 
 ## Features
 
@@ -12,7 +12,7 @@ Mooyie is a web-based application for booking movie tickets. It allows users to 
 
 ## Tech Stack
 
-- **Frontend**: [Nuxt.js](https://nuxtjs.org/)
+- **Frontend**: [React.js](https://react.dev/learn)
 - **Backend**: [NestJS](https://nestjs.com/)
 - **Database**: [PostgreSQL](https://www.postgresql.org/)
 - **Containerization**: [Docker](https://www.docker.com/)

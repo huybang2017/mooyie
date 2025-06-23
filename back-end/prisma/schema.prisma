@@ -1,0 +1,182 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum BookingStatus {
+  BOOKED
+  CANCELED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+model User {
+  id            Int      @id @default(autoincrement())
+  name          String
+  email         String   @unique
+  password      String
+  role          Role     @default(USER)
+  phone         String
+  avatar        String
+  watchedMovies Json?
+  createdAt     DateTime @default(now())
+
+  bookings      Booking[]
+  comments      Comment[]
+  bookmarks     Bookmark[]
+  notifications Notification[]
+}
+
+model Movie {
+  id          Int      @id @default(autoincrement())
+  title       String
+  genre       String
+  duration    Int
+  description String
+  image       String
+  createdAt   DateTime @default(now())
+
+  showtimes Showtime[]
+  comments  Comment[]
+  bookmarks Bookmark[]
+}
+
+model Theater {
+  id        Int      @id @default(autoincrement())
+  name      String
+  location  String
+  createdAt DateTime @default(now())
+
+  rooms Room[]
+}
+
+model Room {
+  id        Int      @id @default(autoincrement())
+  name      String
+  seatCount Int
+  createdAt DateTime @default(now())
+
+  theaterId Int
+  theater   Theater    @relation(fields: [theaterId], references: [id])
+  seats     Seat[]
+  showtimes Showtime[]
+}
+
+model Seat {
+  id     Int    @id @default(autoincrement())
+  row    String
+  number Int
+
+  roomId Int
+  room   Room @relation(fields: [roomId], references: [id])
+}
+
+model Showtime {
+  id        Int      @id @default(autoincrement())
+  time      DateTime
+  seats     Json
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  movieId Int
+  movie   Movie @relation(fields: [movieId], references: [id])
+
+  roomId Int
+  room   Room @relation(fields: [roomId], references: [id])
+
+  bookings Booking[]
+}
+
+model Booking {
+  id         Int           @id @default(autoincrement())
+  seats      Json
+  totalPrice Float
+  status     BookingStatus
+  createdAt  DateTime      @default(now())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  showtimeId Int
+  showtime   Showtime @relation(fields: [showtimeId], references: [id])
+
+  payment Payment?
+  history TicketHistory[]
+}
+
+model Payment {
+  id              Int           @id @default(autoincrement())
+  amount          Float
+  status          PaymentStatus
+  stripePaymentId String
+  paidAt          DateTime      @default(now())
+
+  bookingId Int     @unique
+  booking   Booking @relation(fields: [bookingId], references: [id])
+}
+
+model Bookmark {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  movieId Int
+  movie   Movie @relation(fields: [movieId], references: [id])
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  rating    Float
+  createdAt DateTime @default(now())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  movieId Int
+  movie   Movie @relation(fields: [movieId], references: [id])
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  message   String
+  type      String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+}
+
+model TicketHistory {
+  id        Int           @id @default(autoincrement())
+  status    BookingStatus
+  updatedAt DateTime      @default(now())
+  note      String?
+
+  bookingId Int
+  booking   Booking @relation(fields: [bookingId], references: [id])
+}
