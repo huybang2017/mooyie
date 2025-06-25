@@ -9,6 +9,13 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CacheModule } from '@nestjs/cache-manager';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { MovieModule } from './movie/movie.module';
+import { BookmarkModule } from './bookmark/bookmark.module';
+import { BookingModule } from './booking/booking.module';
+import { ShowtimeModule } from './showtime/showtime.module';
+import { RoomModule } from './room/room.module';
+import { TheaterModule } from './theater/theater.module';
+import { PaymentModule } from './payment/payment.module';
 
 @Module({
   imports: [
@@ -27,6 +34,13 @@ import { AuthModule } from './auth/auth.module';
     PrismaModule,
     UserModule,
     AuthModule,
+    MovieModule,
+    BookmarkModule,
+    BookingModule,
+    ShowtimeModule,
+    RoomModule,
+    TheaterModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
