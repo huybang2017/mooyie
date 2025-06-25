@@ -1,4 +1,3 @@
-// src/common/guards/roles.guard.ts
 import {
   CanActivate,
   ExecutionContext,
@@ -8,6 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { Role } from 'generated/prisma';
 import { ROLES_KEY } from 'src/auth/decorate/roles.decorator';
+import { JwtPayload } from 'src/auth/dto/jwt-payload.dto';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -23,7 +23,8 @@ export class RolesGuard implements CanActivate {
       return true;
     }
 
-    const { user } = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest<{ user: JwtPayload }>();
+    const user = request.user;
 
     if (!user || !requiredRoles.includes(user.role)) {
       throw new ForbiddenException('Bạn không có quyền truy cập');
