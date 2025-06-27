@@ -1,12 +1,109 @@
-# React + Vite
+# Mooyie Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React application with Redux state management and React Router for navigation.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Redux Toolkit** for state management
+- **React Router** for client-side routing
+- **TypeScript** for type safety
+- **Tailwind CSS** for styling
+- **Authentication** with JWT tokens
+- **Protected Routes** for authenticated users
 
-## Expanding the ESLint configuration
+## Project Structure
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```
+src/
+├── components/          # Reusable UI components
+├── pages/              # Page components
+├── routes/             # Routing configuration
+├── store/              # Redux store and slices
+│   ├── slices/         # Redux slices (auth, movies, bookings)
+│   └── hooks.ts        # Typed Redux hooks
+├── services/           # API services
+└── App.tsx            # Main app component
+```
+
+## Redux Store
+
+The application uses Redux Toolkit with the following slices:
+
+- **Auth Slice**: Manages user authentication state
+- **Movie Slice**: Handles movie data and operations
+- **Booking Slice**: Manages booking data and operations
+
+## Routing
+
+The application uses React Router with the following routes:
+
+- `/` - Home page
+- `/movies` - Movie listings
+- `/movies/:id` - Movie details
+- `/login` - Login page
+- `/register` - Registration page
+- `/profile` - User profile (protected)
+- `/bookings` - User bookings (protected)
+- `/bookings/:id` - Booking details (protected)
+
+## Getting Started
+
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+2. Create a `.env` file with:
+   ```
+   VITE_API_URL=http://localhost:3000
+   ```
+
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+## Usage
+
+### Redux Hooks
+
+Use the typed hooks for Redux operations:
+
+```typescript
+import { useAppSelector, useAppDispatch } from './store/hooks';
+
+// In your component
+const dispatch = useAppDispatch();
+const { user, isAuthenticated } = useAppSelector((state) => state.auth);
+```
+
+### API Service
+
+Use the API service for backend communication:
+
+```typescript
+import { apiService } from './services/api';
+
+// Example usage
+const movies = await apiService.get('/movies');
+const user = await apiService.post('/auth/login', credentials);
+```
+
+### Protected Routes
+
+Wrap components that require authentication:
+
+```typescript
+import ProtectedRoute from './routes/ProtectedRoute';
+
+<ProtectedRoute>
+  <YourProtectedComponent />
+</ProtectedRoute>
+```
+
+## Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run lint` - Run ESLint
+- `npm run preview` - Preview production build
