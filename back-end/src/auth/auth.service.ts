@@ -60,8 +60,8 @@ export class AuthService {
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '30d' });
 
     return plainToClass(LoginResponseDto, {
-      access_token: accessToken,
-      refresh_token: refreshToken,
+      accessToken: accessToken,
+      refreshToken: refreshToken,
     });
   }
 
