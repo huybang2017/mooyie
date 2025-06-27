@@ -38,7 +38,7 @@ const BookingDetail = () => {
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="mx-auto">
       <h1 className="text-3xl font-bold mb-6">Booking Details</h1>
       <div className="bg-card border rounded-lg p-6">
         <div className="space-y-4">

@@ -1,4 +1,7 @@
 import { Link } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 const fakeBookings = [
   {
@@ -27,44 +30,59 @@ const fakeBookings = [
   },
 ];
 
+const statusColor = {
+  confirmed: "bg-green-100 text-green-800",
+  pending: "bg-yellow-100 text-yellow-800",
+  cancelled: "bg-red-100 text-red-800",
+};
+
+const statusLabel = {
+  confirmed: "Đã xác nhận",
+  pending: "Đang chờ",
+  cancelled: "Đã hủy",
+};
+
 const Bookings = () => {
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-6">My Bookings</h1>
-      {fakeBookings.length === 0 ? (
-        <p className="text-center text-muted-foreground">No bookings found</p>
-      ) : (
-        <div className="space-y-4">
-          {fakeBookings.map((booking) => (
-            <div key={booking.id} className="border rounded-lg p-4">
-              <h3 className="font-semibold">{booking.movieTitle}</h3>
-              <p className="text-sm text-muted-foreground">
-                {new Date(booking.showtimeDate).toLocaleDateString()}
-              </p>
-              <p className="text-sm">Seats: {booking.seats.join(", ")}</p>
-              <p className="text-sm">Total: ${booking.totalAmount}</p>
-              <span
-                className={`inline-block px-2 py-1 text-xs rounded-full ${
-                  booking.status === "confirmed"
-                    ? "bg-green-100 text-green-800"
-                    : booking.status === "pending"
-                    ? "bg-yellow-100 text-yellow-800"
-                    : "bg-red-100 text-red-800"
-                }`}
-              >
-                {booking.status}
-              </span>
+    <div className="mx-auto">
+      <h1 className="text-3xl font-bold mb-6">My booking</h1>
 
-              {/* Optional: Link to detail page */}
-              <div className="mt-2">
-                <Link
-                  to={`/bookings/${booking.id}`}
-                  className="text-blue-500 text-sm underline"
-                >
-                  View Details
-                </Link>
-              </div>
-            </div>
+      {fakeBookings.length === 0 ? (
+        <p className="text-center text-muted-foreground">Không có vé nào</p>
+      ) : (
+        <div className="grid gap-4">
+          {fakeBookings.map((booking) => (
+            <Card key={booking.id} className="border shadow-sm">
+              <CardHeader className="flex flex-row justify-between items-center pb-2">
+                <div>
+                  <CardTitle className="text-lg">
+                    {booking.movieTitle}
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(booking.showtimeDate).toLocaleString("vi-VN", {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    })}
+                  </p>
+                </div>
+                <Badge className={statusColor[booking.status]}>
+                  {statusLabel[booking.status]}
+                </Badge>
+              </CardHeader>
+              <CardContent className="text-sm space-y-1">
+                <p>
+                  <span className="font-medium">Ghế:</span>{" "}
+                  {booking.seats.join(", ")}
+                </p>
+                <p>
+                  <span className="font-medium">Tổng tiền:</span> $
+                  {booking.totalAmount}
+                </p>
+                <Button asChild variant="link" className="px-0 text-sm mt-2">
+                  <Link to={`/bookings/${booking.id}`}>Xem chi tiết</Link>
+                </Button>
+              </CardContent>
+            </Card>
           ))}
         </div>
       )}

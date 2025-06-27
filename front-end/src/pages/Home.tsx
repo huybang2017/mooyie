@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import { Button } from '../components/ui/button';
+import { Link } from "react-router-dom";
+import { Button } from "../components/ui/button";
 
 const Home = () => {
   return (
@@ -8,17 +8,19 @@ const Home = () => {
       <p className="text-xl text-muted-foreground mb-8">
         Your ultimate movie booking experience
       </p>
-      
+
       <div className="flex justify-center space-x-4">
         <Link to="/movies">
           <Button size="lg">Browse Movies</Button>
         </Link>
         <Link to="/register">
-          <Button variant="outline" size="lg">Get Started</Button>
+          <Button variant="outline" size="lg">
+            Get Started
+          </Button>
         </Link>
       </div>
     </div>
   );
 };
 
-export default Home; 
+export default Home;

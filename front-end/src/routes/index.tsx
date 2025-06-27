@@ -10,6 +10,11 @@ import BookingDetail from "../pages/BookingDetail";
 import Profile from "../pages/Profile";
 import BookingSelect from "../pages/BookingSelect";
 import AdminDashboard from "../pages/AdminDashboard";
+import LayoutAdmin from "@/components/layout-admin";
+import MovieManagement from "@/pages/MovieManagement";
+import ShowtimeManagement from "@/pages/ShowtimeManagement";
+import TheaterManagement from "@/pages/TheaterManagement";
+import TicketManagement from "@/pages/TicketManagement";
 
 const router = createBrowserRouter([
   {
@@ -56,7 +61,29 @@ const router = createBrowserRouter([
   },
   {
     path: "/admin",
-    element: <AdminDashboard />,
+    element: <LayoutAdmin />,
+    children: [
+      {
+        index: true,
+        element: <AdminDashboard />,
+      },
+      {
+        path: "movies",
+        element: <MovieManagement />,
+      },
+      {
+        path: "showtimes",
+        element: <ShowtimeManagement />,
+      },
+      {
+        path: "theaters",
+        element: <TheaterManagement />,
+      },
+      {
+        path: "tickets",
+        element: <TicketManagement />,
+      },
+    ],
   },
 ]);
 
