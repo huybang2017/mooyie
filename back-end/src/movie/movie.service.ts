@@ -4,6 +4,8 @@ import { UpdateMovieDto } from './dto/update-movie.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { FilterMovieDto } from 'src/movie/dto/filter-movie.dto';
 import { PaginationMovieDto } from 'src/movie/dto/pagination-movie.dto';
+import { Prisma } from 'generated/prisma';
+import { paginate } from 'src/utils/helper/paginate';
 
 @Injectable()
 export class MovieService {
@@ -13,17 +15,17 @@ export class MovieService {
     return this.prisma.movie.create({ data: dto });
   }
 
-  findAll(filter: FilterMovieDto, pagination: PaginationMovieDto) {
+  async findAll(filter: FilterMovieDto, pagination: PaginationMovieDto) {
     const { page = 1, limit = 10 } = pagination;
-    const where: Record<string, any> = {};
 
+    const where: Prisma.MovieWhereInput = {};
     if (filter.genre) where.genre = filter.genre;
-    if (filter.cinemaId) where.cinemaId = filter.cinemaId;
 
-    return this.prisma.movie.findMany({
+    return paginate(this.prisma.movie, {
       where,
-      skip: +(page - 1) * +limit,
-      take: +limit,
+      page,
+      limit,
+      orderBy: { createdAt: 'desc' },
     });
   }
 
@@ -31,7 +33,9 @@ export class MovieService {
     return this.prisma.movie.findUnique({
       where: { id },
       include: {
-        showtimes: true,
+        showtimes: {
+          include: { room: { include: { theater: true } } },
+        },
         comments: true,
         bookmarks: true,
       },

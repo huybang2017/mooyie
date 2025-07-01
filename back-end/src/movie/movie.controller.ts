@@ -33,7 +33,6 @@ export class MovieController {
 
   @Get()
   @ApiQuery({ name: 'genre', required: false })
-  @ApiQuery({ name: 'cinemaId', required: false })
   @ApiQuery({ name: 'page', required: false })
   @ApiQuery({ name: 'limit', required: false })
   async findAll(

@@ -26,6 +26,12 @@ enum PaymentStatus {
   REFUNDED
 }
 
+enum MovieStatus {
+  coming_soon
+  now_showing
+  ended
+}
+
 model User {
   id            String   @id @default(uuid())
   name          String
@@ -33,7 +39,7 @@ model User {
   password      String
   role          Role     @default(USER)
   phone         String
-  avatar        String
+  avatar        String?
   watchedMovies Json?
   createdAt     DateTime @default(now())
 
@@ -44,13 +50,15 @@ model User {
 }
 
 model Movie {
-  id          String   @id @default(uuid())
+  id          String      @id @default(uuid())
   title       String
   genre       String
   duration    Int
   description String
+  trailer_url String
   image       String
-  createdAt   DateTime @default(now())
+  status      MovieStatus @default(coming_soon)
+  createdAt   DateTime    @default(now())
 
   showtimes Showtime[]
   comments  Comment[]

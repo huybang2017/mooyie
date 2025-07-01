@@ -6,12 +6,4 @@ export class FilterMovieDto {
   @IsOptional()
   @IsString()
   genre?: string;
-
-  @ApiPropertyOptional({
-    description: 'Lọc theo rạp chiếu',
-    example: 'cinema-uuid',
-  })
-  @IsOptional()
-  @IsString()
-  cinemaId?: string;
 }
