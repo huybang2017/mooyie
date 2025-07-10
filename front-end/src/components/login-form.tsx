@@ -13,6 +13,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { login } from "@/store/slices/authSlice";
+import { toast } from "sonner";
 
 export function LoginForm({
   className,
@@ -36,6 +37,7 @@ export function LoginForm({
     e.preventDefault();
     const result = await dispatch(login(form));
     if (login.fulfilled.match(result)) {
+      toast.success("Đăng nhập thành công!");
       navigate("/");
     }
   };

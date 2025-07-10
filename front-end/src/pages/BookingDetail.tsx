@@ -1,89 +1,100 @@
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { getBookingByIdThunk } from "@/store/slices/bookingSlice";
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
-
-const fakeBookings = [
-  {
-    id: "1",
-    movieTitle: "Inception",
-    showtimeDate: "2025-07-01T18:30:00",
-    seats: ["A1", "A2", "A3"],
-    totalAmount: 30,
-    status: "confirmed",
-  },
-  {
-    id: "2",
-    movieTitle: "The Matrix",
-    showtimeDate: "2025-07-05T20:00:00",
-    seats: ["B4", "B5"],
-    totalAmount: 20,
-    status: "pending",
-  },
-  {
-    id: "3",
-    movieTitle: "Interstellar",
-    showtimeDate: "2025-07-10T17:00:00",
-    seats: ["C1"],
-    totalAmount: 10,
-    status: "cancelled",
-  },
-];
 
 const BookingDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const booking = fakeBookings.find((b) => b.id === id);
+  const dispatch = useAppDispatch();
+  const { bookingDetail, loading } = useAppSelector((state) => state.booking);
 
-  if (!booking) {
+  useEffect(() => {
+    if (id) {
+      dispatch(getBookingByIdThunk(id));
+    }
+  }, [dispatch, id]);
+
+  if (loading) {
+    return <div className="text-center">Đang tải dữ liệu đặt vé...</div>;
+  }
+
+  if (!bookingDetail) {
     return (
       <div className="text-center text-red-500">Không tìm thấy đặt vé</div>
     );
   }
 
+  const movieTitle = bookingDetail.showtime?.movie?.title || "Không rõ";
+  const showtimeDate = bookingDetail.showtime?.time?.[0]?.start;
+  const formattedDate = showtimeDate
+    ? new Date(showtimeDate).toLocaleString("vi-VN")
+    : "Không rõ";
+
+  // Nếu seats là chuỗi JSON thì parse
+  let seats: any[] = [];
+  try {
+    seats = Array.isArray(bookingDetail.seats)
+      ? bookingDetail.seats
+      : JSON.parse(bookingDetail.seats);
+  } catch {
+    seats = [];
+  }
+
+  const formattedSeats = seats.length
+    ? seats.map((seat) => `${seat.row ?? "?"}${seat.number ?? "?"}`).join(", ")
+    : "Không có thông tin ghế";
+
+  const formattedPrice = `${bookingDetail.totalPrice.toLocaleString("vi-VN")}₫`;
+
+  const statusLabel = bookingDetail.status;
+  const statusColor =
+    bookingDetail.status === "CONFIRMED"
+      ? "bg-green-100 text-green-800"
+      : bookingDetail.status === "PENDING"
+      ? "bg-yellow-100 text-yellow-800"
+      : "bg-red-100 text-red-800";
+
   return (
-    <div className="mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Booking Details</h1>
-      <div className="bg-card border rounded-lg p-6">
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-muted-foreground">
-              Movie
-            </label>
-            <p className="text-lg">{booking.movieTitle}</p>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-muted-foreground">
-              Date
-            </label>
-            <p className="text-lg">
-              {new Date(booking.showtimeDate).toLocaleDateString()}
-            </p>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-muted-foreground">
-              Seats
-            </label>
-            <p className="text-lg">{booking.seats.join(", ")}</p>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-muted-foreground">
-              Total Amount
-            </label>
-            <p className="text-lg">${booking.totalAmount}</p>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-muted-foreground">
-              Status
-            </label>
-            <span
-              className={`inline-block px-2 py-1 text-xs rounded-full ${
-                booking.status === "confirmed"
-                  ? "bg-green-100 text-green-800"
-                  : booking.status === "pending"
-                  ? "bg-yellow-100 text-yellow-800"
-                  : "bg-red-100 text-red-800"
-              }`}
-            >
-              {booking.status}
-            </span>
-          </div>
+    <div className="mx-auto max-w-xl px-4 py-8">
+      <h1 className="text-3xl font-bold mb-6">Chi tiết đặt vé</h1>
+      <div className="bg-white dark:bg-card border rounded-lg p-6 space-y-4 shadow-sm">
+        <div>
+          <label className="block text-sm font-medium text-muted-foreground">
+            Tên phim
+          </label>
+          <p className="text-lg font-medium">{movieTitle}</p>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-muted-foreground">
+            Ngày chiếu
+          </label>
+          <p className="text-lg">{formattedDate}</p>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-muted-foreground">
+            Ghế đã đặt
+          </label>
+          <p className="text-lg">{formattedSeats}</p>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-muted-foreground">
+            Tổng tiền
+          </label>
+          <p className="text-lg">{formattedPrice}</p>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-muted-foreground">
+            Trạng thái
+          </label>
+          <span
+            className={`inline-block px-3 py-1 text-sm rounded-full ${statusColor}`}
+          >
+            {statusLabel === "BOOKED"
+              ? "Đã thanh toán"
+              : statusLabel === "PENDING"
+              ? "Chờ thanh toán"
+              : "Đã hủy"}
+          </span>
         </div>
       </div>
     </div>

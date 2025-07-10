@@ -7,8 +7,8 @@ import { ToastProvider } from "@/components/toast-provider";
 function App() {
   return (
     <Provider store={store}>
+      <ToastProvider />
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <ToastProvider />
         <AppRouter />
       </ThemeProvider>
     </Provider>

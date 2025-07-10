@@ -1,4 +1,5 @@
 import { store } from "@/store";
+import { logout, refreshToken } from "@/store/slices/authSlice";
 import axios from "axios";
 
 export const axiosClient = axios.create({
@@ -19,10 +20,12 @@ export const axiosAuth = axios.create({
 
 axiosAuth.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("accessToken") || null;
+
     if (token) {
-      config.headers["Authorization"] = `Bearer ${token}`;
+      config.headers.Authorization = `Bearer ${token}`;
     }
+
     return config;
   },
   (error) => Promise.reject(error)
@@ -33,37 +36,27 @@ axiosAuth.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (
-      error.response?.status === 401 &&
-      !originalRequest._retry &&
-      store.getState().auth.refreshToken
-    ) {
+    const token = localStorage.getItem("refreshToken") || null;
+
+    if (error.response?.status === 401 && !originalRequest._retry && token) {
       originalRequest._retry = true;
 
       try {
-        const refreshToken = store.getState().auth.refreshToken;
-        const res = await axios.post("https://api.example.com/auth/refresh", {
-          refreshToken,
-        });
+        const resultAction = await store.dispatch(refreshToken(token));
 
-        const newAccessToken = res.data.accessToken;
+        if (refreshToken.fulfilled.match(resultAction)) {
+          const newAccessToken = resultAction.payload.accessToken;
 
-        // Cập nhật token mới
-        store.dispatch(
-          setTokens({
-            accessToken: newAccessToken,
-            refreshToken,
-          })
-        );
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
-        localStorage.setItem("accessToken", newAccessToken);
-
-        // Gửi lại request cũ với token mới
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        return axiosClient(originalRequest);
-      } catch (err) {
+          return axiosAuth(originalRequest);
+        } else {
+          store.dispatch(logout());
+          return Promise.reject(error);
+        }
+      } catch (refreshError) {
         store.dispatch(logout());
-        return Promise.reject(err);
+        return Promise.reject(refreshError);
       }
     }
 

@@ -12,7 +12,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Building2, CalendarClock, Film, TicketCheckIcon } from "lucide-react";
+import { Building2, CalendarClock, Film, Settings } from "lucide-react";
+import { title } from "process";
 
 const data = {
   user: {
@@ -21,6 +22,11 @@ const data = {
     avatar: "/avatars/shadcn.jpg",
   },
   navMain: [
+    {
+      title: "Dashboard",
+      url: "/admin",
+      icon: Settings,
+    },
     {
       title: "Movies",
       url: "/admin/movies",
@@ -32,8 +38,8 @@ const data = {
       icon: Building2,
     },
     {
-      title: "Tickets",
-      url: "/admin/tickets",
+      title: "Bookings",
+      url: "/admin/bookings",
       icon: IconTicket,
     },
     {
@@ -41,6 +47,8 @@ const data = {
       url: "/admin/showtimes",
       icon: CalendarClock,
     },
+    { title: "Users", url: "/admin/users", icon: Settings },
+    { title: "Comments", url: "/admin/comments", icon: Settings },
   ],
 };
 

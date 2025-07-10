@@ -55,7 +55,7 @@ const Layout = () => {
       <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <Link to="/" className="text-xl font-bold tracking-tight">
-            🎬 Mooyie
+            Mooyie
           </Link>
 
           {/* Desktop Menu */}
@@ -123,7 +123,7 @@ const Layout = () => {
               </SheetTrigger>
               <SheetContent side="right">
                 <SheetHeader>
-                  <SheetTitle className="text-xl"> 🎬 Mooyie</SheetTitle>
+                  <SheetTitle className="text-xl">Mooyie</SheetTitle>
                 </SheetHeader>
                 <div className="grid flex-1 auto-rows-min gap-6 px-4">
                   {[...navLinks, ...(isAuthenticated ? authLinks : [])].map(

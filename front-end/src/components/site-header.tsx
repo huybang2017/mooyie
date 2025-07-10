@@ -1,5 +1,4 @@
 import { ModeToggle } from "@/components/mode-toggle";
-import { ThemeProvider } from "@/components/theme-provider";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 

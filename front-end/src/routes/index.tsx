@@ -14,75 +14,101 @@ import LayoutAdmin from "@/components/layout-admin";
 import MovieManagement from "@/pages/MovieManagement";
 import ShowtimeManagement from "@/pages/ShowtimeManagement";
 import TheaterManagement from "@/pages/TheaterManagement";
-import TicketManagement from "@/pages/TicketManagement";
+import BookingManagement from "@/pages/BookingManagement";
+import RoleGuard from "@/routes/RoleGuard";
+import PaymentSuccess from "@/pages/PaymentSuccess";
+import Bookmarks from "@/pages/Bookmarks";
+import UserManagement from "@/pages/UserManagement";
+import CommentManagement from "@/pages/CommentManagement";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
     children: [
-      {
-        index: true,
-        element: <Home />,
-      },
+      { index: true, element: <Home /> },
       {
         path: "movies",
         element: <Movies />,
       },
       {
         path: "movies/:id",
-        element: <MovieDetail />,
+        element: (
+          <RoleGuard requiredRoles={["USER"]}>
+            <MovieDetail />
+          </RoleGuard>
+        ),
       },
-      {
-        path: "login",
-        element: <Login />,
-      },
+      { path: "login", element: <Login /> },
       {
         path: "register",
         element: <Register />,
       },
       {
         path: "bookings",
-        element: <Bookings />,
+        element: (
+          <RoleGuard requiredRoles={["USER"]}>
+            <Bookings />
+          </RoleGuard>
+        ),
       },
       {
         path: "bookings/:id",
-        element: <BookingDetail />,
+        element: (
+          <RoleGuard requiredRoles={["USER"]}>
+            <BookingDetail />
+          </RoleGuard>
+        ),
       },
       {
         path: "profile",
-        element: <Profile />,
+        element: (
+          <RoleGuard requiredRoles={["USER"]}>
+            <Profile />
+          </RoleGuard>
+        ),
       },
       {
-        path: "booking/select/:movieId",
-        element: <BookingSelect />,
+        path: "booking/select/:showtimeId",
+        element: (
+          <RoleGuard requiredRoles={["USER"]}>
+            <BookingSelect />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "bookmarks",
+        element: (
+          <RoleGuard requiredRoles={["USER"]}>
+            <Bookmarks />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "/payment-success",
+        element: (
+          <RoleGuard requiredRoles={["USER"]}>
+            <PaymentSuccess />
+          </RoleGuard>
+        ),
       },
     ],
   },
   {
     path: "/admin",
-    element: <LayoutAdmin />,
+    element: (
+      <RoleGuard requiredRoles={["ADMIN"]}>
+        <LayoutAdmin />
+      </RoleGuard>
+    ),
     children: [
-      {
-        index: true,
-        element: <AdminDashboard />,
-      },
-      {
-        path: "movies",
-        element: <MovieManagement />,
-      },
-      {
-        path: "showtimes",
-        element: <ShowtimeManagement />,
-      },
-      {
-        path: "theaters",
-        element: <TheaterManagement />,
-      },
-      {
-        path: "tickets",
-        element: <TicketManagement />,
-      },
+      { index: true, element: <AdminDashboard /> },
+      { path: "movies", element: <MovieManagement /> },
+      { path: "showtimes", element: <ShowtimeManagement /> },
+      { path: "theaters", element: <TheaterManagement /> },
+      { path: "bookings", element: <BookingManagement /> },
+      { path: "users", element: <UserManagement /> },
+      { path: "comments", element: <CommentManagement /> },
     ],
   },
 ]);

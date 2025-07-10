@@ -16,7 +16,8 @@ import {
 
 interface AuthState {
   user: ProfileResponse | null;
-  token: string | null;
+  accessToken: string | null;
+  refreshToken: string | null;
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
@@ -24,7 +25,8 @@ interface AuthState {
 
 const initialState: AuthState = {
   user: null,
-  token: localStorage.getItem("token"),
+  accessToken: localStorage.getItem("accessToken"),
+  refreshToken: localStorage.getItem("refreshToken"),
   isAuthenticated: !!localStorage.getItem("token"),
   loading: false,
   error: null,
@@ -35,9 +37,15 @@ export const login = createAsyncThunk(
   async (credentials: LoginPayload, { rejectWithValue }) => {
     try {
       const { data }: { data: LoginResponse } = await loginApi(credentials);
-      localStorage.setItem("token", data.accessToken);
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+
       const userRes = await getMe();
-      return { user: userRes.data, token: data.accessToken };
+      return {
+        user: userRes.data,
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
+      };
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Login failed");
     }
@@ -54,9 +62,16 @@ export const register = createAsyncThunk(
         email,
         password,
       });
-      localStorage.setItem("token", data.accessToken);
+
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+
       const userRes = await getMe();
-      return { user: userRes.data, token: data.accessToken };
+      return {
+        user: userRes.data,
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
+      };
     } catch (error: any) {
       return rejectWithValue(
         error.response?.data?.message || "Registration failed"
@@ -84,10 +99,15 @@ export const refreshToken = createAsyncThunk(
   async (refreshToken: string, { rejectWithValue }) => {
     try {
       const response = await refreshTokenApi(refreshToken);
-      const { accessToken } = response.data;
-      localStorage.setItem("token", accessToken);
-      const userRes = await getMe();
-      return { user: userRes.data, token: accessToken };
+      const { accessToken, refreshToken: newRefreshToken } = response.data;
+
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", newRefreshToken);
+
+      return {
+        accessToken,
+        refreshToken: newRefreshToken,
+      };
     } catch (error: any) {
       return rejectWithValue(
         error.response?.data?.message || "Token refresh failed"
@@ -97,7 +117,8 @@ export const refreshToken = createAsyncThunk(
 );
 
 export const logout = createAsyncThunk("auth/logout", async () => {
-  localStorage.removeItem("token");
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
   return null;
 });
 
@@ -108,9 +129,13 @@ const authSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-    setUser: (state, action: PayloadAction<ProfileResponse>) => {
-      state.user = action.payload;
-      state.isAuthenticated = true;
+    setUser: (state, action: PayloadAction<Partial<ProfileResponse>>) => {
+      if (!state.user) return;
+
+      state.user = {
+        ...state.user,
+        ...action.payload,
+      };
     },
   },
   extraReducers: (builder) => {
@@ -122,7 +147,8 @@ const authSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload.user;
-        state.token = action.payload.token;
+        state.accessToken = action.payload.accessToken;
+        state.refreshToken = action.payload.refreshToken;
         state.isAuthenticated = true;
       })
       .addCase(login.rejected, (state, action) => {
@@ -136,7 +162,8 @@ const authSlice = createSlice({
       .addCase(register.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload.user;
-        state.token = action.payload.token;
+        state.accessToken = action.payload.accessToken;
+        state.refreshToken = action.payload.refreshToken;
         state.isAuthenticated = true;
       })
       .addCase(register.rejected, (state, action) => {
@@ -145,8 +172,28 @@ const authSlice = createSlice({
       })
       .addCase(logout.fulfilled, (state) => {
         state.user = null;
-        state.token = null;
+        state.accessToken = null;
+        state.refreshToken = null;
         state.isAuthenticated = false;
+      })
+      .addCase(getUserProfile.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getUserProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+        state.isAuthenticated = true;
+      })
+      .addCase(getUserProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+        state.user = null;
+        state.isAuthenticated = false;
+      })
+      .addCase(refreshToken.fulfilled, (state, action) => {
+        state.accessToken = action.payload.accessToken;
+        state.refreshToken = action.payload.refreshToken;
+        state.isAuthenticated = true;
       });
   },
 });
