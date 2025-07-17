@@ -20,6 +20,9 @@ export class BookmarkService {
         userId,
         movieId: dto.movieId,
       },
+      include: {
+        movie: true,
+      },
     });
   }
 
