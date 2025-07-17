@@ -8,6 +8,7 @@ import {
   HttpCode,
   HttpStatus,
   BadRequestException,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -22,6 +23,7 @@ import { LoginResponseDto } from './dto/login-response.dto';
 import { Request } from 'express';
 import { ProfileResponseDto } from 'src/user/dto/profile-response.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { UserProfileCacheInterceptor } from './user-profile-cache.interceptor';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -72,6 +74,7 @@ export class AuthController {
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(UserProfileCacheInterceptor)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get current user profile' })
   @ApiResponse({

@@ -45,6 +45,10 @@ export class AuthService {
       throw new ForbiddenException('Email không tồn tại.');
     }
 
+    if (user.status === false) {
+      throw new ForbiddenException('Tài khoản của bạn đã bị vô hiệu hóa.');
+    }
+
     const isPasswordValid = await compare(loginDto.password, user.password);
     if (!isPasswordValid) {
       throw new ForbiddenException('Mật khẩu không đúng.');
@@ -56,7 +60,7 @@ export class AuthService {
       role: user.role,
     };
 
-    const accessToken = this.jwtService.sign(payload, { expiresIn: '7d' });
+    const accessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '30d' });
 
     return plainToClass(LoginResponseDto, {
@@ -96,7 +100,7 @@ export class AuthService {
       };
 
       return {
-        accessToken: this.jwtService.sign(payload, { expiresIn: '7d' }),
+        accessToken: this.jwtService.sign(payload, { expiresIn: '1h' }),
         refreshToken,
       };
     } catch (error) {
