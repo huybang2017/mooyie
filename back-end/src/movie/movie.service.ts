@@ -17,15 +17,74 @@ export class MovieService {
 
   async findAll(filter: FilterMovieDto, pagination: PaginationMovieDto) {
     const { page = 1, limit = 10 } = pagination;
+    const { genre, title, status } = filter;
 
     const where: Prisma.MovieWhereInput = {};
-    if (filter.genre) where.genre = filter.genre;
+    if (genre) {
+      where.genre = {
+        contains: genre,
+        mode: 'insensitive',
+      };
+    }
+
+    if (title) {
+      where.title = {
+        contains: title,
+        mode: 'insensitive',
+      };
+    }
+
+    if (status) {
+      where.status = status;
+    }
 
     return paginate(this.prisma.movie, {
       where,
       page,
       limit,
       orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async findAllAdmin(filter: FilterMovieDto, pagination: PaginationMovieDto) {
+    const { page, limit } = pagination;
+    const { genre, title, status } = filter;
+
+    const where: Prisma.MovieWhereInput = {};
+
+    if (genre) {
+      where.genre = {
+        contains: genre,
+        mode: 'insensitive',
+      };
+    }
+
+    if (title) {
+      where.title = {
+        contains: title,
+        mode: 'insensitive',
+      };
+    }
+
+    if (status) {
+      where.status = status;
+    }
+
+    return paginate(this.prisma.movie, {
+      where,
+      page,
+      limit,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        showtimes: {
+          include: {
+            bookings: true,
+            room: { include: { theater: true } },
+          },
+        },
+        comments: true,
+        bookmarks: { include: { user: true } },
+      },
     });
   }
 
@@ -49,7 +108,10 @@ export class MovieService {
     });
   }
 
-  remove(id: string) {
-    return this.prisma.movie.delete({ where: { id } });
+  async remove(id: string) {
+    return this.prisma.movie.update({
+      where: { id },
+      data: { status: 'ended' },
+    });
   }
 }

@@ -42,6 +42,20 @@ export class MovieController {
     return this.movieService.findAll(filter, pagination);
   }
 
+  @Get('/admin')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiQuery({ name: 'genre', required: false })
+  @ApiQuery({ name: 'page', required: false })
+  @ApiQuery({ name: 'limit', required: false })
+  @ApiBearerAuth('access-token')
+  async findAllAdmin(
+    @Query() filter: FilterMovieDto,
+    @Query() pagination: PaginationMovieDto,
+  ) {
+    return this.movieService.findAllAdmin(filter, pagination);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Lấy chi tiết phim' })
   @ApiResponse({ status: 200, description: 'Chi tiết phim' })

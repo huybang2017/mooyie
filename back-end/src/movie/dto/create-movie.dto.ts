@@ -1,6 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsInt, Min, Max, Length } from 'class-validator';
+import {
+  IsString,
+  IsInt,
+  Min,
+  Max,
+  Length,
+  IsOptional,
+  IsEnum,
+} from 'class-validator';
 import { Transform } from 'class-transformer';
+import { MovieStatus } from 'generated/prisma';
 
 export class CreateMovieDto {
   @ApiProperty({ description: 'Tên phim', example: 'Avengers: Endgame' })
@@ -23,7 +32,7 @@ export class CreateMovieDto {
 
   @ApiProperty({
     description: 'Mô tả phim',
-    example: 'A superhero movie about ...',
+    example: 'A superhero movie about saving the universe...',
   })
   @IsString()
   @Length(10, 1000)
@@ -37,4 +46,24 @@ export class CreateMovieDto {
   @IsString()
   @Transform(({ value }: { value: string }) => value?.trim())
   image: string;
+
+  @ApiProperty({
+    description: 'Link trailer phim (tùy chọn)',
+    example: 'https://youtube.com/watch?v=abc123',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }: { value: string }) => value?.trim())
+  trailer_url?: string;
+
+  @ApiProperty({
+    description: 'Trạng thái phim',
+    example: 'coming_soon',
+    enum: MovieStatus,
+    default: MovieStatus.coming_soon,
+  })
+  @IsOptional()
+  @IsEnum(MovieStatus)
+  status?: MovieStatus;
 }
