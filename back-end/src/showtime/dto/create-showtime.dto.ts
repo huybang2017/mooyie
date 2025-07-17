@@ -1,33 +1,22 @@
 import {
   IsString,
   IsDateString,
-  ValidateNested,
   ArrayNotEmpty,
+  IsArray,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-
-export class SeatStatus {
-  @ApiProperty({ example: 'A' })
-  row: string;
-
-  @ApiProperty({ example: 5 })
-  number: number;
-
-  @ApiProperty({ example: true })
-  isAvailable: boolean;
-}
 
 export class CreateShowtimeDto {
-  @ApiProperty({ example: '2025-06-26T18:30:00.000Z' })
-  @IsDateString()
-  time: string;
-
-  @ApiProperty({ type: [SeatStatus] })
-  @ValidateNested({ each: true })
-  @Type(() => SeatStatus)
+  @ApiProperty({
+    example: ['2025-06-26T18:30:00.000Z', '2025-06-27T14:00:00.000Z'],
+    type: [String],
+    description: 'Danh sách thời gian bắt đầu chiếu phim (ISO string)',
+  })
+  @IsArray()
   @ArrayNotEmpty()
-  seats: SeatStatus[];
+  @IsArray()
+  @IsDateString({}, { each: true })
+  startTimes: string[];
 
   @ApiProperty()
   @IsString()

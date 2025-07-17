@@ -16,6 +16,9 @@ import { ShowtimeModule } from './showtime/showtime.module';
 import { RoomModule } from './room/room.module';
 import { TheaterModule } from './theater/theater.module';
 import { PaymentModule } from './payment/payment.module';
+import { CommentModule } from './comment/comment.module';
+import { DashboardModule } from 'src/dashboard/dashboard.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -41,6 +44,9 @@ import { PaymentModule } from './payment/payment.module';
     RoomModule,
     TheaterModule,
     PaymentModule,
+    CommentModule,
+    DashboardModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

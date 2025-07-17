@@ -1,9 +1,9 @@
-import { Prisma } from 'generated/prisma';
-
-export interface PaginateOptions {
+export interface PaginateOptions<TInclude = any, TSelect = any> {
   page?: number;
   limit?: number;
   orderBy?: Record<string, 'asc' | 'desc'>;
+  include?: TInclude;
+  select?: TSelect;
 }
 
 export interface PaginatedResponse<T> {
@@ -16,19 +16,51 @@ export interface PaginatedResponse<T> {
   hasPreviousPage: boolean;
 }
 
-export async function paginate<T>(
-  model: {
-    findMany: (args: Prisma.MovieFindManyArgs) => Promise<T[]>;
-    count: (args: Prisma.MovieCountArgs) => Promise<number>;
+export async function paginate<
+  T,
+  TArgs extends {
+    where?: any;
+    include?: any;
+    select?: any;
+    orderBy?: any;
+    skip?: number;
+    take?: number;
   },
-  options: {
-    where?: Prisma.MovieWhereInput;
-  } & PaginateOptions,
+>(
+  model: {
+    findMany: (args: TArgs) => Promise<T[]>;
+    count: (args: Pick<TArgs, 'where'>) => Promise<number>;
+  },
+  options: PaginateOptions<TArgs['include'], TArgs['select']> & {
+    where?: TArgs['where'];
+  },
 ): Promise<PaginatedResponse<T>> {
-  const page = Number(options.page) || 1;
-  const limit = Number(options.limit) || 10;
+  const hasPagination =
+    options.page !== undefined && options.limit !== undefined;
+
+  const page = Number(options.page ?? 1);
+  const limit = Number(options.limit ?? 0);
   const where = options.where ?? {};
   const orderBy = options.orderBy ?? { id: 'desc' };
+
+  if (!hasPagination) {
+    const data = await model.findMany({
+      where,
+      orderBy,
+      include: options.include,
+      select: options.select,
+    } as TArgs);
+
+    return {
+      data,
+      total: data.length,
+      currentPage: 1,
+      totalPages: 1,
+      pageSize: data.length,
+      hasNextPage: false,
+      hasPreviousPage: false,
+    };
+  }
 
   const [data, total] = await Promise.all([
     model.findMany({
@@ -36,8 +68,9 @@ export async function paginate<T>(
       skip: (page - 1) * limit,
       take: limit,
       orderBy,
-    }),
-    model.count({ where }),
+      include: options.include,
+    } as TArgs),
+    model.count({ where } as Pick<TArgs, 'where'>),
   ]);
 
   const totalPages = Math.ceil(total / limit);

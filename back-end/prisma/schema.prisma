@@ -14,9 +14,11 @@ enum Role {
 }
 
 enum BookingStatus {
-  BOOKED
+  PENDING
+  CONFIRMED
   CANCELED
-  REFUNDED
+  USED
+  EXPIRED
 }
 
 enum PaymentStatus {
@@ -32,6 +34,16 @@ enum MovieStatus {
   ended
 }
 
+enum SeatType {
+  REGULAR
+  PREMIUM
+}
+
+enum StatusTheater {
+  active
+  inactive
+}
+
 model User {
   id            String   @id @default(uuid())
   name          String
@@ -39,6 +51,7 @@ model User {
   password      String
   role          Role     @default(USER)
   phone         String
+  status        Boolean  @default(true)
   avatar        String?
   watchedMovies Json?
   createdAt     DateTime @default(now())
@@ -55,7 +68,7 @@ model Movie {
   genre       String
   duration    Int
   description String
-  trailer_url String
+  trailer_url String?
   image       String
   status      MovieStatus @default(coming_soon)
   createdAt   DateTime    @default(now())
@@ -66,10 +79,13 @@ model Movie {
 }
 
 model Theater {
-  id        String   @id @default(uuid())
+  id        String        @id @default(uuid())
   name      String
   location  String
-  createdAt DateTime @default(now())
+  brand     String
+  brandLogo String?
+  status    StatusTheater @default(active)
+  createdAt DateTime      @default(now())
 
   rooms Room[]
 }
@@ -87,9 +103,11 @@ model Room {
 }
 
 model Seat {
-  id     String @id @default(uuid())
+  id     String   @id @default(uuid())
   row    String
   number Int
+  price  Float
+  type   SeatType @default(REGULAR)
 
   roomId String
   room   Room   @relation(fields: [roomId], references: [id])
@@ -97,18 +115,18 @@ model Seat {
 
 model Showtime {
   id        String   @id @default(uuid())
-  time      DateTime
-  seats     Json
+  time      Json?
+  seats     Json?
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
 
   movieId String
   movie   Movie  @relation(fields: [movieId], references: [id])
 
-  roomId String
-  room   Room   @relation(fields: [roomId], references: [id])
-
   bookings Booking[]
+
+  roomId String?
+  room   Room?   @relation(fields: [roomId], references: [id])
 }
 
 model Booking {
@@ -117,6 +135,7 @@ model Booking {
   totalPrice Float
   status     BookingStatus
   createdAt  DateTime      @default(now())
+  expireAt   DateTime?
 
   userId String
   user   User   @relation(fields: [userId], references: [id])

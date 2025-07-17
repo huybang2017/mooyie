@@ -32,4 +32,25 @@ export class RoomService {
 
     return this.prisma.seat.findMany({ where: { roomId } });
   }
+
+  async findByShowTimeId(showtimeId: string): Promise<any> {
+    const showtime = await this.prisma.showtime.findUnique({
+      where: { id: showtimeId },
+      include: {
+        room: {
+          include: {
+            seats: true,
+          },
+        },
+        movie: true,
+      },
+    });
+    if (!showtime) throw new NotFoundException('Showtime not found');
+
+    if (!showtime.room) {
+      throw new NotFoundException('No rooms found for this showtime');
+    }
+
+    return showtime;
+  }
 }

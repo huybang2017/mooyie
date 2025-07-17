@@ -2,13 +2,17 @@ import {
   Injectable,
   ForbiddenException,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ChangePasswordDto } from 'src/user/dto/change-password.dto';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
-import { BookingStatus, User } from 'generated/prisma';
+import { BookingStatus, Prisma, User } from 'generated/prisma';
 import * as bcrypt from 'bcryptjs';
+import { FilterUserDto } from 'src/user/dto/fitler-user.dto';
+import { PaginationUserDto } from 'src/user/dto/pagination-user.dto';
+import { paginate } from 'src/utils/helper/paginate';
 
 @Injectable()
 export class UserService {
@@ -22,6 +26,7 @@ export class UserService {
     const user = await this.prisma.user.create({
       data: {
         ...createUserDto,
+        status: true,
         password: hashedPassword,
       },
     });
@@ -36,6 +41,47 @@ export class UserService {
         email: true,
         phone: true,
         avatar: true,
+        status: true,
+        createdAt: true,
+        role: true,
+      },
+    });
+  }
+
+  findAllAdmin(filter: FilterUserDto, pagination: PaginationUserDto) {
+    const { page, limit } = pagination;
+    const { name, role, email, status } = filter;
+
+    const where: Prisma.UserWhereInput = {};
+
+    if (name) {
+      where.name = { contains: name, mode: 'insensitive' };
+    }
+
+    if (email) {
+      where.email = { contains: email, mode: 'insensitive' };
+    }
+
+    if (role) {
+      where.role = role;
+    }
+
+    if (typeof status === 'boolean') {
+      where.status = status;
+    }
+
+    return paginate(this.prisma.user, {
+      where,
+      page,
+      limit,
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        avatar: true,
+        status: true,
         createdAt: true,
         role: true,
       },
@@ -53,6 +99,20 @@ export class UserService {
         avatar: true,
         createdAt: true,
         role: true,
+        bookings: {
+          include: {
+            showtime: {
+              include: {
+                movie: true,
+              },
+            },
+          },
+        },
+        bookmarks: {
+          include: {
+            movie: true,
+          },
+        },
       },
     });
 
@@ -65,6 +125,25 @@ export class UserService {
     return this.prisma.user.update({
       where: { id },
       data: updateUserDto,
+    });
+  }
+
+  async changeStatusAccount(id: string, status: boolean) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+
+    if (!user) {
+      throw new NotFoundException('Người dùng không tồn tại');
+    }
+
+    if (user.role === 'ADMIN') {
+      throw new BadRequestException(
+        'Không thể thay đổi trạng thái của tài khoản ADMIN',
+      );
+    }
+
+    return this.prisma.user.update({
+      where: { id },
+      data: { status },
     });
   }
 
@@ -83,7 +162,7 @@ export class UserService {
 
   getWatchHistory(userId: string) {
     return this.prisma.booking.findMany({
-      where: { userId, status: BookingStatus.BOOKED },
+      where: { userId, status: BookingStatus.CONFIRMED },
       include: {
         showtime: {
           include: {

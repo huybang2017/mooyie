@@ -9,4 +9,12 @@ export class CreateTheaterDto {
   @ApiProperty()
   @IsString()
   location: string;
+
+  @ApiProperty()
+  @IsString()
+  brand: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  brandLogo?: string;
 }
