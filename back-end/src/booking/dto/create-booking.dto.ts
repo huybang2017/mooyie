@@ -12,7 +12,7 @@ export class CreateBookingDto {
   })
   @IsArray()
   @IsNotEmpty()
-  seats: any[];
+  seats: string[];
 
   @ApiProperty({ description: 'Tổng giá vé', example: 120000 })
   @IsNumber()
