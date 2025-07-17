@@ -11,7 +11,7 @@ export const createPaymentApi = (data: CreatePaymentRequest) => {
 };
 
 export const getPaymentByIdApi = (id: string) => {
-  return axiosClient.get<Payment>(`/payments/${id}`);
+  return axiosAuth.get<Payment>(`/payments/${id}`);
 };
 
 export const refundPaymentApi = (bookingId: string) => {
@@ -24,4 +24,9 @@ export const createIntentApi = (data: CreateIntentRequest) => {
 
 export const getQrCheckoutApi = (bookingId: string) => {
   return axiosAuth.get<string>(`/payments/qr-checkout/${bookingId}`);
+};
+
+// Payment status check
+export const checkPaymentStatusApi = (bookingId: string) => {
+  return axiosAuth.get<Payment>(`/payments/booking/${bookingId}`);
 };

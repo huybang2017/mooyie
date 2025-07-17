@@ -126,11 +126,11 @@ const Profile = () => {
     }
   };
 
-  const totalBookings = user?.bookings.length || 0;
+  const totalBookings = user?.bookings?.length ?? 0;
 
   const totalSpent =
     user?.bookings
-      .filter((b) => b.status === "BOOKED")
+      ?.filter((b) => b.status === "CONFIRMED")
       .reduce((sum, b) => sum + b.totalPrice, 0) || 0;
 
   return (
@@ -303,7 +303,7 @@ const Profile = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {user?.bookings.map((booking) => (
+                  {user?.bookings?.map((booking) => (
                     <div
                       key={booking.id}
                       className="flex items-start space-x-4 p-4 border rounded-lg"
@@ -312,14 +312,16 @@ const Profile = () => {
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
                           <h4 className="font-medium">
-                            {booking.showtime.movie.title}
+                            {booking.showtime?.movie?.title || "Unknown Movie"}
                           </h4>
                           {getActivityBadge("booking")}
                         </div>
                         <p className="text-sm text-muted-foreground mt-1">
-                          {booking.status === "BOOKED"
+                          {booking.status === "CONFIRMED"
                             ? "Đặt vé thành công"
-                            : "Đang chờ thanh toán"}
+                            : booking.status === "PENDING"
+                            ? "Đang chờ thanh toán"
+                            : booking.status}
                         </p>
                         <p className="text-xs text-muted-foreground mt-2">
                           {new Date(booking.createdAt).toLocaleDateString(
@@ -347,7 +349,7 @@ const Profile = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {user?.bookmarks.map((bookmark) => (
+                  {user?.bookmarks?.map((bookmark) => (
                     <div key={bookmark.id} className="space-y-3">
                       <div className="relative">
                         <img

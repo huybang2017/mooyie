@@ -93,6 +93,11 @@ export interface FilterBookingRequest extends PaginationRequest {
   status?: BookingStatus;
 }
 
+export interface FilterShowtimeByMovieRequest {
+  theaterLogo?: string;
+  time?: string;
+}
+
 export interface FilterTheatersRequest extends PaginationRequest {
   name?: string;
   location?: string;
@@ -167,18 +172,19 @@ export interface UpdateShowtimeRequest {
   isActive?: boolean;
 }
 
-export interface Booking {
+export type Booking = {
   id: string;
-  userId: string;
-  showtimeId: string;
-  seats?: Seat[];
+  seats: Seat[];
   totalPrice: number;
-  status: BookingStatus;
+  status: string;
   createdAt: string;
+  expireAt?: string;
+  showtimeId: string;
   showtime?: Showtime;
-  payment?: Payment;
+  userId: string;
   user?: ProfileResponse;
-}
+  payment?: Payment;
+};
 
 export interface CreateBookingRequest {
   showtimeId: string;
@@ -280,7 +286,6 @@ export interface BookmarkResponse {
   data: Bookmark[];
 }
 
-// Payment types
 export interface Payment {
   id: string;
   amount: number;
@@ -319,4 +324,80 @@ export interface UpdateCommentData {
   id: string;
   content?: string;
   rating?: number;
+}
+
+export interface DashboardStatsResponse {
+  totalMovies: number;
+  totalShowtimes: number;
+  totalBookings: number;
+  totalRevenue: number;
+  totalComments: number;
+  totalUsers: number;
+  movieGrowth: number;
+  showtimeGrowth: number;
+  bookingGrowth: number;
+  revenueGrowth: number;
+  commentGrowth: number;
+  userGrowth: number;
+}
+
+export interface RevenueChartResponse {
+  data: Array<{
+    month: string;
+    revenue: number;
+    tickets: number;
+  }>;
+}
+
+export interface RecentBookingsResponse {
+  data: Array<{
+    id: string;
+    movie: {
+      id: string;
+      title: string;
+    };
+    user: {
+      id: string;
+      email: string;
+      name: string;
+    };
+    showtime: {
+      id: string;
+      dateTime: string;
+      room: {
+        id: string;
+        name: string;
+      } | null;
+    };
+    seats: string[];
+    status: string;
+    amount: number;
+    createdAt: string;
+  }>;
+}
+
+export interface RecentCommentsResponse {
+  data: Array<{
+    id: string;
+    user: {
+      id: string;
+      email: string;
+      name: string;
+    };
+    movie: {
+      id: string;
+      title: string;
+    };
+    comment: string;
+    rating: number;
+    createdAt: string;
+  }>;
+  averageRating: number;
+}
+
+export interface RevenueAnalyticsResponse {
+  totalRevenue: number;
+  averageTicketPrice: number;
+  growthRate: number;
+  totalBookings: number;
 }

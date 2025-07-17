@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,12 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import {
-  MoreHorizontal,
-  Eye,
-  Edit,
-  Trash2,
-} from "lucide-react";
+import { MoreHorizontal, Eye, Edit, Trash2 } from "lucide-react";
 import type { Showtime } from "@/services/type";
 
 interface ShowtimeActionMenuProps {
@@ -53,7 +48,7 @@ export function ShowtimeActionMenu({
           <Eye className="h-4 w-4 mr-2" />
           Xem chi tiết
         </DropdownMenuItem>
-        
+
         <DropdownMenuItem
           onClick={() => {
             onEdit(showtime);
@@ -80,4 +75,4 @@ export function ShowtimeActionMenu({
       </DropdownMenuContent>
     </DropdownMenu>
   );
-} 
+}

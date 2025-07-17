@@ -1,354 +1,51 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import {
+  Clock,
+  MapPin,
+  Calendar,
+  CreditCard,
+  XCircle,
+  CheckCircle,
+  AlertCircle,
+} from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { useEffect } from "react";
-import { getUserBookingsThunk } from "@/store/slices/bookingSlice";
-
-// const userBookings = [
-//   {
-//     id: "ae330e5a-e52a-4842-8024-788a293d2170",
-//     seats: [
-//       {
-//         id: "dc3baed5-9470-44bd-b555-aab5deb817b4",
-//         row: "D",
-//         type: "REGULAR",
-//         price: 100000,
-//         number: 4,
-//         roomId: "99bc4f20-caf0-40f2-afab-91469d162729",
-//       },
-//     ],
-//     totalPrice: 100000,
-//     status: "PENDING",
-//     createdAt: "2025-07-05T16:49:20.598Z",
-//     userId: "6487fe2c-8ac9-43e1-b89e-2fe3076fc42f",
-//     showtimeId: "8359257c-8f1a-488c-b0fd-40f4bd53a866",
-//     showtime: {
-//       id: "8359257c-8f1a-488c-b0fd-40f4bd53a866",
-//       time: [
-//         {
-//           end: "2025-07-05T06:01:00.000Z",
-//           start: "2025-07-05T03:00:00.000Z",
-//         },
-//       ],
-//       seats: [
-//         {
-//           id: "dc3baed5-9470-44bd-b555-aab5deb817b4",
-//           row: "D",
-//           type: "REGULAR",
-//           price: 100000,
-//           number: 4,
-//           roomId: "99bc4f20-caf0-40f2-afab-91469d162729",
-//         },
-//       ],
-//       isActive: true,
-//       createdAt: "2025-07-05T16:42:02.098Z",
-//       movieId: "996d8f96-90a3-4d68-b0a0-5bfe9a6ca030",
-//       roomId: "99bc4f20-caf0-40f2-afab-91469d162729",
-//       movie: {
-//         id: "996d8f96-90a3-4d68-b0a0-5bfe9a6ca030",
-//         title: "Avengers: Endgame",
-//         genre: "Action",
-//         duration: 181,
-//         description:
-//           "After the devastating events of Avengers: Infinity War, the universe is in ruins. The Avengers assemble once more to reverse Thanos' actions.",
-//         trailer_url: "https://www.youtube.com/watch?v=TcMBFSGVi1c",
-//         image:
-//           "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=400&h=600&fit=crop",
-//         status: "now_showing",
-//         createdAt: "2025-07-05T16:42:01.072Z",
-//       },
-//     },
-//     payment: null,
-//   },
-//   {
-//     id: "1971e531-bd14-4d42-9c64-03ce6d8f749c",
-//     seats:
-//       '[{"row":"A","number":1},{"row":"B","number":3},{"row":"C","number":5}]',
-//     totalPrice: 150000,
-//     status: "BOOKED",
-//     createdAt: "2025-07-05T16:42:02.438Z",
-//     userId: "6487fe2c-8ac9-43e1-b89e-2fe3076fc42f",
-//     showtimeId: "756450db-8dd6-488e-a2e7-2eadf6bfae57",
-//     showtime: {
-//       id: "756450db-8dd6-488e-a2e7-2eadf6bfae57",
-//       time: [
-//         {
-//           end: "2025-07-06T09:12:00.000Z",
-//           start: "2025-07-06T07:00:00.000Z",
-//         },
-//       ],
-//       seats: [],
-//       isActive: true,
-//       createdAt: "2025-07-05T16:42:02.374Z",
-//       movieId: "7d0c05ae-80ad-40f4-af78-47730acd3848",
-//       roomId: "99bc4f20-caf0-40f2-afab-91469d162729",
-//       movie: {
-//         id: "7d0c05ae-80ad-40f4-af78-47730acd3848",
-//         title: "Parasite",
-//         genre: "Thriller",
-//         duration: 132,
-//         description:
-//           "Greed and class discrimination threaten the newly formed symbiotic relationship between the wealthy Park family and the Kim clan.",
-//         trailer_url: "https://www.youtube.com/watch?v=5xH0HfJHsaY",
-//         image:
-//           "https://images.unsplash.com/photo-1489599835382-957593cb2375?w=400&h=600&fit=crop",
-//         status: "now_showing",
-//         createdAt: "2025-07-05T16:42:01.072Z",
-//       },
-//     },
-//     payment: {
-//       id: "53cc2e86-da9f-448b-b04b-d2ea4530af61",
-//       amount: 150000,
-//       status: "PAID",
-//       stripePaymentId: "pi_pwkgrbft9",
-//       paidAt: "2025-07-05T16:42:02.453Z",
-//       bookingId: "1971e531-bd14-4d42-9c64-03ce6d8f749c",
-//     },
-//   },
-//   {
-//     id: "e5a84560-bf2b-4b1f-9caf-8fe8a7ad3e42",
-//     seats:
-//       '[{"row":"A","number":1},{"row":"B","number":3},{"row":"C","number":5}]',
-//     totalPrice: 150000,
-//     status: "BOOKED",
-//     createdAt: "2025-07-05T16:42:02.436Z",
-//     userId: "6487fe2c-8ac9-43e1-b89e-2fe3076fc42f",
-//     showtimeId: "dc2825d0-4781-415f-acc7-4e20642b7a6e",
-//     showtime: {
-//       id: "dc2825d0-4781-415f-acc7-4e20642b7a6e",
-//       time: [
-//         {
-//           end: "2025-07-10T09:08:00.000Z",
-//           start: "2025-07-10T07:00:00.000Z",
-//         },
-//       ],
-//       seats: [],
-//       isActive: true,
-//       createdAt: "2025-07-05T16:42:02.334Z",
-//       movieId: "165a3bdc-0d53-4fc2-b9d5-348b2fafb9f6",
-//       roomId: "99bc4f20-caf0-40f2-afab-91469d162729",
-//       movie: {
-//         id: "165a3bdc-0d53-4fc2-b9d5-348b2fafb9f6",
-//         title: "La La Land",
-//         genre: "Musical",
-//         duration: 128,
-//         description:
-//           "A jazz pianist falls for an aspiring actress in Los Angeles.",
-//         trailer_url: "https://www.youtube.com/watch?v=0pdqf4P9MB8",
-//         image:
-//           "https://images.unsplash.com/photo-1489599835382-957593cb2375?w=400&h=600&fit=crop",
-//         status: "now_showing",
-//         createdAt: "2025-07-05T16:42:01.072Z",
-//       },
-//     },
-//     payment: {
-//       id: "4cd02979-a605-4245-b077-6cd453ba5dd4",
-//       amount: 150000,
-//       status: "PAID",
-//       stripePaymentId: "pi_p89ubjrt1",
-//       paidAt: "2025-07-05T16:42:02.450Z",
-//       bookingId: "e5a84560-bf2b-4b1f-9caf-8fe8a7ad3e42",
-//     },
-//   },
-//   {
-//     id: "8a3c932e-1be3-4328-9c0b-16fee5c472e0",
-//     seats:
-//       '[{"row":"A","number":1},{"row":"B","number":3},{"row":"C","number":5}]',
-//     totalPrice: 150000,
-//     status: "BOOKED",
-//     createdAt: "2025-07-05T16:42:02.433Z",
-//     userId: "6487fe2c-8ac9-43e1-b89e-2fe3076fc42f",
-//     showtimeId: "bfddf8dc-3d5f-4594-97d6-22b7479b0aad",
-//     showtime: {
-//       id: "bfddf8dc-3d5f-4594-97d6-22b7479b0aad",
-//       time: [
-//         {
-//           end: "2025-07-09T09:12:00.000Z",
-//           start: "2025-07-09T07:00:00.000Z",
-//         },
-//       ],
-//       seats: [],
-//       isActive: true,
-//       createdAt: "2025-07-05T16:42:02.386Z",
-//       movieId: "7d0c05ae-80ad-40f4-af78-47730acd3848",
-//       roomId: "99bc4f20-caf0-40f2-afab-91469d162729",
-//       movie: {
-//         id: "7d0c05ae-80ad-40f4-af78-47730acd3848",
-//         title: "Parasite",
-//         genre: "Thriller",
-//         duration: 132,
-//         description:
-//           "Greed and class discrimination threaten the newly formed symbiotic relationship between the wealthy Park family and the Kim clan.",
-//         trailer_url: "https://www.youtube.com/watch?v=5xH0HfJHsaY",
-//         image:
-//           "https://images.unsplash.com/photo-1489599835382-957593cb2375?w=400&h=600&fit=crop",
-//         status: "now_showing",
-//         createdAt: "2025-07-05T16:42:01.072Z",
-//       },
-//     },
-//     payment: {
-//       id: "062461d2-e7f9-4e6d-b0d3-873670b5b2e2",
-//       amount: 150000,
-//       status: "PAID",
-//       stripePaymentId: "pi_abjy641jr",
-//       paidAt: "2025-07-05T16:42:02.447Z",
-//       bookingId: "8a3c932e-1be3-4328-9c0b-16fee5c472e0",
-//     },
-//   },
-//   {
-//     id: "63a5182a-5a3b-46b2-b0ff-c476238aab7e",
-//     seats:
-//       '[{"row":"A","number":1},{"row":"B","number":3},{"row":"C","number":5}]',
-//     totalPrice: 150000,
-//     status: "BOOKED",
-//     createdAt: "2025-07-05T16:42:02.430Z",
-//     userId: "6487fe2c-8ac9-43e1-b89e-2fe3076fc42f",
-//     showtimeId: "580c1df1-bd84-41a1-9877-470efcf01426",
-//     showtime: {
-//       id: "580c1df1-bd84-41a1-9877-470efcf01426",
-//       time: [
-//         {
-//           end: "2025-07-06T09:08:00.000Z",
-//           start: "2025-07-06T07:00:00.000Z",
-//         },
-//       ],
-//       seats: [],
-//       isActive: true,
-//       createdAt: "2025-07-05T16:42:02.346Z",
-//       movieId: "165a3bdc-0d53-4fc2-b9d5-348b2fafb9f6",
-//       roomId: "36aeed8e-b7c8-4e58-af96-92010d7f27f4",
-//       movie: {
-//         id: "165a3bdc-0d53-4fc2-b9d5-348b2fafb9f6",
-//         title: "La La Land",
-//         genre: "Musical",
-//         duration: 128,
-//         description:
-//           "A jazz pianist falls for an aspiring actress in Los Angeles.",
-//         trailer_url: "https://www.youtube.com/watch?v=0pdqf4P9MB8",
-//         image:
-//           "https://images.unsplash.com/photo-1489599835382-957593cb2375?w=400&h=600&fit=crop",
-//         status: "now_showing",
-//         createdAt: "2025-07-05T16:42:01.072Z",
-//       },
-//     },
-//     payment: {
-//       id: "a3ebf681-32be-42a0-82d6-56740cf80028",
-//       amount: 150000,
-//       status: "PAID",
-//       stripePaymentId: "pi_jfg23hnkf",
-//       paidAt: "2025-07-05T16:42:02.445Z",
-//       bookingId: "63a5182a-5a3b-46b2-b0ff-c476238aab7e",
-//     },
-//   },
-//   {
-//     id: "4ab5b15d-7d8e-4204-bcaf-3cb4f3f46727",
-//     seats:
-//       '[{"row":"A","number":1},{"row":"B","number":3},{"row":"C","number":5}]',
-//     totalPrice: 150000,
-//     status: "BOOKED",
-//     createdAt: "2025-07-05T16:42:02.427Z",
-//     userId: "6487fe2c-8ac9-43e1-b89e-2fe3076fc42f",
-//     showtimeId: "508e6646-e9b1-4be9-9109-3ceadcdfdd10",
-//     showtime: {
-//       id: "508e6646-e9b1-4be9-9109-3ceadcdfdd10",
-//       time: [
-//         {
-//           end: "2025-07-06T13:32:00.000Z",
-//           start: "2025-07-06T11:00:00.000Z",
-//         },
-//       ],
-//       seats: [],
-//       isActive: true,
-//       createdAt: "2025-07-05T16:42:02.236Z",
-//       movieId: "b638c7ea-da1d-4eec-b158-435851016689",
-//       roomId: "36aeed8e-b7c8-4e58-af96-92010d7f27f4",
-//       movie: {
-//         id: "b638c7ea-da1d-4eec-b158-435851016689",
-//         title: "The Dark Knight",
-//         genre: "Action",
-//         duration: 152,
-//         description:
-//           "Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice when the Joker causes chaos.",
-//         trailer_url: "https://www.youtube.com/watch?v=EXeTwQWrcwY",
-//         image:
-//           "https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?w=400&h=600&fit=crop",
-//         status: "now_showing",
-//         createdAt: "2025-07-05T16:42:01.072Z",
-//       },
-//     },
-//     payment: {
-//       id: "14c00979-04ab-4be1-97fe-2f2aac3bf4eb",
-//       amount: 150000,
-//       status: "PAID",
-//       stripePaymentId: "pi_g8ckn4y0o",
-//       paidAt: "2025-07-05T16:42:02.442Z",
-//       bookingId: "4ab5b15d-7d8e-4204-bcaf-3cb4f3f46727",
-//     },
-//   },
-//   {
-//     id: "cd6ec1aa-b5bc-44d5-9c50-442a99637c85",
-//     seats:
-//       '[{"row":"A","number":1},{"row":"B","number":3},{"row":"C","number":5}]',
-//     totalPrice: 150000,
-//     status: "BOOKED",
-//     createdAt: "2025-07-05T16:42:02.425Z",
-//     userId: "6487fe2c-8ac9-43e1-b89e-2fe3076fc42f",
-//     showtimeId: "6d57558c-cb92-4eda-af61-fa6ee5acad6b",
-//     showtime: {
-//       id: "6d57558c-cb92-4eda-af61-fa6ee5acad6b",
-//       time: [
-//         {
-//           end: "2025-07-07T05:32:00.000Z",
-//           start: "2025-07-07T03:00:00.000Z",
-//         },
-//       ],
-//       seats: [],
-//       isActive: true,
-//       createdAt: "2025-07-05T16:42:02.211Z",
-//       movieId: "b638c7ea-da1d-4eec-b158-435851016689",
-//       roomId: "99bc4f20-caf0-40f2-afab-91469d162729",
-//       movie: {
-//         id: "b638c7ea-da1d-4eec-b158-435851016689",
-//         title: "The Dark Knight",
-//         genre: "Action",
-//         duration: 152,
-//         description:
-//           "Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice when the Joker causes chaos.",
-//         trailer_url: "https://www.youtube.com/watch?v=EXeTwQWrcwY",
-//         image:
-//           "https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?w=400&h=600&fit=crop",
-//         status: "now_showing",
-//         createdAt: "2025-07-05T16:42:01.072Z",
-//       },
-//     },
-//     payment: {
-//       id: "3dd2ef80-9267-436b-88c3-28d31c046eff",
-//       amount: 150000,
-//       status: "PAID",
-//       stripePaymentId: "pi_cog15ge8k",
-//       paidAt: "2025-07-05T16:42:02.440Z",
-//       bookingId: "cd6ec1aa-b5bc-44d5-9c50-442a99637c85",
-//     },
-//   },
-// ];
+import {
+  getUserBookingsThunk,
+  cancelBookingThunk,
+} from "@/store/slices/bookingSlice";
+import { toast } from "sonner";
+import { bookingWebSocket } from "@/services/booking-websocket";
+import type { Booking, Seat } from "@/services/type";
+import QRCode from "react-qr-code";
 
 const statusColor = {
-  BOOKED: "bg-green-100 text-green-800",
   PENDING: "bg-yellow-100 text-yellow-800",
-  CANCELLED: "bg-red-100 text-red-800",
+  CONFIRMED: "bg-green-100 text-green-800",
+  CANCELED: "bg-red-100 text-red-800",
+  USED: "bg-blue-100 text-blue-800",
+  EXPIRED: "bg-gray-100 text-gray-800",
 };
 
 const statusLabel = {
-  BOOKED: "Đã xác nhận",
   PENDING: "Đang chờ",
-  CANCELLED: "Đã hủy",
+  CONFIRMED: "Đã xác nhận",
+  CANCELED: "Đã hủy",
+  USED: "Đã sử dụng",
+  EXPIRED: "Hết hạn",
 };
 
 const Bookings = () => {
   const dispatch = useAppDispatch();
-  const { userBookings } = useAppSelector((state) => state.booking);
+  const { userBookings, loading } = useAppSelector((state) => state.booking);
+  const { user } = useAppSelector((state) => state.auth);
+  const [cancelingBookings, setCancelingBookings] = useState<Set<string>>(
+    new Set()
+  );
+
   useEffect(() => {
     dispatch(getUserBookingsThunk())
       .unwrap()
@@ -356,70 +53,289 @@ const Bookings = () => {
         console.error("Failed to fetch user bookings:", err);
       });
   }, [dispatch]);
+
+  useEffect(() => {
+    if (user?.id) {
+      bookingWebSocket.connect(user.id);
+      bookingWebSocket.onBookingUpdate((data) => {
+        // data: { bookingId, bookingStatus, paymentStatus }
+        // Refresh bookings nếu có thay đổi
+        dispatch(getUserBookingsThunk());
+        if (
+          data.bookingStatus === "confirmed" &&
+          data.paymentStatus === "paid"
+        ) {
+          toast.success("Thanh toán thành công! Vé đã được xác nhận.");
+        }
+        if (
+          data.bookingStatus === "cancel" &&
+          data.paymentStatus === "failed"
+        ) {
+          toast.error("Thanh toán thất bại hoặc hết thời gian. Vé đã bị hủy.");
+        }
+      });
+
+      // Set up event listeners for real-time updates
+      bookingWebSocket.onBookingPaid((data) => {
+        console.log("Booking paid:", data);
+        toast.success("Thanh toán thành công! Vé đã được xác nhận.");
+        // Refresh bookings
+        dispatch(getUserBookingsThunk());
+      });
+
+      bookingWebSocket.onBookingFailed((data) => {
+        console.log("Booking failed:", data);
+        toast.error("Thanh toán thất bại. Vé đã bị hủy.");
+        // Refresh bookings
+        dispatch(getUserBookingsThunk());
+      });
+
+      bookingWebSocket.onBookingTimeout((data) => {
+        console.log("Booking timeout:", data);
+        toast.error("Hết thời gian thanh toán. Vé đã bị hủy.");
+        // Refresh bookings
+        dispatch(getUserBookingsThunk());
+      });
+
+      bookingWebSocket.onBookingExpired((data) => {
+        console.log("Booking expired:", data);
+        toast.warning("Vé đã hết hạn.");
+        // Refresh bookings
+        dispatch(getUserBookingsThunk());
+      });
+
+      return () => {
+        bookingWebSocket.offBookingUpdate();
+        bookingWebSocket.disconnect();
+      };
+    }
+  }, [user?.id, dispatch]);
+
+  const handleCancelBooking = async (bookingId: string) => {
+    try {
+      setCancelingBookings((prev) => new Set(prev).add(bookingId));
+
+      await dispatch(cancelBookingThunk(bookingId)).unwrap();
+      toast.success("Hủy vé thành công!");
+
+      // Refresh bookings
+      dispatch(getUserBookingsThunk());
+    } catch (error: any) {
+      toast.error(error || "Không thể hủy vé");
+    } finally {
+      setCancelingBookings((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(bookingId);
+        return newSet;
+      });
+    }
+  };
+
+  const canCancelBooking = (booking: Booking) => {
+    if (booking.status !== "CONFIRMED") return false;
+
+    const bookingDate = new Date(booking.createdAt);
+    const now = new Date();
+    const hoursDiff =
+      (now.getTime() - bookingDate.getTime()) / (1000 * 60 * 60);
+
+    return hoursDiff <= 24;
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "PENDING":
+        return <Clock className="w-4 h-4" />;
+      case "CONFIRMED":
+        return <CheckCircle className="w-4 h-4" />;
+      case "CANCELED":
+        return <XCircle className="w-4 h-4" />;
+      case "USED":
+        return <CheckCircle className="w-4 h-4" />;
+      case "EXPIRED":
+        return <AlertCircle className="w-4 h-4" />;
+      default:
+        return <Clock className="w-4 h-4" />;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-lg">Đang tải danh sách vé...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto">
-      <h1 className="text-3xl font-bold mb-6">My booking</h1>
+      <h1 className="text-3xl font-bold mb-6">Vé của tôi</h1>
 
       {userBookings.length === 0 ? (
-        <p className="text-center text-muted-foreground">Không có vé nào</p>
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <div className="text-center">
+              <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">Chưa có vé nào</h3>
+              <p className="text-muted-foreground">
+                Bạn chưa đặt vé nào. Hãy chọn phim và đặt vé ngay!
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       ) : (
         <div className="grid gap-4">
-          {userBookings?.map((booking) => (
+          {userBookings?.map((booking: Booking) => (
             <Card key={booking.id} className="border shadow-sm">
               <CardHeader className="flex flex-row justify-between items-center pb-2">
                 <div>
                   <CardTitle className="text-lg">
-                    {booking.showtime.movie.title}
+                    {booking.showtime?.movie?.title || "N/A"}
                   </CardTitle>
                   <p className="text-sm text-muted-foreground">
-                    {new Date(booking.showtime.time[0].start).toLocaleString(
-                      "vi-VN",
-                      {
-                        dateStyle: "medium",
-                        timeStyle: "short",
-                      }
-                    )}
+                    {booking.showtime?.time?.[0]?.start
+                      ? new Date(booking.showtime.time[0].start).toLocaleString(
+                          "vi-VN",
+                          {
+                            dateStyle: "medium",
+                            timeStyle: "short",
+                          }
+                        )
+                      : "N/A"}
                   </p>
                 </div>
-                <Badge
-                  className={
-                    statusColor[booking.status as keyof typeof statusColor]
-                  }
-                >
-                  {statusLabel[booking.status as keyof typeof statusLabel]}
-                </Badge>
-              </CardHeader>
-              <CardContent className="text-sm space-y-1">
-                <p>
-                  <span className="font-medium">Ghế:</span>{" "}
-                  {(() => {
-                    try {
-                      const seats =
-                        typeof booking.seats === "string"
-                          ? JSON.parse(booking.seats)
-                          : booking.seats;
-
-                      if (!Array.isArray(seats)) return "Không xác định";
-
-                      return seats
-                        .map(
-                          (seat: { row: string; number: number }) =>
-                            `${seat.row}${seat.number}`
-                        )
-                        .join(", ");
-                    } catch (error) {
-                      return "Không xác định";
+                <div className="flex items-center gap-2">
+                  <Badge
+                    className={
+                      statusColor[booking.status as keyof typeof statusColor]
                     }
-                  })()}
-                </p>
+                  >
+                    {getStatusIcon(booking.status)}
+                    <span className="ml-1">
+                      {statusLabel[booking.status as keyof typeof statusLabel]}
+                    </span>
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm">
+                        {booking.showtime?.room?.name || "N/A"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CreditCard className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm">
+                        {booking.totalPrice.toLocaleString()} VNĐ
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm">
+                        Đặt ngày:{" "}
+                        {new Date(booking.createdAt).toLocaleDateString(
+                          "vi-VN"
+                        )}
+                      </span>
+                    </div>
+                  </div>
 
-                <p>
-                  <span className="font-medium">Tổng tiền:</span> $
-                  {booking.totalPrice}
-                </p>
-                <Button asChild variant="link" className="px-0 text-sm mt-2">
-                  <Link to={`/bookings/${booking.id}`}>Xem chi tiết</Link>
-                </Button>
+                  <div className="space-y-2">
+                    <div>
+                      <h4 className="font-medium text-sm mb-1">Ghế đã đặt:</h4>
+                      <div className="flex flex-wrap gap-1">
+                        {Array.isArray(booking.seats) ? (
+                          booking.seats.map((seat: Seat, index: number) => (
+                            <Badge
+                              key={index}
+                              variant="outline"
+                              className="text-xs"
+                            >
+                              {seat.row}
+                              {seat.number}
+                            </Badge>
+                          ))
+                        ) : (
+                          <span className="text-sm text-muted-foreground">
+                            N/A
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {booking.payment && (
+                      <div>
+                        <h4 className="font-medium text-sm mb-1">
+                          Thanh toán:
+                        </h4>
+                        <div className="flex items-center gap-2">
+                          <Badge
+                            variant={
+                              booking.payment.status === "PAID"
+                                ? "default"
+                                : "secondary"
+                            }
+                            className="text-xs"
+                          >
+                            {booking.payment.status}
+                          </Badge>
+                          {booking.payment.status === "PAID" && (
+                            <span className="text-xs text-muted-foreground">
+                              {new Date(
+                                booking.payment.paidAt
+                              ).toLocaleDateString("vi-VN")}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <Separator className="my-4" />
+
+                <div className="flex justify-between items-center flex-wrap gap-4">
+                  <div className="text-sm text-muted-foreground">
+                    Mã vé:
+                    <div className="mt-2">
+                      <QRCode value={booking.id} size={80} />
+                    </div>
+                  </div>
+
+                  {canCancelBooking(booking) && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleCancelBooking(booking.id)}
+                      disabled={cancelingBookings.has(booking.id)}
+                    >
+                      {cancelingBookings.has(booking.id) ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+                          Đang hủy...
+                        </>
+                      ) : (
+                        <>
+                          <XCircle className="w-4 h-4 mr-2" />
+                          Hủy vé
+                        </>
+                      )}
+                    </Button>
+                  )}
+
+                  {!canCancelBooking(booking) &&
+                    booking.status === "CONFIRMED" && (
+                      <div className="text-xs text-muted-foreground">
+                        Chỉ có thể hủy vé trong vòng 24h sau khi đặt
+                      </div>
+                    )}
+                </div>
               </CardContent>
             </Card>
           ))}

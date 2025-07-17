@@ -7,11 +7,11 @@ import type {
 } from "@/services/type";
 import {
   createBookingApi,
-  getBookingByIdApi,
   cancelBookingApi,
   getUserBookingsApi,
-  getBookingAdminApi,
   updateBookingApi,
+  getAdminBookingsApi,
+  getBookingDetailApi,
 } from "@/services/booking-service";
 import type { FilterBookingRequest } from "@/services/type";
 
@@ -51,7 +51,7 @@ export const getBookingByIdThunk = createAsyncThunk(
   "booking/getById",
   async (id: string, { rejectWithValue }) => {
     try {
-      const response = await getBookingByIdApi(id);
+      const response = await getBookingDetailApi(id);
       return response.data;
     } catch (err: any) {
       return rejectWithValue(
@@ -126,7 +126,7 @@ export const fetchAdminBookingsThunk = createAsyncThunk<
   { rejectValue: string }
 >("booking/fetchAdminBookings", async (params, { rejectWithValue }) => {
   try {
-    const response = await getBookingAdminApi(params);
+    const response = await getAdminBookingsApi(params);
     return response.data;
   } catch (err: any) {
     return rejectWithValue(err?.response?.data?.message || "Fetch failed");

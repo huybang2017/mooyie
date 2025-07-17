@@ -1,3 +1,4 @@
+import { getAverageRating } from "./../../services/comment-service";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type {
   Comment,
@@ -9,12 +10,14 @@ import { deleteCommentById, getAllComments } from "@/services/comment-service";
 
 interface AdminCommentsState {
   commentsAdmin: CommentResponse | null;
+  averageRating: { averageRating: number } | null;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: AdminCommentsState = {
   commentsAdmin: null,
+  averageRating: null,
   loading: false,
   error: null,
 };
@@ -47,6 +50,20 @@ export const deleteCommentThunk = createAsyncThunk<string, string>(
   }
 );
 
+export const getAverageRatingThunk = createAsyncThunk<
+  { averageRating: number },
+  string
+>("comment/getAverageRating", async (movieId, { rejectWithValue }) => {
+  try {
+    const response = await getAverageRating(movieId);
+    return response.data;
+  } catch (error: any) {
+    return rejectWithValue(
+      error.response?.data?.message || "Failed to get average rating"
+    );
+  }
+});
+
 const commentSlice = createSlice({
   name: "comment",
   initialState,
@@ -78,6 +95,18 @@ const commentSlice = createSlice({
         }
       })
       .addCase(deleteCommentThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(getAverageRatingThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAverageRatingThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.averageRating = action.payload;
+      })
+      .addCase(getAverageRatingThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

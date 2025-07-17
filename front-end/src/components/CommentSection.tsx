@@ -6,8 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Star, MessageCircle, Send, Trash2, Edit } from "lucide-react";
 import { commentWebSocketService } from "../services/comment-service";
-import type { Comment, CreateCommentData } from "../services/comment-service";
 import { toast } from "sonner";
+import type { Comment, CreateCommentData } from "@/services/type";
 
 interface CommentSectionProps {
   movieId: string;
@@ -28,13 +28,9 @@ const CommentSection: React.FC<CommentSectionProps> = ({
   const [editRating, setEditRating] = useState(5);
 
   useEffect(() => {
-    console.log("CommentSection: useEffect triggered with movieId:", movieId);
-    console.log("CommentSection: currentUserId:", currentUserId);
-
     // Connect to WebSocket and join movie room
     commentWebSocketService.connect();
     commentWebSocketService.joinMovieRoom(movieId, (loadedComments) => {
-      console.log("CommentSection: Comments loaded:", loadedComments);
       setComments(loadedComments);
     });
 
@@ -201,8 +197,6 @@ const CommentSection: React.FC<CommentSectionProps> = ({
       });
     }
   };
-
-  console.log("CommentSection: Rendering with comments:", comments);
 
   return (
     <div className="space-y-6">

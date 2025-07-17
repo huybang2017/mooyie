@@ -6,6 +6,7 @@ import type {
   LoginResponse,
   ProfileResponse,
   RegisterPayload,
+  Bookmark,
 } from "@/services/type";
 import {
   getMe,
@@ -137,6 +138,21 @@ const authSlice = createSlice({
         ...action.payload,
       };
     },
+    setBookmarkforCurrentUser: (state, action: PayloadAction<Bookmark>) => {
+      if (state.user) {
+        state.user.bookmarks = [
+          ...(state.user.bookmarks || []),
+          action.payload,
+        ];
+      }
+    },
+    removeBookmarkforCurrentUser: (state, action: PayloadAction<string>) => {
+      if (state.user && Array.isArray(state.user.bookmarks)) {
+        state.user.bookmarks = state.user.bookmarks.filter(
+          (bookmark) => bookmark.movieId !== action.payload
+        );
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -198,5 +214,10 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearError, setUser } = authSlice.actions;
+export const {
+  clearError,
+  setUser,
+  setBookmarkforCurrentUser,
+  removeBookmarkforCurrentUser,
+} = authSlice.actions;
 export default authSlice.reducer;

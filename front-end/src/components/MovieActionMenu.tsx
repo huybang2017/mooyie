@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,7 +14,6 @@ import {
   Trash2,
   Copy,
   ExternalLink,
-  Star,
 } from "lucide-react";
 import type { Movie } from "@/services/type";
 
@@ -47,7 +46,7 @@ export function MovieActionMenu({
 
   const handleViewTrailer = () => {
     if (movie.trailer_url) {
-      window.open(movie.trailer_url, '_blank');
+      window.open(movie.trailer_url, "_blank");
     }
   };
 
@@ -74,7 +73,7 @@ export function MovieActionMenu({
           <Eye className="h-4 w-4 mr-2" />
           Xem chi tiết
         </DropdownMenuItem>
-        
+
         <DropdownMenuItem
           onClick={() => {
             onEdit(movie);
@@ -127,4 +126,4 @@ export function MovieActionMenu({
       </DropdownMenuContent>
     </DropdownMenu>
   );
-} 
+}

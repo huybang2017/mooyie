@@ -6,6 +6,7 @@ import type {
   CreateShowtimeRequest,
   UpdateShowtimeRequest,
   ShowtimeResponse,
+  FilterShowtimeByMovieRequest,
 } from "@/services/type";
 import {
   getShowtimesApi,
@@ -18,7 +19,7 @@ import {
 } from "@/services/showtime-service";
 
 interface ShowtimeState {
-  showtimes: Showtime[];
+  showtimes: ShowtimeResponse | null;
   showtimeDetail: Showtime | null;
   adminShowtimes: ShowtimeResponse | null;
   loading: boolean;
@@ -26,7 +27,7 @@ interface ShowtimeState {
 }
 
 const initialState: ShowtimeState = {
-  showtimes: [],
+  showtimes: null,
   showtimeDetail: null,
   adminShowtimes: null,
   loading: false,
@@ -38,7 +39,7 @@ export const fetchShowtimesThunk = createAsyncThunk(
   async (params: FilterShowtimeRequest, { rejectWithValue }) => {
     try {
       const response = await getShowtimesApi(params);
-      return response.data as Showtime[];
+      return response.data as ShowtimeResponse;
     } catch (err: any) {
       return rejectWithValue(
         err.response?.data?.message || "Failed to fetch showtimes"
@@ -124,10 +125,16 @@ export const deleteShowtimeThunk = createAsyncThunk(
 
 export const fetchShowtimesByMovieThunk = createAsyncThunk(
   "showtimes/fetchByMovie",
-  async (movieId: string, { rejectWithValue }) => {
+  async (
+    {
+      movieId,
+      params,
+    }: { movieId: string; params: FilterShowtimeByMovieRequest },
+    { rejectWithValue }
+  ) => {
     try {
-      const response = await getShowtimesByMovieApi(movieId);
-      return response.data as Showtime[];
+      const response = await getShowtimesByMovieApi(movieId, params);
+      return response.data as ShowtimeResponse;
     } catch (err: any) {
       return rejectWithValue(
         err.response?.data?.message || "Failed to fetch showtimes by movie"
@@ -155,7 +162,7 @@ const showtimeSlice = createSlice({
       })
       .addCase(
         fetchShowtimesThunk.fulfilled,
-        (state, action: PayloadAction<Showtime[]>) => {
+        (state, action: PayloadAction<ShowtimeResponse>) => {
           state.loading = false;
           state.showtimes = action.payload;
         }
@@ -200,18 +207,23 @@ const showtimeSlice = createSlice({
       .addCase(
         createShowtimeThunk.fulfilled,
         (state, action: PayloadAction<Showtime>) => {
-          state.showtimes.unshift(action.payload);
+          if (state.showtimes?.data) {
+            state.showtimes.data.unshift(action.payload);
+            state.showtimes.total += 1;
+          }
         }
       )
 
       .addCase(
         updateShowtimeThunk.fulfilled,
         (state, action: PayloadAction<Showtime>) => {
-          const index = state.showtimes.findIndex(
-            (s) => s.id === action.payload.id
-          );
-          if (index !== -1) {
-            state.showtimes[index] = action.payload;
+          if (state.showtimes?.data) {
+            const index = state.showtimes.data.findIndex(
+              (s) => s.id === action.payload.id
+            );
+            if (index !== -1) {
+              state.showtimes.data[index] = action.payload;
+            }
           }
           if (state.showtimeDetail?.id === action.payload.id) {
             state.showtimeDetail = action.payload;
@@ -222,9 +234,12 @@ const showtimeSlice = createSlice({
       .addCase(
         deleteShowtimeThunk.fulfilled,
         (state, action: PayloadAction<string>) => {
-          state.showtimes = state.showtimes.filter(
-            (s) => s.id !== action.payload
-          );
+          if (state.showtimes?.data) {
+            state.showtimes.data = state.showtimes.data.filter(
+              (s) => s.id !== action.payload
+            );
+            state.showtimes.total -= 1;
+          }
           if (state.showtimeDetail?.id === action.payload) {
             state.showtimeDetail = null;
           }
@@ -237,7 +252,7 @@ const showtimeSlice = createSlice({
       })
       .addCase(
         fetchShowtimesByMovieThunk.fulfilled,
-        (state, action: PayloadAction<Showtime[]>) => {
+        (state, action: PayloadAction<ShowtimeResponse>) => {
           state.loading = false;
           state.showtimes = action.payload;
         }

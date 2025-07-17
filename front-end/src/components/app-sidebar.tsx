@@ -12,47 +12,54 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Building2, CalendarClock, Film, Settings } from "lucide-react";
-import { title } from "process";
+import {
+  Building2,
+  CalendarClock,
+  Film,
+  MessageCircle,
+  Settings,
+  User2,
+} from "lucide-react";
+import { useAppSelector } from "@/store/hooks";
 
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: [
     {
       title: "Dashboard",
       url: "/admin",
-      icon: Settings,
+      icon: () => <Settings />,
     },
     {
       title: "Movies",
       url: "/admin/movies",
-      icon: Film,
+      icon: () => <Film />,
     },
     {
       title: "Theaters",
       url: "/admin/theaters",
-      icon: Building2,
+      icon: () => <Building2 />,
     },
     {
       title: "Bookings",
       url: "/admin/bookings",
-      icon: IconTicket,
+      icon: () => <IconTicket />,
     },
     {
       title: "ShowTimes",
       url: "/admin/showtimes",
-      icon: CalendarClock,
+      icon: () => <CalendarClock />,
     },
-    { title: "Users", url: "/admin/users", icon: Settings },
-    { title: "Comments", url: "/admin/comments", icon: Settings },
+    { title: "Users", url: "/admin/users", icon: () => <User2 /> },
+    {
+      title: "Comments",
+      url: "/admin/comments",
+      icon: () => <MessageCircle />,
+    },
   ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user } = useAppSelector((state) => state.auth);
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -72,9 +79,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={data.navMain} />
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={data.user} />
-      </SidebarFooter>
+      <SidebarFooter>{user && <NavUser user={user} />}</SidebarFooter>
     </Sidebar>
   );
 }

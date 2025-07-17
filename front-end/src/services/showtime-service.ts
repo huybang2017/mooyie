@@ -5,14 +5,24 @@ import type {
   UpdateShowtimeRequest,
   Showtime,
   ShowtimeResponse,
+  FilterShowtimeByMovieRequest,
 } from "@/services/type";
 
 export const getShowtimesApi = (params: FilterShowtimeRequest) => {
-  return axiosClient.get<Showtime[]>("/showtimes", { params });
+  return axiosClient.get<ShowtimeResponse>("/showtimes", { params });
 };
 
-export const getShowtimesByMovieApi = (movieId: string) => {
-  return axiosClient.get<Showtime[]>(`/showtimes/movies/${movieId}`);
+export const getShowtimesByMovieApi = (
+  movieId: string,
+  params: FilterShowtimeByMovieRequest
+) => {
+  const { time, theaterLogo } = params;
+  return axiosClient.get<ShowtimeResponse>(`/showtimes/movies/${movieId}`, {
+    params: {
+      time,
+      theaterLogo,
+    },
+  });
 };
 
 export const getShowtimesAdminApi = (params: FilterShowtimeRequest) => {

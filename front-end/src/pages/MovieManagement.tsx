@@ -58,6 +58,7 @@ import { MovieActionMenu } from "@/components/MovieActionMenu";
 import { BulkActionConfirmation } from "@/components/BulkActionConfirmation";
 import type { Movie } from "@/services/type";
 import { toast } from "sonner";
+import { getAverageRatingThunk } from "@/store/slices/commentSlice";
 
 const genres = [
   "Action",
@@ -89,6 +90,7 @@ const MovieManagement = () => {
   const [selectedMovies, setSelectedMovies] = useState<Movie[]>([]);
   const [bulkAction, setBulkAction] = useState<"delete" | "update">("delete");
   const [isLoadingBulkAction, setIsLoadingBulkAction] = useState(false);
+  const [averageRatings, setAverageRatings] = useState<{ [movieId: string]: number }>({});
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
@@ -113,6 +115,21 @@ const MovieManagement = () => {
     debouncedSearchTerm,
     selectedStatus,
   ]);
+
+  useEffect(() => {
+    if (adminMovies?.data) {
+      adminMovies.data.forEach((movie) => {
+        if (averageRatings[movie.id] === undefined) {
+          dispatch(getAverageRatingThunk(movie.id)).then((action: any) => {
+            if (action.payload && typeof action.payload.averageRating === "number") {
+              setAverageRatings((prev) => ({ ...prev, [movie.id]: action.payload.averageRating }));
+            }
+          });
+        }
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [adminMovies?.data]);
 
   const handleRefresh = () => {
     dispatch(
@@ -529,7 +546,10 @@ const MovieManagement = () => {
                     <div className="flex items-center space-x-1">
                       <Star className="h-4 w-4 text-yellow-500 fill-current" />
                       <span className="text-neutral-900 dark:text-neutral-100">
-                        {calculateAverageRating(movie.comments || [])}/5
+                        {typeof averageRatings[movie.id] === "number" && !isNaN(averageRatings[movie.id])
+                          ? averageRatings[movie.id].toFixed(1)
+                          : "0"}
+                        /5
                       </span>
                     </div>
                   </TableCell>

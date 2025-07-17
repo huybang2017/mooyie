@@ -18,6 +18,9 @@ export const getAllComments = (params: FilterCommentRequest) => {
 export const deleteCommentById = (id: string) =>
   axiosAuth.delete<Comment>(`/comments/${id}`);
 
+export const getAverageRating = (movieId: string) =>
+  axiosAuth.get<{ averageRating: number }>(`/comments/rating/${movieId}`);
+
 export class CommentWebSocketService {
   private socket: Socket | null = null;
   private isConnected = false;

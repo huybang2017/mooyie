@@ -33,8 +33,6 @@ const navLinks = [
 const authLinks = [
   { to: "/bookings", label: "My Bookings" },
   { to: "/profile", label: "Profile" },
-  { to: "/admin", label: "Admin" },
-  { to: "/admin/movies", label: "Quản lý phim" },
 ];
 
 const Layout = () => {

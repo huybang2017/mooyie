@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { register } from "@/store/slices/authSlice";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";

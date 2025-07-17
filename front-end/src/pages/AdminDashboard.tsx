@@ -1,636 +1,414 @@
-import { SectionCards } from "@/components/section-cards";
-import { ChartAreaInteractive } from "@/components/chart-area-interactive";
+import React, { useEffect, useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  Film, 
+  Calendar, 
+  Ticket, 
+  DollarSign, 
+  MessageSquare, 
+  Users, 
+  TrendingUp,
+  TrendingDown,
+  Eye,
+  Star
+} from "lucide-react";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { fetchDashboardStatsThunk } from "@/store/slices/dashboardSlice";
 import { DataTable } from "@/components/data-table";
+import { ChartAreaInteractive } from "@/components/chart-area-interactive";
 
-const data = [
+// Mock data for charts and recent activities
+const revenueData = [
+  { name: "Jan", revenue: 4000 },
+  { name: "Feb", revenue: 3000 },
+  { name: "Mar", revenue: 2000 },
+  { name: "Apr", revenue: 2780 },
+  { name: "May", revenue: 1890 },
+  { name: "Jun", revenue: 2390 },
+  { name: "Jul", revenue: 3490 },
+];
+
+const ticketSalesData = [
+  { name: "Jan", tickets: 400 },
+  { name: "Feb", tickets: 300 },
+  { name: "Mar", tickets: 200 },
+  { name: "Apr", revenue: 278 },
+  { name: "May", revenue: 189 },
+  { name: "Jun", revenue: 239 },
+  { name: "Jul", revenue: 349 },
+];
+
+const recentBookings = [
   {
     id: 1,
-    header: "Cover page",
-    type: "Cover page",
-    status: "In Process",
-    target: "18",
-    limit: "5",
-    reviewer: "Eddie Lake",
+    movie: "Avengers: Endgame",
+    user: "john.doe@example.com",
+    showtime: "2024-01-15 19:00",
+    seats: "A1, A2",
+    status: "confirmed",
+    amount: 25.00,
   },
   {
     id: 2,
-    header: "Table of contents",
-    type: "Table of contents",
-    status: "Done",
-    target: "29",
-    limit: "24",
-    reviewer: "Eddie Lake",
+    movie: "Spider-Man: No Way Home",
+    user: "jane.smith@example.com",
+    showtime: "2024-01-15 20:30",
+    seats: "B5",
+    status: "confirmed",
+    amount: 12.50,
   },
   {
     id: 3,
-    header: "Executive summary",
-    type: "Narrative",
-    status: "Done",
-    target: "10",
-    limit: "13",
-    reviewer: "Eddie Lake",
-  },
-  {
-    id: 4,
-    header: "Technical approach",
-    type: "Narrative",
-    status: "Done",
-    target: "27",
-    limit: "23",
-    reviewer: "Jamik Tashpulatov",
-  },
-  {
-    id: 5,
-    header: "Design",
-    type: "Narrative",
-    status: "In Process",
-    target: "2",
-    limit: "16",
-    reviewer: "Jamik Tashpulatov",
-  },
-  {
-    id: 6,
-    header: "Capabilities",
-    type: "Narrative",
-    status: "In Process",
-    target: "20",
-    limit: "8",
-    reviewer: "Jamik Tashpulatov",
-  },
-  {
-    id: 7,
-    header: "Integration with existing systems",
-    type: "Narrative",
-    status: "In Process",
-    target: "19",
-    limit: "21",
-    reviewer: "Jamik Tashpulatov",
-  },
-  {
-    id: 8,
-    header: "Innovation and Advantages",
-    type: "Narrative",
-    status: "Done",
-    target: "25",
-    limit: "26",
-    reviewer: "Assign reviewer",
-  },
-  {
-    id: 9,
-    header: "Overview of EMR's Innovative Solutions",
-    type: "Technical content",
-    status: "Done",
-    target: "7",
-    limit: "23",
-    reviewer: "Assign reviewer",
-  },
-  {
-    id: 10,
-    header: "Advanced Algorithms and Machine Learning",
-    type: "Narrative",
-    status: "Done",
-    target: "30",
-    limit: "28",
-    reviewer: "Assign reviewer",
-  },
-  {
-    id: 11,
-    header: "Adaptive Communication Protocols",
-    type: "Narrative",
-    status: "Done",
-    target: "9",
-    limit: "31",
-    reviewer: "Assign reviewer",
-  },
-  {
-    id: 12,
-    header: "Advantages Over Current Technologies",
-    type: "Narrative",
-    status: "Done",
-    target: "12",
-    limit: "0",
-    reviewer: "Assign reviewer",
-  },
-  {
-    id: 13,
-    header: "Past Performance",
-    type: "Narrative",
-    status: "Done",
-    target: "22",
-    limit: "33",
-    reviewer: "Assign reviewer",
-  },
-  {
-    id: 14,
-    header: "Customer Feedback and Satisfaction Levels",
-    type: "Narrative",
-    status: "Done",
-    target: "15",
-    limit: "34",
-    reviewer: "Assign reviewer",
-  },
-  {
-    id: 15,
-    header: "Implementation Challenges and Solutions",
-    type: "Narrative",
-    status: "Done",
-    target: "3",
-    limit: "35",
-    reviewer: "Assign reviewer",
-  },
-  {
-    id: 16,
-    header: "Security Measures and Data Protection Policies",
-    type: "Narrative",
-    status: "In Process",
-    target: "6",
-    limit: "36",
-    reviewer: "Assign reviewer",
-  },
-  {
-    id: 17,
-    header: "Scalability and Future Proofing",
-    type: "Narrative",
-    status: "Done",
-    target: "4",
-    limit: "37",
-    reviewer: "Assign reviewer",
-  },
-  {
-    id: 18,
-    header: "Cost-Benefit Analysis",
-    type: "Plain language",
-    status: "Done",
-    target: "14",
-    limit: "38",
-    reviewer: "Assign reviewer",
-  },
-  {
-    id: 19,
-    header: "User Training and Onboarding Experience",
-    type: "Narrative",
-    status: "Done",
-    target: "17",
-    limit: "39",
-    reviewer: "Assign reviewer",
-  },
-  {
-    id: 20,
-    header: "Future Development Roadmap",
-    type: "Narrative",
-    status: "Done",
-    target: "11",
-    limit: "40",
-    reviewer: "Assign reviewer",
-  },
-  {
-    id: 21,
-    header: "System Architecture Overview",
-    type: "Technical content",
-    status: "In Process",
-    target: "24",
-    limit: "18",
-    reviewer: "Maya Johnson",
-  },
-  {
-    id: 22,
-    header: "Risk Management Plan",
-    type: "Narrative",
-    status: "Done",
-    target: "15",
-    limit: "22",
-    reviewer: "Carlos Rodriguez",
-  },
-  {
-    id: 23,
-    header: "Compliance Documentation",
-    type: "Legal",
-    status: "In Process",
-    target: "31",
-    limit: "27",
-    reviewer: "Sarah Chen",
-  },
-  {
-    id: 24,
-    header: "API Documentation",
-    type: "Technical content",
-    status: "Done",
-    target: "8",
-    limit: "12",
-    reviewer: "Raj Patel",
-  },
-  {
-    id: 25,
-    header: "User Interface Mockups",
-    type: "Visual",
-    status: "In Process",
-    target: "19",
-    limit: "25",
-    reviewer: "Leila Ahmadi",
-  },
-  {
-    id: 26,
-    header: "Database Schema",
-    type: "Technical content",
-    status: "Done",
-    target: "22",
-    limit: "20",
-    reviewer: "Thomas Wilson",
-  },
-  {
-    id: 27,
-    header: "Testing Methodology",
-    type: "Technical content",
-    status: "In Process",
-    target: "17",
-    limit: "14",
-    reviewer: "Assign reviewer",
-  },
-  {
-    id: 28,
-    header: "Deployment Strategy",
-    type: "Narrative",
-    status: "Done",
-    target: "26",
-    limit: "30",
-    reviewer: "Eddie Lake",
-  },
-  {
-    id: 29,
-    header: "Budget Breakdown",
-    type: "Financial",
-    status: "In Process",
-    target: "13",
-    limit: "16",
-    reviewer: "Jamik Tashpulatov",
-  },
-  {
-    id: 30,
-    header: "Market Analysis",
-    type: "Research",
-    status: "Done",
-    target: "29",
-    limit: "32",
-    reviewer: "Sophia Martinez",
-  },
-  {
-    id: 31,
-    header: "Competitor Comparison",
-    type: "Research",
-    status: "In Process",
-    target: "21",
-    limit: "19",
-    reviewer: "Assign reviewer",
-  },
-  {
-    id: 32,
-    header: "Maintenance Plan",
-    type: "Technical content",
-    status: "Done",
-    target: "16",
-    limit: "23",
-    reviewer: "Alex Thompson",
-  },
-  {
-    id: 33,
-    header: "User Personas",
-    type: "Research",
-    status: "In Process",
-    target: "27",
-    limit: "24",
-    reviewer: "Nina Patel",
-  },
-  {
-    id: 34,
-    header: "Accessibility Compliance",
-    type: "Legal",
-    status: "Done",
-    target: "18",
-    limit: "21",
-    reviewer: "Assign reviewer",
-  },
-  {
-    id: 35,
-    header: "Performance Metrics",
-    type: "Technical content",
-    status: "In Process",
-    target: "23",
-    limit: "26",
-    reviewer: "David Kim",
-  },
-  {
-    id: 36,
-    header: "Disaster Recovery Plan",
-    type: "Technical content",
-    status: "Done",
-    target: "14",
-    limit: "17",
-    reviewer: "Jamik Tashpulatov",
-  },
-  {
-    id: 37,
-    header: "Third-party Integrations",
-    type: "Technical content",
-    status: "In Process",
-    target: "25",
-    limit: "28",
-    reviewer: "Eddie Lake",
-  },
-  {
-    id: 38,
-    header: "User Feedback Summary",
-    type: "Research",
-    status: "Done",
-    target: "20",
-    limit: "15",
-    reviewer: "Assign reviewer",
-  },
-  {
-    id: 39,
-    header: "Localization Strategy",
-    type: "Narrative",
-    status: "In Process",
-    target: "12",
-    limit: "19",
-    reviewer: "Maria Garcia",
-  },
-  {
-    id: 40,
-    header: "Mobile Compatibility",
-    type: "Technical content",
-    status: "Done",
-    target: "28",
-    limit: "31",
-    reviewer: "James Wilson",
-  },
-  {
-    id: 41,
-    header: "Data Migration Plan",
-    type: "Technical content",
-    status: "In Process",
-    target: "19",
-    limit: "22",
-    reviewer: "Assign reviewer",
-  },
-  {
-    id: 42,
-    header: "Quality Assurance Protocols",
-    type: "Technical content",
-    status: "Done",
-    target: "30",
-    limit: "33",
-    reviewer: "Priya Singh",
-  },
-  {
-    id: 43,
-    header: "Stakeholder Analysis",
-    type: "Research",
-    status: "In Process",
-    target: "11",
-    limit: "14",
-    reviewer: "Eddie Lake",
-  },
-  {
-    id: 44,
-    header: "Environmental Impact Assessment",
-    type: "Research",
-    status: "Done",
-    target: "24",
-    limit: "27",
-    reviewer: "Assign reviewer",
-  },
-  {
-    id: 45,
-    header: "Intellectual Property Rights",
-    type: "Legal",
-    status: "In Process",
-    target: "17",
-    limit: "20",
-    reviewer: "Sarah Johnson",
-  },
-  {
-    id: 46,
-    header: "Customer Support Framework",
-    type: "Narrative",
-    status: "Done",
-    target: "22",
-    limit: "25",
-    reviewer: "Jamik Tashpulatov",
-  },
-  {
-    id: 47,
-    header: "Version Control Strategy",
-    type: "Technical content",
-    status: "In Process",
-    target: "15",
-    limit: "18",
-    reviewer: "Assign reviewer",
-  },
-  {
-    id: 48,
-    header: "Continuous Integration Pipeline",
-    type: "Technical content",
-    status: "Done",
-    target: "26",
-    limit: "29",
-    reviewer: "Michael Chen",
-  },
-  {
-    id: 49,
-    header: "Regulatory Compliance",
-    type: "Legal",
-    status: "In Process",
-    target: "13",
-    limit: "16",
-    reviewer: "Assign reviewer",
-  },
-  {
-    id: 50,
-    header: "User Authentication System",
-    type: "Technical content",
-    status: "Done",
-    target: "28",
-    limit: "31",
-    reviewer: "Eddie Lake",
-  },
-  {
-    id: 51,
-    header: "Data Analytics Framework",
-    type: "Technical content",
-    status: "In Process",
-    target: "21",
-    limit: "24",
-    reviewer: "Jamik Tashpulatov",
-  },
-  {
-    id: 52,
-    header: "Cloud Infrastructure",
-    type: "Technical content",
-    status: "Done",
-    target: "16",
-    limit: "19",
-    reviewer: "Assign reviewer",
-  },
-  {
-    id: 53,
-    header: "Network Security Measures",
-    type: "Technical content",
-    status: "In Process",
-    target: "29",
-    limit: "32",
-    reviewer: "Lisa Wong",
-  },
-  {
-    id: 54,
-    header: "Project Timeline",
-    type: "Planning",
-    status: "Done",
-    target: "14",
-    limit: "17",
-    reviewer: "Eddie Lake",
-  },
-  {
-    id: 55,
-    header: "Resource Allocation",
-    type: "Planning",
-    status: "In Process",
-    target: "27",
-    limit: "30",
-    reviewer: "Assign reviewer",
-  },
-  {
-    id: 56,
-    header: "Team Structure and Roles",
-    type: "Planning",
-    status: "Done",
-    target: "20",
-    limit: "23",
-    reviewer: "Jamik Tashpulatov",
-  },
-  {
-    id: 57,
-    header: "Communication Protocols",
-    type: "Planning",
-    status: "In Process",
-    target: "15",
-    limit: "18",
-    reviewer: "Assign reviewer",
-  },
-  {
-    id: 58,
-    header: "Success Metrics",
-    type: "Planning",
-    status: "Done",
-    target: "30",
-    limit: "33",
-    reviewer: "Eddie Lake",
-  },
-  {
-    id: 59,
-    header: "Internationalization Support",
-    type: "Technical content",
-    status: "In Process",
-    target: "23",
-    limit: "26",
-    reviewer: "Jamik Tashpulatov",
-  },
-  {
-    id: 60,
-    header: "Backup and Recovery Procedures",
-    type: "Technical content",
-    status: "Done",
-    target: "18",
-    limit: "21",
-    reviewer: "Assign reviewer",
-  },
-  {
-    id: 61,
-    header: "Monitoring and Alerting System",
-    type: "Technical content",
-    status: "In Process",
-    target: "25",
-    limit: "28",
-    reviewer: "Daniel Park",
-  },
-  {
-    id: 62,
-    header: "Code Review Guidelines",
-    type: "Technical content",
-    status: "Done",
-    target: "12",
-    limit: "15",
-    reviewer: "Eddie Lake",
-  },
-  {
-    id: 63,
-    header: "Documentation Standards",
-    type: "Technical content",
-    status: "In Process",
-    target: "27",
-    limit: "30",
-    reviewer: "Jamik Tashpulatov",
-  },
-  {
-    id: 64,
-    header: "Release Management Process",
-    type: "Planning",
-    status: "Done",
-    target: "22",
-    limit: "25",
-    reviewer: "Assign reviewer",
-  },
-  {
-    id: 65,
-    header: "Feature Prioritization Matrix",
-    type: "Planning",
-    status: "In Process",
-    target: "19",
-    limit: "22",
-    reviewer: "Emma Davis",
-  },
-  {
-    id: 66,
-    header: "Technical Debt Assessment",
-    type: "Technical content",
-    status: "Done",
-    target: "24",
-    limit: "27",
-    reviewer: "Eddie Lake",
-  },
-  {
-    id: 67,
-    header: "Capacity Planning",
-    type: "Planning",
-    status: "In Process",
-    target: "21",
-    limit: "24",
-    reviewer: "Jamik Tashpulatov",
-  },
-  {
-    id: 68,
-    header: "Service Level Agreements",
-    type: "Legal",
-    status: "Done",
-    target: "26",
-    limit: "29",
-    reviewer: "Assign reviewer",
+    movie: "Black Panther: Wakanda Forever",
+    user: "mike.wilson@example.com",
+    showtime: "2024-01-16 18:00",
+    seats: "C3, C4, C5",
+    status: "pending",
+    amount: 37.50,
+  },
+];
+
+const recentComments = [
+  {
+    id: 1,
+    user: "alice.johnson@example.com",
+    movie: "Avatar: The Way of Water",
+    comment: "Amazing visual effects! The 3D experience was incredible.",
+    rating: 5,
+    date: "2024-01-14",
+  },
+  {
+    id: 2,
+    user: "bob.chen@example.com",
+    movie: "Top Gun: Maverick",
+    comment: "Great action sequences and Tom Cruise was fantastic!",
+    rating: 4,
+    date: "2024-01-13",
+  },
+  {
+    id: 3,
+    user: "sarah.davis@example.com",
+    movie: "The Batman",
+    comment: "Dark and atmospheric, perfect for the character.",
+    rating: 4,
+    date: "2024-01-12",
   },
 ];
 
 const AdminDashboard = () => {
-  return (
-    <div className="flex flex-1 flex-col">
-      <div className="@container/main flex flex-1 flex-col gap-2">
-        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-          <SectionCards />
-          <div className="px-4 lg:px-6">
-            <ChartAreaInteractive />
-          </div>
-          <div className="px-4 lg:px-6">
-            <DataTable data={data} />
+  const dispatch = useAppDispatch();
+  const { stats, loading, error } = useAppSelector((state) => state.dashboard);
+
+  useEffect(() => {
+    dispatch(fetchDashboardStatsThunk());
+  }, [dispatch]);
+
+  // Calculate statistics from API data
+  const totalMovies = stats?.totalMovies || 0;
+  const totalShowtimes = stats?.totalShowtimes || 0;
+  const totalBookings = stats?.totalBookings || 0;
+  const totalComments = stats?.totalComments || 0;
+  const totalUsers = stats?.totalUsers || 0;
+  const totalRevenue = stats?.totalRevenue || 0;
+
+  // Calculate growth percentages from API data
+  const movieGrowth = stats?.movieGrowth || 0;
+  const showtimeGrowth = stats?.showtimeGrowth || 0;
+  const bookingGrowth = stats?.bookingGrowth || 0;
+  const revenueGrowth = stats?.revenueGrowth || 0;
+  const commentGrowth = stats?.commentGrowth || 0;
+  const userGrowth = stats?.userGrowth || 0;
+
+  const statsCards = [
+    {
+      title: "Tổng Số Phim",
+      value: totalMovies,
+      icon: Film,
+      growth: movieGrowth,
+      description: "Phim đang hoạt động",
+    },
+    {
+      title: "Tổng Lịch Chiếu",
+      value: totalShowtimes,
+      icon: Calendar,
+      growth: bookingGrowth,
+      description: "Lịch chiếu đã lên lịch",
+    },
+    {
+      title: "Vé Đã Bán",
+      value: totalBookings,
+      icon: Ticket,
+      growth: bookingGrowth,
+      description: "Tổng số đặt vé",
+    },
+    {
+      title: "Tổng Doanh Thu",
+      value: `${totalRevenue.toFixed(0)}đ`,
+      icon: DollarSign,
+      growth: revenueGrowth,
+      description: "Tổng doanh thu tạo ra",
+    },
+    {
+      title: "Bình Luận Người Dùng",
+      value: totalComments,
+      icon: MessageSquare,
+      growth: userGrowth,
+      description: "Đánh giá và bình luận",
+    },
+    {
+      title: "Người Dùng Đăng Ký",
+      value: totalUsers,
+      icon: Users,
+      growth: userGrowth,
+      description: "Tổng người dùng đăng ký",
+    },
+  ];
+
+  if (loading && !stats) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="flex items-center space-x-2">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600 dark:border-green-400"></div>
+            <span className="text-sm text-neutral-600 dark:text-neutral-300">
+              Đang tải...
+            </span>
           </div>
         </div>
       </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-lg text-red-600">Error: {error}</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6 p-6 relative">
+      {loading && (
+        <div className="absolute inset-0 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-sm flex items-center justify-center z-10">
+          <div className="flex items-center space-x-2">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600 dark:border-green-400"></div>
+            <span className="text-sm text-neutral-600 dark:text-neutral-300">
+              Đang tải...
+            </span>
+          </div>
+        </div>
+      )}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Bảng Điều Khiển Admin</h1>
+          <p className="text-muted-foreground">
+            Tổng quan hệ thống quản lý rạp chiếu phim
+          </p>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Badge variant="secondary">Trực tuyến</Badge>
+          <span className="text-sm text-muted-foreground">Cập nhật lần cuối: {new Date().toLocaleString('vi-VN')}</span>
+        </div>
+      </div>
+
+      {/* Statistics Cards */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {statsCards.map((stat, index) => {
+          const Icon = stat.icon;
+          const isPositive = stat.growth > 0;
+          
+          return (
+            <Card key={index}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  {stat.title}
+                </CardTitle>
+                <Icon className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stat.value}</div>
+                <p className="text-xs text-muted-foreground">
+                  {stat.description}
+                </p>
+                <div className="flex items-center mt-2">
+                  {isPositive ? (
+                    <TrendingUp className="h-3 w-3 text-green-500 mr-1" />
+                  ) : (
+                    <TrendingDown className="h-3 w-3 text-red-500 mr-1" />
+                  )}
+                  <span className={`text-xs ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
+                    {isPositive ? '+' : ''}{stat.growth}%
+                  </span>
+                                     <span className="text-xs text-muted-foreground ml-1">so với tháng trước</span>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
+      {/* Charts and Tables */}
+      <Tabs defaultValue="overview" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="overview">Tổng Quan</TabsTrigger>
+          <TabsTrigger value="revenue">Doanh Thu</TabsTrigger>
+          <TabsTrigger value="bookings">Đặt Vé Gần Đây</TabsTrigger>
+          <TabsTrigger value="comments">Bình Luận Gần Đây</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2">
+                        <Card>
+              <CardHeader>
+                <CardTitle>Tổng Quan Doanh Thu</CardTitle>
+                <CardDescription>
+                  Xu hướng doanh thu hàng tháng
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChartAreaInteractive />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Bán Vé</CardTitle>
+                <CardDescription>
+                  Xu hướng bán vé hàng tháng
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+            <ChartAreaInteractive />
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="revenue" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Phân Tích Doanh Thu</CardTitle>
+              <CardDescription>
+                Chi tiết doanh thu và xu hướng
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 md:grid-cols-3">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">
+                    {totalRevenue.toFixed(0)}đ
+                  </div>
+                  <p className="text-sm text-muted-foreground">Tổng Doanh Thu</p>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600">
+                    {(totalRevenue / totalBookings).toFixed(0)}đ
+                  </div>
+                  <p className="text-sm text-muted-foreground">Giá Vé Trung Bình</p>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-purple-600">
+                    {revenueGrowth}%
+                  </div>
+                  <p className="text-sm text-muted-foreground">Tỷ Lệ Tăng Trưởng</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="bookings" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Đặt Vé Gần Đây</CardTitle>
+              <CardDescription>
+                Hoạt động đặt vé mới nhất
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {recentBookings.map((booking) => (
+                  <div key={booking.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex-1">
+                        <h4 className="font-medium">{booking.movie}</h4>
+                        <p className="text-sm text-muted-foreground">
+                          {booking.user} • {booking.showtime}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Ghế: {booking.seats}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-medium">{booking.amount.toFixed(0)}đ</div>
+                      <Badge 
+                        variant={booking.status === 'confirmed' ? 'default' : 'secondary'}
+                        className="mt-1"
+                      >
+                        {booking.status === 'confirmed' ? 'Đã xác nhận' : 'Đang chờ'}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="comments" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Bình Luận Gần Đây</CardTitle>
+              <CardDescription>
+                Đánh giá và phản hồi mới nhất từ người dùng
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {recentComments.map((comment) => (
+                  <div key={comment.id} className="p-4 border rounded-lg">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h4 className="font-medium">{comment.movie}</h4>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          {comment.user} • {comment.date}
+                        </p>
+                        <p className="text-sm">{comment.comment}</p>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`h-4 w-4 ${
+                              i < comment.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                            }`}
+                          />
+                        ))}
+          </div>
+        </div>
+      </div>
+                ))}
+                <div className="text-center pt-4">
+                  <div className="text-2xl font-bold text-yellow-600">
+                    {recentComments.length > 0 
+                      ? (recentComments.reduce((sum, comment) => sum + comment.rating, 0) / recentComments.length).toFixed(1)
+                      : '0.0'
+                    }
+                  </div>
+                  <p className="text-sm text-muted-foreground">Điểm Đánh Giá Trung Bình</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+
+
     </div>
   );
 };

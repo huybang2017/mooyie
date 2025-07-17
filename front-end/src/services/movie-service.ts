@@ -7,9 +7,11 @@ import type {
 } from "@/services/type";
 
 export const getMoviesApi = (params: FilterMovieRequest) => {
-  const { genre, page = 1, limit = 10 } = params;
+  const { genre, page = 1, limit = 10, title, status } = params;
   return axiosClient.get<MovieResponse>("/movies", {
     params: {
+      title,
+      status,
       genre,
       page,
       limit,
