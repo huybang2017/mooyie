@@ -6,7 +6,7 @@ import type {
   FilterCommentRequest,
   CommentResponse,
 } from "@/services/type";
-import { io } from "socket.io-client";
+import io from "socket.io-client";
 
 export const getAllComments = (params: FilterCommentRequest) => {
   const { page, limit, movie, user, rating } = params;
@@ -22,7 +22,7 @@ export const getAverageRating = (movieId: string) =>
   axiosAuth.get<{ averageRating: number }>(`/comments/rating/${movieId}`);
 
 export class CommentWebSocketService {
-  private socket: Socket | null = null;
+  private socket: any | null = null;
   private isConnected = false;
 
   connect() {

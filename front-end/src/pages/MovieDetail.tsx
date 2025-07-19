@@ -28,7 +28,7 @@ const MovieDetail = () => {
   );
   const { user } = useAppSelector((state) => state.auth);
 
-  const { bookmarks, loading: bookmarkLoading } = useAppSelector(
+  const { loading: bookmarkLoading } = useAppSelector(
     (state) => state.bookmark
   );
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -50,7 +50,10 @@ const MovieDetail = () => {
       dispatch(fetchMovieByIdThunk(id));
       dispatch(fetchShowtimesByMovieThunk({ movieId: id, params: {} }));
       dispatch(getAverageRatingThunk(id)).then((action: any) => {
-        if (action.payload && typeof action.payload.averageRating === "number") {
+        if (
+          action.payload &&
+          typeof action.payload.averageRating === "number"
+        ) {
           setAverageRating(action.payload.averageRating);
         }
       });

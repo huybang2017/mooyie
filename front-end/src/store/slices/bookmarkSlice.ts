@@ -5,7 +5,6 @@ import {
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { Bookmark, CreateBookmarkRequest } from "@/services/type";
-import { setBookmarkforCurrentUser } from "./authSlice";
 
 interface BookmarkState {
   bookmarks: Bookmark[];

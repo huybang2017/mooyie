@@ -4,6 +4,7 @@ import type {
   CreateRoomRequest,
   GetRoomsByTheaterResponse,
   GetRoomSeatsResponse,
+  Showtime,
 } from "@/services/type";
 
 export const createRoomApi = (data: CreateRoomRequest) => {
@@ -21,5 +22,5 @@ export const getRoomSeatsApi = (roomId: string) => {
 };
 
 export const getRoomByShowtimeApi = (showtimeId: string) => {
-  return axiosClient.get<Room>(`/rooms/showtime/${showtimeId}`);
+  return axiosClient.get<Showtime>(`/rooms/showtime/${showtimeId}`);
 };

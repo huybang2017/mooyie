@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +14,7 @@ import {
 import { Loader2 } from "lucide-react";
 import { updateTheaterThunk } from "@/store/slices/theaterSlice";
 import type { UpdateTheaterRequest, Theater } from "@/services/type";
-import type { AppDispatch } from "@/store";
+import { useAppDispatch } from "@/store/hooks";
 
 interface UpdateTheaterFormProps {
   theater: Theater | null;
@@ -30,7 +29,7 @@ export function UpdateTheaterForm({
   onOpenChange,
   onSuccess,
 }: UpdateTheaterFormProps) {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<UpdateTheaterRequest>({
     name: "",

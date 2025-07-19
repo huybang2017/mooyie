@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,8 +8,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, Trash2, Edit, Eye, RefreshCw } from "lucide-react";
 import type { Movie } from "@/services/type";
+import { Edit, Eye, RefreshCw, Trash2 } from "lucide-react";
 
 interface BulkActionConfirmationProps {
   open: boolean;
@@ -74,7 +73,15 @@ export function BulkActionConfirmation({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center space-x-3">
-            <div className={`text-${config.variant === "destructive" ? "red" : config.variant === "warning" ? "yellow" : "blue"}-600`}>
+            <div
+              className={`text-${
+                config.variant === "destructive"
+                  ? "red"
+                  : config.variant === "warning"
+                  ? "yellow"
+                  : "blue"
+              }-600`}
+            >
               {config.icon}
             </div>
             <DialogTitle className="text-lg font-semibold">
@@ -132,4 +139,4 @@ export function BulkActionConfirmation({
       </DialogContent>
     </Dialog>
   );
-} 
+}

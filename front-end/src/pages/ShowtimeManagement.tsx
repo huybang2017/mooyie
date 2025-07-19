@@ -179,12 +179,6 @@ export default function ShowtimeManagement() {
     );
   };
 
-  const getAvailableRooms = (theaterId: string) => {
-    return showtimes.filter(
-      (showtime: Showtime) => showtime?.room?.theater?.id === theaterId
-    );
-  };
-
   if (loading && !adminShowtimes) {
     return (
       <div className="p-6 space-y-6">

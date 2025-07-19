@@ -1,4 +1,4 @@
-import { axiosClient, axiosAuth } from "@/services/axios";
+import { axiosAuth } from "@/services/axios";
 import type {
   Payment,
   CreatePaymentRequest,

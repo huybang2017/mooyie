@@ -144,7 +144,7 @@ const roomSlice = createSlice({
       })
       .addCase(
         fetchRoomByShowtimeThunk.fulfilled,
-        (state, action: PayloadAction<Room>) => {
+        (state, action: PayloadAction<Showtime>) => {
           state.selectedRoom = action.payload;
           state.loading = false;
         }

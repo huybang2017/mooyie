@@ -1,4 +1,3 @@
-import { Comment } from "./type";
 export interface RegisterPayload {
   name: string;
   email: string;

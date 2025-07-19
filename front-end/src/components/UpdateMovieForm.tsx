@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,7 +22,7 @@ import {
 import { Loader2 } from "lucide-react";
 import { updateMovieThunk } from "@/store/slices/movieSlice";
 import type { UpdateMovieRequest, Movie } from "@/services/type";
-import type { AppDispatch } from "@/store";
+import { useAppDispatch } from "@/store/hooks";
 
 const genres = [
   "Action",
@@ -49,7 +48,7 @@ export function UpdateMovieForm({
   onOpenChange, 
   onSuccess 
 }: UpdateMovieFormProps) {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<UpdateMovieRequest>({
     title: "",

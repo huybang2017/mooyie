@@ -131,7 +131,8 @@ const BookingSelect = () => {
           }
           if (
             data.bookingStatus === "cancel" &&
-            (data.paymentStatus === "failed" || data.paymentStatus === "refunded")
+            (data.paymentStatus === "failed" ||
+              data.paymentStatus === "refunded")
           ) {
             setCurrentStep("seats");
             setShowPayment(false);
@@ -414,7 +415,7 @@ const BookingSelect = () => {
                 </div>
               )}
 
-              {currentStep === "processing" && (
+              {(currentStep as string) === "processing" && (
                 <div className="flex items-center gap-2 text-blue-600">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
                   <span>Đang tạo booking...</span>
@@ -453,7 +454,7 @@ const BookingSelect = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {currentStep === "seats" && (
+            {(currentStep as string) === "seats" && (
               <div className="space-y-4 flex flex-col items-center">
                 {/* Màn hình + Lưới ghế */}
                 <div className="w-full flex flex-col items-center">

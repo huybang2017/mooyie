@@ -90,7 +90,9 @@ const MovieManagement = () => {
   const [selectedMovies, setSelectedMovies] = useState<Movie[]>([]);
   const [bulkAction, setBulkAction] = useState<"delete" | "update">("delete");
   const [isLoadingBulkAction, setIsLoadingBulkAction] = useState(false);
-  const [averageRatings, setAverageRatings] = useState<{ [movieId: string]: number }>({});
+  const [averageRatings, setAverageRatings] = useState<{
+    [movieId: string]: number;
+  }>({});
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
@@ -121,8 +123,14 @@ const MovieManagement = () => {
       adminMovies.data.forEach((movie) => {
         if (averageRatings[movie.id] === undefined) {
           dispatch(getAverageRatingThunk(movie.id)).then((action: any) => {
-            if (action.payload && typeof action.payload.averageRating === "number") {
-              setAverageRatings((prev) => ({ ...prev, [movie.id]: action.payload.averageRating }));
+            if (
+              action.payload &&
+              typeof action.payload.averageRating === "number"
+            ) {
+              setAverageRatings((prev) => ({
+                ...prev,
+                [movie.id]: action.payload.averageRating,
+              }));
             }
           });
         }
@@ -262,7 +270,6 @@ const MovieManagement = () => {
   const totalPages = adminMovies?.totalPages || 1;
   const totalItems = adminMovies?.total || 0;
   const currentPageFromApi = adminMovies?.currentPage || 1;
-  const pageSize = adminMovies?.pageSize || itemsPerPage;
   const hasNextPage = adminMovies?.hasNextPage || false;
   const hasPreviousPage = adminMovies?.hasPreviousPage || false;
 
@@ -287,8 +294,6 @@ const MovieManagement = () => {
 
   const isAllSelected =
     movies.length > 0 && selectedMovies.length === movies.length;
-  const isIndeterminate =
-    selectedMovies.length > 0 && selectedMovies.length < movies.length;
 
   if (error) {
     return (
@@ -546,7 +551,8 @@ const MovieManagement = () => {
                     <div className="flex items-center space-x-1">
                       <Star className="h-4 w-4 text-yellow-500 fill-current" />
                       <span className="text-neutral-900 dark:text-neutral-100">
-                        {typeof averageRatings[movie.id] === "number" && !isNaN(averageRatings[movie.id])
+                        {typeof averageRatings[movie.id] === "number" &&
+                        !isNaN(averageRatings[movie.id])
                           ? averageRatings[movie.id].toFixed(1)
                           : "0"}
                         /5

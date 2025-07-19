@@ -22,10 +22,7 @@ import {
 import { Plus, Loader2 } from "lucide-react";
 import { createShowtimeThunk } from "@/store/slices/showtimeSlice";
 import type {
-  CreateShowtimeRequest,
-  Movie,
-  Theater,
-  Room
+  CreateShowtimeRequest
 } from "@/services/type";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchAdminMoviesThunk } from "@/store/slices/movieSlice";

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,14 +15,14 @@ import {
 import { Plus, Loader2 } from "lucide-react";
 import { createTheaterThunk } from "@/store/slices/theaterSlice";
 import type { CreateTheaterRequest } from "@/services/type";
-import type { AppDispatch } from "@/store";
+import { useAppDispatch } from "@/store/hooks";
 
 interface CreateTheaterFormProps {
   onSuccess?: () => void;
 }
 
 export function CreateTheaterForm({ onSuccess }: CreateTheaterFormProps) {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<CreateTheaterRequest>({

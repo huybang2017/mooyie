@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, Trash2, Edit, Eye, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 
 interface ActionConfirmationDialogProps {
   open: boolean;
@@ -99,4 +99,4 @@ export function ActionConfirmationDialog({
       </DialogContent>
     </Dialog>
   );
-} 
+}

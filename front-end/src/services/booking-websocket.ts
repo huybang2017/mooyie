@@ -1,4 +1,3 @@
-import { io } from "socket.io-client";
 import type { Booking, CreateBookingRequest } from "./type";
 
 export interface BookingEvent {
@@ -14,7 +13,7 @@ export interface PaymentEvent {
 export interface SeatsUpdatedEvent {
   showtimeId: string;
   seats: string[];
-  status: 'pending' | 'released';
+  status: "pending" | "released";
 }
 
 export class BookingWebSocketService {

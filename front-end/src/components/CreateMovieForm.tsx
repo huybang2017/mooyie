@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,7 +23,7 @@ import {
 import { Plus, Loader2 } from "lucide-react";
 import { createMovieThunk } from "@/store/slices/movieSlice";
 import type { CreateMovieRequest } from "@/services/type";
-import type { AppDispatch } from "@/store";
+import { useAppDispatch } from "@/store/hooks";
 
 interface CreateMovieFormProps {
   onSuccess?: () => void;
@@ -42,7 +41,7 @@ const genres = [
 ];
 
 export function CreateMovieForm({ onSuccess }: CreateMovieFormProps) {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<CreateMovieRequest>({

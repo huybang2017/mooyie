@@ -293,15 +293,15 @@ const CommentSection: React.FC<CommentSectionProps> = ({
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
                         <Avatar className="w-8 h-8">
-                          <AvatarImage src={comment.user.avatar} />
+                          <AvatarImage src={comment.user?.avatar} />
                           <AvatarFallback>
-                            {comment.user.name.charAt(0).toUpperCase()}
+                            {comment.user?.name?.charAt(0).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
                         <div>
                           <div className="flex items-center gap-2">
                             <span className="font-medium text-sm">
-                              {comment.user.name}
+                              {comment.user?.name}
                             </span>
                             <Badge variant="secondary" className="text-xs">
                               {renderStars(comment.rating)}
@@ -312,7 +312,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
                           </span>
                         </div>
                       </div>
-                      {currentUserId === comment.user.id && (
+                      {currentUserId === comment.user?.id && (
                         <div className="flex gap-1">
                           <Button
                             size="sm"

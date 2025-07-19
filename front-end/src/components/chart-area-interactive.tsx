@@ -12,8 +12,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import type { ChartConfig } from "@/components/ui/chart"
 import {
-  ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
@@ -140,7 +140,19 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export function ChartAreaInteractive() {
+interface ChartAreaInteractiveProps {
+  data?: any[];
+  valueKey?: string;
+  labelKey?: string;
+  title?: string;
+}
+
+export function ChartAreaInteractive({
+  data,
+  valueKey,
+  labelKey,
+  title,
+}: ChartAreaInteractiveProps) {
   const isMobile = useIsMobile()
   const [timeRange, setTimeRange] = React.useState("90d")
 
@@ -150,24 +162,31 @@ export function ChartAreaInteractive() {
     }
   }, [isMobile])
 
-  const filteredData = chartData.filter((item) => {
-    const date = new Date(item.date)
-    const referenceDate = new Date("2024-06-30")
-    let daysToSubtract = 90
-    if (timeRange === "30d") {
-      daysToSubtract = 30
-    } else if (timeRange === "7d") {
-      daysToSubtract = 7
-    }
-    const startDate = new Date(referenceDate)
-    startDate.setDate(startDate.getDate() - daysToSubtract)
-    return date >= startDate
-  })
+  const chartSource = data || chartData
+  const xKey = labelKey || "date"
+  const yKey = valueKey || "desktop"
+  const chartTitle = title || "Total Visitors"
+
+  const filteredData = data
+    ? chartSource
+    : chartSource.filter((item) => {
+        const date = new Date(item.date)
+        const referenceDate = new Date("2024-06-30")
+        let daysToSubtract = 90
+        if (timeRange === "30d") {
+          daysToSubtract = 30
+        } else if (timeRange === "7d") {
+          daysToSubtract = 7
+        }
+        const startDate = new Date(referenceDate)
+        startDate.setDate(startDate.getDate() - daysToSubtract)
+        return date >= startDate
+      })
 
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>Total Visitors</CardTitle>
+        <CardTitle>{chartTitle}</CardTitle>
         <CardDescription>
           <span className="hidden @[540px]/card:block">
             Total for the last 3 months
@@ -242,7 +261,7 @@ export function ChartAreaInteractive() {
             </defs>
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="date"
+              dataKey={xKey}
               tickLine={false}
               axisLine={false}
               tickMargin={8}
@@ -271,14 +290,7 @@ export function ChartAreaInteractive() {
               }
             />
             <Area
-              dataKey="mobile"
-              type="natural"
-              fill="url(#fillMobile)"
-              stroke="var(--color-mobile)"
-              stackId="a"
-            />
-            <Area
-              dataKey="desktop"
+              dataKey={yKey}
               type="natural"
               fill="url(#fillDesktop)"
               stroke="var(--color-desktop)"

@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -29,7 +29,10 @@ import { Search, Filter, Star, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useDebounce } from "use-debounce";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { fetchAdminCommentsThunk, deleteCommentThunk } from "@/store/slices/commentSlice";
+import {
+  fetchAdminCommentsThunk,
+  deleteCommentThunk,
+} from "@/store/slices/commentSlice";
 import { ActionConfirmationDialog } from "@/components/ActionConfirmationDialog";
 
 const ratingOptions = [
@@ -45,7 +48,9 @@ const itemsPerPage = 7;
 
 export default function CommentManagement() {
   const dispatch = useAppDispatch();
-  const { commentsAdmin, loading, error } = useAppSelector((state) => state.comment);
+  const { commentsAdmin, loading, error } = useAppSelector(
+    (state) => state.comment
+  );
   const [movieSearch, setMovieSearch] = useState("");
   const [debouncedMovieSearch] = useDebounce(movieSearch, 500);
   const [userSearch, setUserSearch] = useState("");
@@ -70,7 +75,13 @@ export default function CommentManagement() {
         rating: selectedRating !== "all" ? Number(selectedRating) : undefined,
       })
     );
-  }, [dispatch, currentPage, debouncedMovieSearch, debouncedUserSearch, selectedRating]);
+  }, [
+    dispatch,
+    currentPage,
+    debouncedMovieSearch,
+    debouncedUserSearch,
+    selectedRating,
+  ]);
 
   const comments = commentsAdmin?.data || [];
   const totalItems = commentsAdmin?.total || 0;
@@ -235,7 +246,9 @@ export default function CommentManagement() {
             <div className="text-center text-red-500 py-4">{error}</div>
           )}
           {!loading && !error && commentsAdmin && comments.length === 0 && (
-            <div className="text-center text-muted-foreground py-4">Không có bình luận nào.</div>
+            <div className="text-center text-muted-foreground py-4">
+              Không có bình luận nào.
+            </div>
           )}
           <Table>
             <TableHeader>
@@ -282,7 +295,9 @@ export default function CommentManagement() {
                           <span>{comment.user ? comment.user.name : "?"}</span>
                         </div>
                       </TableCell>
-                      <TableCell>{comment.movie ? comment.movie.title : "?"}</TableCell>
+                      <TableCell>
+                        {comment.movie ? comment.movie.title : "?"}
+                      </TableCell>
                       <TableCell>{comment.content}</TableCell>
                       <TableCell>
                         <Badge className="bg-yellow-100 text-yellow-800 flex items-center gap-1">
@@ -297,7 +312,12 @@ export default function CommentManagement() {
                         <button
                           className="text-red-600 hover:text-red-800 disabled:opacity-50"
                           disabled={deletingId === comment.id || loading}
-                          onClick={() => handleRequestDeleteComment(comment.id, comment.content)}
+                          onClick={() =>
+                            handleRequestDeleteComment(
+                              comment.id,
+                              comment.content
+                            )
+                          }
                           title="Xóa bình luận"
                         >
                           {deletingId === comment.id ? (
@@ -348,7 +368,10 @@ export default function CommentManagement() {
         open={confirmDialog.open}
         onOpenChange={(open) => setConfirmDialog((prev) => ({ ...prev, open }))}
         title="Xóa bình luận?"
-        description={`Bạn có chắc chắn muốn xóa bình luận: "${confirmDialog.commentContent.slice(0, 40)}${confirmDialog.commentContent.length > 40 ? '...' : ''}" không?`}
+        description={`Bạn có chắc chắn muốn xóa bình luận: "${confirmDialog.commentContent.slice(
+          0,
+          40
+        )}${confirmDialog.commentContent.length > 40 ? "..." : ""}" không?`}
         confirmText="Xóa"
         cancelText="Hủy"
         variant="destructive"
@@ -359,4 +382,3 @@ export default function CommentManagement() {
     </div>
   );
 }
- 

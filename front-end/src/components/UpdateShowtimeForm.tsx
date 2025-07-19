@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,8 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { Loader2 } from "lucide-react";
 import { updateShowtimeThunk } from "@/store/slices/showtimeSlice";
-import type { UpdateShowtimeRequest, Showtime, Movie, Theater, Room } from "@/services/type";
-import type { AppDispatch } from "@/store";
+import type { UpdateShowtimeRequest, Showtime } from "@/services/type";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetchAdminMoviesThunk } from "@/store/slices/movieSlice";
 import { fetchTheatersAdminThunk } from "@/store/slices/theaterSlice";
@@ -35,11 +33,11 @@ interface UpdateShowtimeFormProps {
   onSuccess?: () => void;
 }
 
-export function UpdateShowtimeForm({ 
-  open, 
-  onOpenChange, 
-  showtime, 
-  onSuccess 
+export function UpdateShowtimeForm({
+  open,
+  onOpenChange,
+  showtime,
+  onSuccess,
 }: UpdateShowtimeFormProps) {
   const dispatch = useAppDispatch();
   const { adminMovies } = useAppSelector((state) => state.movie);
@@ -47,13 +45,17 @@ export function UpdateShowtimeForm({
   const { rooms } = useAppSelector((state) => state.room);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<
-    Omit<UpdateShowtimeRequest, 'time'> & { startTimes: string[]; theaterId: string; isActive?: boolean }
+    Omit<UpdateShowtimeRequest, "time"> & {
+      startTimes: string[];
+      theaterId: string;
+      isActive?: boolean;
+    }
   >({
     movieId: "",
     theaterId: "",
     roomId: "",
     startTimes: [""],
-    isActive: true
+    isActive: true,
   });
 
   // Fetch movies and theaters on mount
@@ -67,14 +69,16 @@ export function UpdateShowtimeForm({
     if (showtime) {
       const theaterId = showtime.room?.theaterId || "";
       const startTimes = Array.isArray(showtime.time)
-        ? showtime.time.map((t) => t.start ? new Date(t.start).toISOString().slice(0, 16) : "")
+        ? showtime.time.map((t) =>
+            t.start ? new Date(t.start).toISOString().slice(0, 16) : ""
+          )
         : [""];
       setFormData({
         movieId: showtime.movieId || "",
         roomId: showtime.roomId || "",
         theaterId,
         startTimes: startTimes.length ? startTimes : [""],
-        isActive: showtime.isActive ?? true
+        isActive: showtime.isActive ?? true,
       });
       if (theaterId) {
         dispatch(fetchRoomsByTheaterThunk(theaterId));
@@ -96,10 +100,7 @@ export function UpdateShowtimeForm({
   }, [rooms, showtime, formData.theaterId]);
 
   // Only reset roomId if user actually changes theater
-  const handleInputChange = (
-    field: keyof typeof formData,
-    value: any
-  ) => {
+  const handleInputChange = (field: keyof typeof formData, value: any) => {
     setFormData((prev) => {
       if (field === "theaterId") {
         return { ...prev, theaterId: value, roomId: "" };
@@ -126,7 +127,10 @@ export function UpdateShowtimeForm({
   const handleRemoveStartTime = (idx: number) => {
     setFormData((prev) => {
       const newStartTimes = prev.startTimes.filter((_, i) => i !== idx);
-      return { ...prev, startTimes: newStartTimes.length ? newStartTimes : [""] };
+      return {
+        ...prev,
+        startTimes: newStartTimes.length ? newStartTimes : [""],
+      };
     });
   };
 
@@ -148,7 +152,10 @@ export function UpdateShowtimeForm({
       toast.error("Vui lòng chọn phòng chiếu");
       return;
     }
-    if (!formData.startTimes.length || formData.startTimes.some((t) => !t.trim())) {
+    if (
+      !formData.startTimes.length ||
+      formData.startTimes.some((t) => !t.trim())
+    ) {
       toast.error("Vui lòng nhập ít nhất một thời gian chiếu hợp lệ");
       return;
     }
@@ -161,7 +168,9 @@ export function UpdateShowtimeForm({
     };
     setLoading(true);
     try {
-      await dispatch(updateShowtimeThunk({ id: showtime.id, data: updateShowtimeData })).unwrap();
+      await dispatch(
+        updateShowtimeThunk({ id: showtime.id, data: updateShowtimeData })
+      ).unwrap();
       toast.success("Cập nhật lịch chiếu thành công");
       onOpenChange(false);
       onSuccess?.();
@@ -181,9 +190,7 @@ export function UpdateShowtimeForm({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Cập nhật lịch chiếu</DialogTitle>
-          <DialogDescription>
-            Cập nhật thông tin lịch chiếu
-          </DialogDescription>
+          <DialogDescription>Cập nhật thông tin lịch chiếu</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -209,7 +216,9 @@ export function UpdateShowtimeForm({
               <Label htmlFor="isActive">Trạng thái lịch chiếu</Label>
               <Select
                 value={formData.isActive ? "true" : "false"}
-                onValueChange={(value) => handleInputChange("isActive", value === "true")}
+                onValueChange={(value) =>
+                  handleInputChange("isActive", value === "true")
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Chọn trạng thái" />
@@ -317,4 +326,4 @@ export function UpdateShowtimeForm({
       </DialogContent>
     </Dialog>
   );
-} 
+}
