@@ -1,3 +1,4 @@
+import io from "socket.io-client";
 import type { Booking, CreateBookingRequest } from "./type";
 
 export interface BookingEvent {
@@ -30,7 +31,7 @@ export class BookingWebSocketService {
     }
 
     console.log("BookingWebSocket: Connecting to WebSocket...");
-    this.socket = io("http://localhost:3000/bookings", {
+    this.socket = io(`${import.meta.env.VITE_BASE_URL}/bookings`, {
       transports: ["websocket"],
       autoConnect: true,
     });

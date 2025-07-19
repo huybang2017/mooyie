@@ -23,7 +23,7 @@ export class FilterUserDto {
   @IsString()
   name?: string;
 
-  @ApiPropertyOptional({ description: 'filter by status', example: true })
+  @ApiPropertyOptional({ description: 'Filter by status', example: true })
   @Transform(({ value }) => {
     if (value === 'true' || value === true) return true;
     if (value === 'false' || value === false) return false;

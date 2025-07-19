@@ -126,17 +126,16 @@ const BookingSelect = () => {
           ) {
             setCurrentStep("seats");
             setShowPayment(false);
-            toast.success("Thanh toán thành công! Vé đã được xác nhận.");
+            toast.success("Payment successful! Your ticket has been confirmed.");
             setSelectedSeats([]); // Reset ghế đã chọn khi thanh toán thành công
           }
           if (
             data.bookingStatus === "cancel" &&
-            (data.paymentStatus === "failed" ||
-              data.paymentStatus === "refunded")
+            (data.paymentStatus === "failed" || data.paymentStatus === "refunded")
           ) {
             setCurrentStep("seats");
             setShowPayment(false);
-            toast.error("Vé đã bị hủy.");
+            toast.error("Your ticket has been canceled.");
             setSelectedSeats([]); // Reset ghế đã chọn
           }
         }
@@ -154,7 +153,7 @@ const BookingSelect = () => {
           const now = Date.now();
           setPaymentTimeLeft(Math.max(0, Math.floor((expireAt - now) / 1000)));
         }
-        toast.success("Đặt vé thành công! Vui lòng thanh toán trong 5 phút.");
+        toast.success("Booking successful! Please pay within 5 minutes.");
       });
 
       bookingWebSocket.onBookingPaid((data) => {
@@ -163,9 +162,9 @@ const BookingSelect = () => {
         setPaymentStatus("PAID");
         setCurrentStep("seats");
         setShowPayment(false);
-        toast.success("Thanh toán thành công! Vé đã được xác nhận.");
+        toast.success("Payment successful! Your ticket has been confirmed.");
         refetchSeats();
-        setSelectedSeats([]); // Reset ghế đã chọn khi thanh toán thành công
+        setSelectedSeats([]); // Reset selected seats after successful payment
       });
 
       bookingWebSocket.onBookingFailed((data) => {
@@ -174,9 +173,9 @@ const BookingSelect = () => {
         setPaymentStatus("FAILED");
         setCurrentStep("seats");
         setShowPayment(false);
-        toast.error("Thanh toán thất bại. Vé đã bị hủy.");
+        toast.error("Payment failed. Your ticket has been canceled.");
         refetchSeats();
-        setSelectedSeats([]); // Reset ghế đã chọn
+        setSelectedSeats([]); // Reset selected seats
       });
 
       bookingWebSocket.onBookingTimeout((data) => {
@@ -185,14 +184,14 @@ const BookingSelect = () => {
         setPaymentStatus("FAILED");
         setCurrentStep("seats");
         setShowPayment(false);
-        toast.error("Hết thời gian thanh toán. Vé đã bị hủy.");
+        toast.error("Payment timeout. Your ticket has been canceled.");
         refetchSeats();
-        setSelectedSeats([]); // Reset ghế đã chọn
+        setSelectedSeats([]); // Reset selected seats
       });
 
       bookingWebSocket.onBookingError((data) => {
         console.log("Booking error:", data);
-        toast.error(data.message || "Có lỗi xảy ra khi đặt vé.");
+        toast.error(data.message || "An error occurred while booking.");
       });
 
       // Listen for seats updates
@@ -232,7 +231,7 @@ const BookingSelect = () => {
       return () => clearInterval(timer);
     }
     if (showPayment && paymentTimeLeft === 0) {
-      toast.error("Hết thời gian thanh toán. Vui lòng thử lại.");
+      toast.error("Payment timeout. Please try again.");
       setShowPayment(false);
       setCurrentStep("seats");
     }
@@ -343,7 +342,7 @@ const BookingSelect = () => {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-neutral-900 mx-auto"></div>
-          <p className="mt-4 text-lg">Đang tải thông tin phòng...</p>
+          <p className="mt-4 text-lg">Loading room information...</p>
         </div>
       </div>
     );
@@ -375,16 +374,16 @@ const BookingSelect = () => {
             <div className="space-y-4">
               <div>
                 <h3 className="font-semibold mb-2 text-sm sm:text-base">
-                  Thông tin suất chiếu
+                  Showtime Information
                 </h3>
                 <p className="text-xs sm:text-sm">
-                  <strong>Phòng:</strong> {room.name}
+                  <strong>Room:</strong> {room.name}
                 </p>
                 <p className="text-xs sm:text-sm">
-                  <strong>Thời gian:</strong>{" "}
+                  <strong>Time:</strong>{" "}
                   {selectedRoom.time &&
                     new Date(selectedRoom.time[0].start).toLocaleString(
-                      "vi-VN"
+                      "en-US"
                     )}
                 </p>
               </div>
@@ -392,7 +391,7 @@ const BookingSelect = () => {
               {selectedSeats.length > 0 && (
                 <div>
                   <h3 className="font-semibold mb-2 text-sm sm:text-base">
-                    Ghế đã chọn
+                    Selected Seats
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {selectedSeats.map((seat) => (
@@ -406,11 +405,11 @@ const BookingSelect = () => {
                     ))}
                   </div>
                   <p className="text-xs sm:text-sm mt-2">
-                    <strong>Tổng tiền:</strong>{" "}
+                    <strong>Total:</strong>{" "}
                     {selectedSeats
                       .reduce((sum, seat) => sum + getSeatPrice(seat), 0)
-                      .toLocaleString()}{" "}
-                    VNĐ
+                      .toLocaleString()} {" "}
+                    VND
                   </p>
                 </div>
               )}
@@ -418,7 +417,7 @@ const BookingSelect = () => {
               {(currentStep as string) === "processing" && (
                 <div className="flex items-center gap-2 text-blue-600">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                  <span>Đang tạo booking...</span>
+                  <span>Creating booking...</span>
                 </div>
               )}
 
@@ -445,12 +444,10 @@ const BookingSelect = () => {
         <Card className="lg:col-span-2 bg-white dark:bg-[#18181c] text-black dark:text-white shadow-xl min-w-0">
           <CardHeader>
             <CardTitle className="text-black dark:text-white">
-              Chọn ghế
+              Select Seats
             </CardTitle>
             <CardDescription className="text-neutral-700 dark:text-neutral-300">
-              Chọn ghế bạn muốn đặt. Ghế đã được đặt sẽ có màu xám. Ghế bạn chọn
-              sẽ có màu xanh lá. Ghế thường màu xanh dương nhạt. Ghế VIP màu
-              vàng.
+              Select the seats you want to book. Seats already booked will be gray. Your selected seats will be green. Regular seats are light blue. VIP seats are yellow.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -464,7 +461,7 @@ const BookingSelect = () => {
                       className="bg-neutral-300 dark:bg-neutral-200 rounded-t-lg h-5 sm:h-6 flex items-center justify-center text-black font-bold text-xs sm:text-sm mb-1 w-full"
                       style={{ minWidth: "100%", width: "100%" }}
                     >
-                      MÀN HÌNH
+                      SCREEN
                     </div>
                     {/* Bảng ghế */}
                     <div className="overflow-x-auto w-full">
@@ -525,12 +522,12 @@ const BookingSelect = () => {
                                         onClick={() => handleSeatSelect(seatId)}
                                         title={
                                           isBooked
-                                            ? "Ghế đã được đặt"
+                                            ? "Seat already booked"
                                             : isPending
-                                            ? "Ghế đang được đặt"
+                                            ? "Seat is being booked"
                                             : seat.type === "PREMIUM"
-                                            ? "Ghế VIP"
-                                            : "Ghế thường"
+                                            ? "VIP Seat"
+                                            : "Regular Seat"
                                         }
                                       >
                                         {seat.number}
@@ -551,25 +548,25 @@ const BookingSelect = () => {
                   <div className="flex items-center gap-2">
                     <span className="w-5 h-5 sm:w-6 sm:h-6 rounded bg-neutral-300 border border-neutral-400 dark:bg-neutral-700 dark:border-neutral-500 inline-block" />{" "}
                     <span className="text-neutral-700 dark:text-neutral-300 text-xs sm:text-sm">
-                      Đã đặt
+                      Booked
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="w-5 h-5 sm:w-6 sm:h-6 rounded bg-green-500 border border-green-400 dark:bg-green-600 inline-block" />{" "}
+                    <span className="w-5 h-5 sm:w-6 sm:h-6 rounded bg-green-500 border border-green-700 inline-block" />{" "}
                     <span className="text-neutral-700 dark:text-neutral-300 text-xs sm:text-sm">
-                      Ghế bạn chọn
+                      Your Selection
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="w-5 h-5 sm:w-6 sm:h-6 rounded bg-blue-100 dark:bg-blue-400 inline-block" />{" "}
+                    <span className="w-5 h-5 sm:w-6 sm:h-6 rounded bg-blue-400 border border-blue-700 inline-block" />{" "}
                     <span className="text-neutral-700 dark:text-neutral-300 text-xs sm:text-sm">
-                      Ghế thường
+                      Regular Seat
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="w-5 h-5 sm:w-6 sm:h-6 rounded bg-yellow-200 border border-yellow-400 dark:bg-yellow-400 dark:border-yellow-600 inline-block" />{" "}
+                    <span className="w-5 h-5 sm:w-6 sm:h-6 rounded bg-yellow-400 border border-yellow-700 inline-block" />{" "}
                     <span className="text-neutral-700 dark:text-neutral-300 text-xs sm:text-sm">
-                      Ghế VIP
+                      VIP Seat
                     </span>
                   </div>
                 </div>
@@ -577,7 +574,7 @@ const BookingSelect = () => {
                   <Button
                     onClick={handleConfirmBooking}
                     disabled={
-                      selectedSeats.length === 0 || currentStep === "processing"
+                      selectedSeats.length === 0 || currentStep === ("processing" as typeof currentStep)
                     }
                     className="flex-1 bg-green-500 hover:bg-green-600 text-white text-base sm:text-lg font-bold py-2 sm:py-3 rounded shadow-lg dark:bg-green-600 dark:hover:bg-green-700"
                   >

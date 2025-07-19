@@ -36,12 +36,12 @@ import {
 import { ActionConfirmationDialog } from "@/components/ActionConfirmationDialog";
 
 const ratingOptions = [
-  { value: "all", label: "Tất cả đánh giá" },
-  { value: "5", label: "5 sao" },
-  { value: "4", label: "4 sao" },
-  { value: "3", label: "3 sao" },
-  { value: "2", label: "2 sao" },
-  { value: "1", label: "1 sao" },
+  { value: "all", label: "All Ratings" },
+  { value: "5", label: "5 stars" },
+  { value: "4", label: "4 stars" },
+  { value: "3", label: "3 stars" },
+  { value: "2", label: "2 stars" },
+  { value: "1", label: "1 star" },
 ];
 
 const itemsPerPage = 7;
@@ -113,9 +113,9 @@ export default function CommentManagement() {
     setDeletingId(id);
     try {
       await dispatch(deleteCommentThunk(id)).unwrap();
-      toast.success("Xóa bình luận thành công");
+      toast.success("Comment deleted successfully");
     } catch (e) {
-      toast.error("Xóa bình luận thất bại");
+      toast.error("Failed to delete comment");
     } finally {
       setDeletingId(null);
     }
@@ -135,14 +135,14 @@ export default function CommentManagement() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Quản lý bình luận</h1>
+          <h1 className="text-3xl font-bold">Comment Management</h1>
           <p className="text-muted-foreground">
-            Quản lý các bình luận của người dùng về phim
+            Manage user comments about movies
           </p>
         </div>
         <div className="flex space-x-2">
           <Button variant="outline" onClick={handleClearFilters}>
-            Làm mới
+            Refresh
           </Button>
         </div>
       </div>
@@ -151,19 +151,19 @@ export default function CommentManagement() {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Filter className="h-5 w-5" />
-            <span>Bộ lọc</span>
+            <span>Filters</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
             {/* User search filter */}
             <div className="space-y-2">
-              <Label htmlFor="filter-user">Người dùng</Label>
+              <Label htmlFor="filter-user">User</Label>
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="filter-user"
-                  placeholder="Tìm theo tên người dùng..."
+                  placeholder="Search by user name..."
                   value={userSearch}
                   onChange={(e) => handleUserSearchChange(e.target.value)}
                   className="pl-10"
@@ -177,12 +177,12 @@ export default function CommentManagement() {
             </div>
             {/* Movie search filter */}
             <div className="space-y-2">
-              <Label htmlFor="filter-movie">Phim</Label>
+              <Label htmlFor="filter-movie">Movie</Label>
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="filter-movie"
-                  placeholder="Tìm theo tên phim..."
+                  placeholder="Search by movie title..."
                   value={movieSearch}
                   onChange={(e) => handleMovieSearchChange(e.target.value)}
                   className="pl-10"
@@ -196,10 +196,10 @@ export default function CommentManagement() {
             </div>
             {/* Rating filter */}
             <div className="space-y-2">
-              <Label htmlFor="filter-rating">Đánh giá</Label>
+              <Label htmlFor="filter-rating">Rating</Label>
               <Select value={selectedRating} onValueChange={handleRatingChange}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Tất cả đánh giá" />
+                  <SelectValue placeholder="All Ratings" />
                 </SelectTrigger>
                 <SelectContent>
                   {ratingOptions.map((opt) => (
@@ -217,7 +217,7 @@ export default function CommentManagement() {
                 onClick={handleClearFilters}
                 className="w-full"
               >
-                Xóa bộ lọc
+                Clear Filters
               </Button>
             </div>
           </div>
@@ -226,9 +226,9 @@ export default function CommentManagement() {
       {/* Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Danh sách bình luận</CardTitle>
+          <CardTitle>Comment List</CardTitle>
           <CardDescription>
-            Hiển thị {comments.length} trong tổng số {totalItems} bình luận
+            Displaying {comments.length} out of {totalItems} comments
           </CardDescription>
         </CardHeader>
         <CardContent className="relative">
@@ -237,7 +237,7 @@ export default function CommentManagement() {
               <div className="flex items-center space-x-2">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600 dark:border-green-400"></div>
                 <span className="text-sm text-neutral-600 dark:text-neutral-300">
-                  Đang tải...
+                  Loading...
                 </span>
               </div>
             </div>
@@ -247,18 +247,18 @@ export default function CommentManagement() {
           )}
           {!loading && !error && commentsAdmin && comments.length === 0 && (
             <div className="text-center text-muted-foreground py-4">
-              Không có bình luận nào.
+              No comments found.
             </div>
           )}
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Người dùng</TableHead>
-                <TableHead>Phim</TableHead>
-                <TableHead>Nội dung</TableHead>
-                <TableHead>Đánh giá</TableHead>
-                <TableHead>Ngày tạo</TableHead>
-                <TableHead>Thao tác</TableHead>
+                <TableHead>User</TableHead>
+                <TableHead>Movie</TableHead>
+                <TableHead>Content</TableHead>
+                <TableHead>Rating</TableHead>
+                <TableHead>Created At</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -318,7 +318,7 @@ export default function CommentManagement() {
                               comment.content
                             )
                           }
-                          title="Xóa bình luận"
+                          title="Delete comment"
                         >
                           {deletingId === comment.id ? (
                             <span className="animate-spin rounded-full h-5 w-5 border-b-2 border-red-600"></span>
@@ -334,9 +334,9 @@ export default function CommentManagement() {
           {/* Pagination */}
           <div className="flex items-center justify-between space-x-2 py-4">
             <div className="text-sm text-muted-foreground">
-              Hiển thị {(currentPage - 1) * itemsPerPage + 1} đến{" "}
-              {Math.min(currentPage * itemsPerPage, totalItems)} trong{" "}
-              {totalItems} kết quả
+              Displaying {(currentPage - 1) * itemsPerPage + 1} to{" "}
+              {Math.min(currentPage * itemsPerPage, totalItems)} out of{" "}
+              {totalItems} results
             </div>
             <div className="flex items-center space-x-2">
               <Button
@@ -345,10 +345,10 @@ export default function CommentManagement() {
                 onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
               >
-                Trước
+                Previous
               </Button>
               <div className="text-sm">
-                Trang {currentPage} / {totalPages}
+                Page {currentPage} / {totalPages}
               </div>
               <Button
                 variant="outline"
@@ -358,7 +358,7 @@ export default function CommentManagement() {
                 }
                 disabled={currentPage === totalPages}
               >
-                Sau
+                Next
               </Button>
             </div>
           </div>
@@ -367,13 +367,13 @@ export default function CommentManagement() {
       <ActionConfirmationDialog
         open={confirmDialog.open}
         onOpenChange={(open) => setConfirmDialog((prev) => ({ ...prev, open }))}
-        title="Xóa bình luận?"
-        description={`Bạn có chắc chắn muốn xóa bình luận: "${confirmDialog.commentContent.slice(
+        title="Delete Comment?"
+        description={`Are you sure you want to delete the comment: "${confirmDialog.commentContent.slice(
           0,
           40
-        )}${confirmDialog.commentContent.length > 40 ? "..." : ""}" không?`}
-        confirmText="Xóa"
-        cancelText="Hủy"
+        )}${confirmDialog.commentContent.length > 40 ? "..." : ""}"`}
+        confirmText="Delete"
+        cancelText="Cancel"
         variant="destructive"
         icon={<Trash2 className="w-5 h-5" />}
         onConfirm={handleConfirmDeleteComment}

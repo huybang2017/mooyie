@@ -36,9 +36,9 @@ import { Badge } from "@/components/ui/badge";
 const logo = ["CGV", "Galaxy", "BHD", "Lotte", "Mega"];
 
 const statusOptions = [
-  { value: "all", label: "Tất cả trạng thái" },
-  { value: "active", label: "Hoạt động" },
-  { value: "inactive", label: "Ngừng hoạt động" },
+  { value: "all", label: "All statuses" },
+  { value: "active", label: "Active" },
+  { value: "inactive", label: "Inactive" },
 ];
 
 export default function TheaterManagement() {
@@ -134,14 +134,14 @@ export default function TheaterManagement() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Quản lý rạp chiếu</h1>
+          <h1 className="text-3xl font-bold">Theater Management</h1>
           <p className="text-muted-foreground">
-            Quản lý danh sách rạp chiếu và thông tin chi tiết
+            Manage the list of theaters and detailed information
           </p>
         </div>
         <div className="flex space-x-2">
           <Button variant="outline" onClick={handleRefresh}>
-            Làm mới
+            Refresh
           </Button>
           <CreateTheaterForm onSuccess={handleCreateSuccess} />
         </div>
@@ -152,19 +152,19 @@ export default function TheaterManagement() {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Filter className="h-5 w-5" />
-            <span>Bộ lọc</span>
+            <span>Filters</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Name filter */}
             <div className="space-y-2">
-              <Label htmlFor="filter-name">Tìm kiếm</Label>
+              <Label htmlFor="filter-name">Search</Label>
               <div className="relative">
                 <Filter className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="filter-name"
-                  placeholder="Tìm theo tên rạp chiếu..."
+                  placeholder="Search by theater name..."
                   value={filterName}
                   onChange={(e) => setFilterName(e.target.value)}
                   className="pl-10"
@@ -178,13 +178,13 @@ export default function TheaterManagement() {
             </div>
             {/* Brand filter */}
             <div className="space-y-2">
-              <Label htmlFor="filter-brand">Thương hiệu</Label>
+              <Label htmlFor="filter-brand">Brand</Label>
               <Select value={filterBrand} onValueChange={setFilterBrand}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Tất cả thương hiệu" />
+                  <SelectValue placeholder="All brands" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tất cả thương hiệu</SelectItem>
+                  <SelectItem value="all">All brands</SelectItem>
                   {logo.map((brand) => (
                     <SelectItem key={brand} value={brand}>
                       {brand}
@@ -195,13 +195,13 @@ export default function TheaterManagement() {
             </div>
             {/* Status filter */}
             <div className="space-y-2">
-              <Label htmlFor="filter-status">Trạng thái</Label>
+              <Label htmlFor="filter-status">Status</Label>
               <Select
                 value={filterStatus}
                 onValueChange={(value) => setFilterStatus(value as "active" | "inactive" | "all")}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Tất cả trạng thái" />
+                  <SelectValue placeholder="All statuses" />
                 </SelectTrigger>
                 <SelectContent>
                   {statusOptions.map((option) => (
@@ -219,7 +219,7 @@ export default function TheaterManagement() {
                 onClick={handleClearFilters}
                 className="w-full"
               >
-                Xóa bộ lọc
+                Clear Filters
               </Button>
             </div>
           </div>
@@ -229,9 +229,9 @@ export default function TheaterManagement() {
       {/* Theater Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Danh sách rạp chiếu</CardTitle>
+          <CardTitle>Theater List</CardTitle>
           <CardDescription>
-            Hiển thị {theaters.length} trong tổng số {total} rạp chiếu
+            Displaying {theaters.length} out of {total} theaters
           </CardDescription>
         </CardHeader>
         <CardContent className="relative">
@@ -240,7 +240,7 @@ export default function TheaterManagement() {
               <div className="flex items-center space-x-2">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600 dark:border-green-400"></div>
                 <span className="text-sm text-neutral-600 dark:text-neutral-300">
-                  Đang tải...
+                  Loading...
                 </span>
               </div>
             </div>
@@ -248,13 +248,12 @@ export default function TheaterManagement() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Tên rạp chiếu</TableHead>
-                <TableHead>Địa chỉ</TableHead>
-                <TableHead>Thương hiệu</TableHead>
-                <TableHead>Trạng thái</TableHead>
-                <TableHead>Số phòng</TableHead>
-                <TableHead>Ngày tạo</TableHead>
-                <TableHead className="text-right">Thao tác</TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead>Brand</TableHead>
+                <TableHead>Address</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Created At</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -281,12 +280,11 @@ export default function TheaterManagement() {
                   <TableCell>{theater.brand}</TableCell>
                   <TableCell>
                     {theater.status === "active" ? (
-                      <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Hoạt động</Badge>
+                      <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Active</Badge>
                     ) : (
-                      <Badge className="bg-red-100 text-red-800 hover:bg-red-100">Ngừng hoạt động</Badge>
+                      <Badge className="bg-red-100 text-red-800 hover:bg-red-100">Inactive</Badge>
                     )}
                   </TableCell>
-                  <TableCell>{theater.rooms?.length}</TableCell>
                   <TableCell>
                     {new Date(theater.createdAt).toLocaleDateString()}
                   </TableCell>
@@ -309,9 +307,9 @@ export default function TheaterManagement() {
           {/* Pagination */}
           <div className="flex items-center justify-between space-x-2 py-4">
             <div className="text-sm text-muted-foreground">
-              Hiển thị {(currentPage - 1) * itemsPerPage + 1} đến{" "}
-              {Math.min(currentPage * itemsPerPage, total)} trong {total}{" "}
-              kết quả
+              Displaying {(currentPage - 1) * itemsPerPage + 1} to{" "}
+              {Math.min(currentPage * itemsPerPage, total)} out of {total}{" "}
+              results
             </div>
             <div className="flex items-center space-x-2">
               <Button
@@ -320,10 +318,10 @@ export default function TheaterManagement() {
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
               >
-                Trước
+                Previous
               </Button>
               <div className="text-sm">
-                Trang {currentPage} / {totalPages}
+                Page {currentPage} / {totalPages}
               </div>
               <Button
                 variant="outline"
@@ -333,7 +331,7 @@ export default function TheaterManagement() {
                 }
                 disabled={currentPage === totalPages}
               >
-                Sau
+                Next
               </Button>
             </div>
           </div>

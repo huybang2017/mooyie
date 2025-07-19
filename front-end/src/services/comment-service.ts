@@ -32,7 +32,7 @@ export class CommentWebSocketService {
     }
 
     console.log("CommentWebSocket: Connecting to WebSocket...");
-    this.socket = io("http://localhost:3000/comments", {
+    this.socket = io(`${import.meta.env.VITE_BASE_URL}/comments`, {
       transports: ["websocket"],
       autoConnect: true,
     });

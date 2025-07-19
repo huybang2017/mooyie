@@ -14,7 +14,6 @@ async function main() {
   console.log('🌱 Starting seed...');
 
   // Clear existing data
-  await prisma.ticketHistory.deleteMany();
   await prisma.payment.deleteMany();
   await prisma.booking.deleteMany();
   await prisma.bookmark.deleteMany();
@@ -212,7 +211,7 @@ async function main() {
     for (let i = 1; i <= 3; i++) {
       const room = await prisma.room.create({
         data: {
-          name: `Phòng ${i}`,
+          name: `Room ${i}`,
           seatCount: 50,
           theaterId: theater.id,
         },
@@ -285,43 +284,43 @@ async function main() {
   console.log('🎫 Created showtimes');
 
   // Seed Bookings
-  // const bookings: Booking[] = [];
-  // for (let i = 0; i < 10; i++) {
-  //   const showtime = showtimes[Math.floor(Math.random() * showtimes.length)];
-  //   const user = [regularUser, user2][Math.floor(Math.random() * 2)];
-  //   const seats = [
-  //     { row: 'A', number: 1 },
-  //     { row: 'B', number: 3 },
-  //     { row: 'C', number: 5 },
-  //   ];
+  const bookings: Booking[] = [];
+  for (let i = 0; i < 10; i++) {
+    const showtime = showtimes[Math.floor(Math.random() * showtimes.length)];
+    const user = [regularUser, user2][Math.floor(Math.random() * 2)];
+    const seats = [
+      { row: 'A', number: 1 },
+      { row: 'B', number: 3 },
+      { row: 'C', number: 5 },
+    ];
 
-  //   const booking = await prisma.booking.create({
-  //     data: {
-  //       seats: JSON.stringify(seats),
-  //       totalPrice: 150000, // 150k VND
-  //       status: BookingStatus.CONFIRMED,
-  //       userId: user.id,
-  //       showtimeId: showtime.id,
-  //     },
-  //   });
-  //   bookings.push(booking);
-  // }
+    const booking = await prisma.booking.create({
+      data: {
+        seats: JSON.stringify(seats),
+        totalPrice: 150000, // 150k VND
+        status: BookingStatus.CONFIRMED,
+        userId: user.id,
+        showtimeId: showtime.id,
+      },
+    });
+    bookings.push(booking);
+  }
 
-  // console.log('📅 Created bookings');
+  console.log('📅 Created bookings');
 
   // Seed Payments
-  // for (const booking of bookings) {
-  //   await prisma.payment.create({
-  //     data: {
-  //       amount: booking.totalPrice,
-  //       status: PaymentStatus.PAID,
-  //       stripePaymentId: `pi_${Math.random().toString(36).substr(2, 9)}`,
-  //       bookingId: booking.id,
-  //     },
-  //   });
-  // }
+  for (const booking of bookings) {
+    await prisma.payment.create({
+      data: {
+        amount: booking.totalPrice,
+        status: PaymentStatus.PAID,
+        stripePaymentId: `pi_${Math.random().toString(36).substr(2, 9)}`,
+        bookingId: booking.id,
+      },
+    });
+  }
 
-  // console.log('💳 Created payments');
+  console.log('💳 Created payments');
 
   // Seed Bookmarks
   for (const user of [regularUser, user2]) {
@@ -385,19 +384,6 @@ async function main() {
 
   console.log('🔔 Created notifications');
 
-  // Seed Ticket History
-  // for (const booking of bookings.slice(0, 5)) {
-  //   await prisma.ticketHistory.create({
-  //     data: {
-  //       status: BookingStatus.CONFIRMED,
-  //       note: 'Booking created successfully',
-  //       bookingId: booking.id,
-  //     },
-  //   });
-  // }
-
-  console.log('📋 Created ticket history');
-
   console.log('✅ Seed completed successfully!');
   console.log('📊 Summary:');
   console.log(`- Users: 3 (1 admin, 2 regular)`);
@@ -405,21 +391,18 @@ async function main() {
   console.log(`- Theaters: ${createdTheaters.length}`);
   console.log(`- Rooms: ${rooms.length}`);
   console.log(`- Showtimes: ${showtimes.length}`);
-  // console.log(`- Bookings: ${bookings.length}`);
-  // console.log(`- Payments: ${bookings.length}`);
+  console.log(`- Bookings: ${bookings.length}`);
+  console.log(`- Payments: ${bookings.length}`);
   console.log(`- Bookmarks: 6`);
   console.log(`- Comments: 8`);
   console.log(`- Notifications: 6`);
-  console.log(`- Ticket History: 5`);
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Seed failed:', e);
+    console.error(e);
     process.exit(1);
   })
-  .finally(() => {
-    void prisma.$disconnect().then(() => {
-      console.log('Disconnected');
-    });
+  .finally(async () => {
+    await prisma.$disconnect();
   });

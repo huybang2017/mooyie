@@ -68,34 +68,34 @@ export function CreateMovieForm({ onSuccess }: CreateMovieFormProps) {
     e.preventDefault();
 
     if (!formData.title.trim()) {
-      toast.error("Vui lòng nhập tên phim");
+      toast.error("Please enter the movie title");
       return;
     }
 
     if (!formData.genre.trim()) {
-      toast.error("Vui lòng nhập thể loại phim");
+      toast.error("Please enter the movie genre");
       return;
     }
 
     if (formData.duration <= 0) {
-      toast.error("Thời lượng phim phải lớn hơn 0");
+      toast.error("Movie duration must be greater than 0");
       return;
     }
 
     if (!formData.description.trim()) {
-      toast.error("Vui lòng nhập mô tả phim");
+      toast.error("Please enter the movie description");
       return;
     }
 
     if (!formData.image.trim()) {
-      toast.error("Vui lòng nhập URL ảnh phim");
+      toast.error("Please enter the movie image URL");
       return;
     }
 
     setLoading(true);
     try {
       await dispatch(createMovieThunk(formData)).unwrap();
-      toast.success("Tạo phim mới thành công");
+      toast.success("Movie created successfully");
       setFormData({
         title: "",
         genre: "",
@@ -108,7 +108,7 @@ export function CreateMovieForm({ onSuccess }: CreateMovieFormProps) {
       setOpen(false);
       onSuccess?.();
     } catch (error: any) {
-      toast.error(error || "Có lỗi xảy ra khi tạo phim");
+      toast.error(error || "An error occurred while creating the movie");
     } finally {
       setLoading(false);
     }
@@ -119,36 +119,36 @@ export function CreateMovieForm({ onSuccess }: CreateMovieFormProps) {
       <DialogTrigger asChild>
         <Button>
           <Plus className="h-4 w-4 mr-2" />
-          Thêm phim mới
+          Add new movie
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Thêm phim mới</DialogTitle>
+          <DialogTitle>Add new movie</DialogTitle>
           <DialogDescription>
-            Điền thông tin phim mới vào form bên dưới
+            Fill in the movie details in the form below
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="title">Tên phim *</Label>
+              <Label htmlFor="title">Movie Title *</Label>
               <Input
                 id="title"
                 value={formData.title}
                 onChange={(e) => handleInputChange("title", e.target.value)}
-                placeholder="Nhập tên phim"
+                placeholder="Enter movie title"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="genre">Thể loại *</Label>
+              <Label htmlFor="genre">Genre *</Label>
               <Select
                 value={formData.genre}
                 onValueChange={(value) => handleInputChange("genre", value)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Chọn thể loại phim" />
+                  <SelectValue placeholder="Select movie genre" />
                 </SelectTrigger>
                 <SelectContent>
                   {genres.map((genre) => (
@@ -163,7 +163,7 @@ export function CreateMovieForm({ onSuccess }: CreateMovieFormProps) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="duration">Thời lượng (phút) *</Label>
+              <Label htmlFor="duration">Duration (minutes) *</Label>
               <Input
                 id="duration"
                 type="number"
@@ -173,30 +173,30 @@ export function CreateMovieForm({ onSuccess }: CreateMovieFormProps) {
                 onChange={(e) =>
                   handleInputChange("duration", parseInt(e.target.value) || 0)
                 }
-                placeholder="Nhập thời lượng phim"
+                placeholder="Enter movie duration"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="status">Trạng thái</Label>
+              <Label htmlFor="status">Status</Label>
               <Select
                 value={formData.status}
                 onValueChange={(value) => handleInputChange("status", value)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Chọn trạng thái" />
+                  <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="coming_soon">Sắp chiếu</SelectItem>
-                  <SelectItem value="now_showing">Đang chiếu</SelectItem>
-                  <SelectItem value="ended">Đã kết thúc</SelectItem>
+                  <SelectItem value="coming_soon">Coming Soon</SelectItem>
+                  <SelectItem value="now_showing">Now Showing</SelectItem>
+                  <SelectItem value="ended">Ended</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="image">URL ảnh phim *</Label>
+            <Label htmlFor="image">Movie Image URL *</Label>
             <Input
               id="image"
               type="url"
@@ -208,7 +208,7 @@ export function CreateMovieForm({ onSuccess }: CreateMovieFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="trailer_url">URL trailer (tùy chọn)</Label>
+            <Label htmlFor="trailer_url">Trailer URL (optional)</Label>
             <Input
               id="trailer_url"
               type="url"
@@ -219,12 +219,12 @@ export function CreateMovieForm({ onSuccess }: CreateMovieFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Mô tả phim *</Label>
+            <Label htmlFor="description">Movie Description *</Label>
             <Textarea
               id="description"
               value={formData.description}
               onChange={(e) => handleInputChange("description", e.target.value)}
-              placeholder="Nhập mô tả chi tiết về phim"
+              placeholder="Enter detailed movie description"
               rows={4}
               required
             />
@@ -237,11 +237,11 @@ export function CreateMovieForm({ onSuccess }: CreateMovieFormProps) {
               onClick={() => setOpen(false)}
               disabled={loading}
             >
-              Hủy
+              Cancel
             </Button>
             <Button type="submit" disabled={loading}>
               {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-              Tạo phim
+              Create Movie
             </Button>
           </DialogFooter>
         </form>

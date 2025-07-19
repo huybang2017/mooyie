@@ -14,6 +14,7 @@ import { PaginationBookingDto } from 'src/booking/dto/pagination-booking.dto';
 import { paginate } from 'src/utils/helper/paginate';
 import { UpdateBookingDto } from 'src/booking/dto/update-booking.dto';
 import { PaymentService } from 'src/payment/payment.service';
+import { NotificationService } from 'src/notification/notification.service';
 
 @Injectable()
 export class BookingService {
@@ -21,6 +22,8 @@ export class BookingService {
     private prisma: PrismaService,
     @Inject(forwardRef(() => PaymentService))
     private paymentService: PaymentService,
+    @Inject(forwardRef(() => NotificationService))
+    private notificationService: NotificationService,
   ) {}
 
   async create(userId: string, dto: CreateBookingDto) {
@@ -165,7 +168,7 @@ export class BookingService {
     const booking = await this.prisma.booking.findUnique({ where: { id } });
 
     if (!booking) {
-      throw new NotFoundException('Đơn đặt vé không tồn tại');
+      throw new NotFoundException('Booking not found');
     }
 
     const currentStatus = booking.status;
@@ -179,7 +182,7 @@ export class BookingService {
 
     if (immutableStatuses.includes(currentStatus)) {
       throw new ForbiddenException(
-        'Không thể cập nhật đơn đã hoàn tất, hủy hoặc hết hạn',
+        'Cannot update a booking that is completed, cancelled, or expired',
       );
     }
 
@@ -199,14 +202,23 @@ export class BookingService {
 
     if (!allowed.includes(nextStatus)) {
       throw new BadRequestException(
-        `Không thể chuyển trạng thái từ ${currentStatus} sang ${nextStatus}`,
+        `Cannot change status from ${currentStatus} to ${nextStatus}`,
       );
     }
 
-    return this.prisma.booking.update({
+    const updatedBooking = await this.prisma.booking.update({
       where: { id },
       data: { status: nextStatus },
     });
+
+    // Send real-time notification to the user
+    await this.notificationService.sendToUser(
+      updatedBooking.userId,
+      `Your ticket status has been updated to "${nextStatus}".`,
+      'booking_status'
+    );
+
+    return updatedBooking;
   }
 
   async getSeatsStatus(showtimeId: string) {

@@ -36,15 +36,15 @@ import { toast } from "sonner";
 import { ActionConfirmationDialog } from "@/components/ActionConfirmationDialog";
 
 const roles = [
-  { value: "all", label: "Tất cả vai trò" },
-  { value: "ADMIN", label: "Quản trị viên" },
-  { value: "USER", label: "Người dùng" },
+  { value: "all", label: "All Roles" },
+  { value: "ADMIN", label: "Administrator" },
+  { value: "USER", label: "User" },
 ];
 
 const statusOptions = [
-  { value: "all", label: "Tất cả trạng thái" },
-  { value: "active", label: "Hoạt động" },
-  { value: "inactive", label: "Bị khóa" },
+  { value: "all", label: "All Statuses" },
+  { value: "active", label: "Active" },
+  { value: "inactive", label: "Inactive" },
 ];
 
 const itemsPerPage = 7;
@@ -132,14 +132,14 @@ export default function UserManagement() {
       ).unwrap();
       toast.success(
         !currentStatus
-          ? "Mở khóa tài khoản thành công"
-          : "Khóa tài khoản thành công"
+          ? "Unlock account successfully"
+          : "Lock account successfully"
       );
     } catch (e) {
       toast.error(
         !currentStatus
-          ? "Mở khóa tài khoản thất bại"
-          : "Khóa tài khoản thất bại"
+          ? "Unlock account failed"
+          : "Lock account failed"
       );
     } finally {
       setStatusLoadingId(null);
@@ -166,14 +166,14 @@ export default function UserManagement() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Quản lý người dùng</h1>
+          <h1 className="text-3xl font-bold">User Management</h1>
           <p className="text-muted-foreground">
-            Quản lý tài khoản người dùng hệ thống
+            Manage user accounts in the system
           </p>
         </div>
         <div className="flex space-x-2">
           <Button variant="outline" onClick={handleClearFilters}>
-            Làm mới
+            Refresh
           </Button>
         </div>
       </div>
@@ -182,19 +182,19 @@ export default function UserManagement() {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Filter className="h-5 w-5" />
-            <span>Bộ lọc</span>
+            <span>Filters</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-6">
             {/* Name search filter */}
             <div className="space-y-2">
-              <Label htmlFor="filter-user-name">Tên</Label>
+              <Label htmlFor="filter-user-name">Name</Label>
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="filter-user-name"
-                  placeholder="Tìm theo tên..."
+                  placeholder="Search by name..."
                   value={nameSearch}
                   onChange={(e) => handleNameSearchChange(e.target.value)}
                   className="pl-10"
@@ -213,7 +213,7 @@ export default function UserManagement() {
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="filter-user-email"
-                  placeholder="Tìm theo email..."
+                  placeholder="Search by email..."
                   value={emailSearch}
                   onChange={(e) => handleEmailSearchChange(e.target.value)}
                   className="pl-10"
@@ -227,10 +227,10 @@ export default function UserManagement() {
             </div>
             {/* Role filter */}
             <div className="space-y-2">
-              <Label htmlFor="filter-role">Vai trò</Label>
+              <Label htmlFor="filter-role">Role</Label>
               <Select value={selectedRole} onValueChange={handleRoleChange}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Tất cả vai trò" />
+                  <SelectValue placeholder="All Roles" />
                 </SelectTrigger>
                 <SelectContent>
                   {roles.map((role) => (
@@ -243,10 +243,10 @@ export default function UserManagement() {
             </div>
             {/* Status filter */}
             <div className="space-y-2">
-              <Label htmlFor="filter-status">Trạng thái</Label>
+              <Label htmlFor="filter-status">Status</Label>
               <Select value={selectedStatus} onValueChange={handleStatusChange}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Tất cả trạng thái" />
+                  <SelectValue placeholder="All Statuses" />
                 </SelectTrigger>
                 <SelectContent>
                   {statusOptions.map((opt) => (
@@ -264,7 +264,7 @@ export default function UserManagement() {
                 onClick={handleClearFilters}
                 className="w-full"
               >
-                Xóa bộ lọc
+                Clear Filters
               </Button>
             </div>
           </div>
@@ -273,9 +273,9 @@ export default function UserManagement() {
       {/* Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Danh sách người dùng</CardTitle>
+          <CardTitle>User List</CardTitle>
           <CardDescription>
-            Hiển thị {users.length} trong tổng số {totalItems} người dùng
+            Displaying {users.length} out of {totalItems} users
           </CardDescription>
         </CardHeader>
         <CardContent className="relative">
@@ -284,7 +284,7 @@ export default function UserManagement() {
               <div className="flex items-center space-x-2">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600 dark:border-green-400"></div>
                 <span className="text-sm text-neutral-600 dark:text-neutral-300">
-                  Đang tải...
+                  Loading...
                 </span>
               </div>
             </div>
@@ -296,13 +296,13 @@ export default function UserManagement() {
             <TableHeader>
               <TableRow>
                 <TableHead>Avatar</TableHead>
-                <TableHead>Tên</TableHead>
+                <TableHead>Name</TableHead>
                 <TableHead>Email</TableHead>
-                <TableHead>Số điện thoại</TableHead>
-                <TableHead>Vai trò</TableHead>
-                <TableHead>Trạng thái</TableHead>
-                <TableHead>Ngày tạo</TableHead>
-                <TableHead>Thao tác</TableHead>
+                <TableHead>Phone</TableHead>
+                <TableHead>Role</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Created At</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -350,18 +350,18 @@ export default function UserManagement() {
                           }
                         >
                           {user.role === "ADMIN"
-                            ? "Quản trị viên"
-                            : "Người dùng"}
+                            ? "Administrator"
+                            : "User"}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         {user.status ? (
                           <Badge className="bg-green-100 text-green-800">
-                            Hoạt động
+                            Active
                           </Badge>
                         ) : (
                           <Badge className="bg-red-100 text-red-800">
-                            Bị khóa
+                            Inactive
                           </Badge>
                         )}
                       </TableCell>
@@ -383,7 +383,7 @@ export default function UserManagement() {
                           ) : (
                             <Unlock className="w-4 h-4" />
                           )}
-                          {user.status ? "Khóa" : "Mở khóa"}
+                          {user.status ? "Lock" : "Unlock"}
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -393,9 +393,9 @@ export default function UserManagement() {
           {/* Pagination */}
           <div className="flex items-center justify-between space-x-2 py-4">
             <div className="text-sm text-muted-foreground">
-              Hiển thị {(currentPage - 1) * itemsPerPage + 1} đến{" "}
-              {Math.min(currentPage * itemsPerPage, totalItems)} trong{" "}
-              {totalItems} kết quả
+              Displaying {(currentPage - 1) * itemsPerPage + 1} to{" "}
+              {Math.min(currentPage * itemsPerPage, totalItems)} out of{" "}
+              {totalItems} results
             </div>
             <div className="flex items-center space-x-2">
               <Button
@@ -404,10 +404,10 @@ export default function UserManagement() {
                 onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
               >
-                Trước
+                Previous
               </Button>
               <div className="text-sm">
-                Trang {currentPage} / {totalPages}
+                Page {currentPage} / {totalPages}
               </div>
               <Button
                 variant="outline"
@@ -417,7 +417,7 @@ export default function UserManagement() {
                 }
                 disabled={currentPage === totalPages}
               >
-                Sau
+                Next
               </Button>
             </div>
           </div>
@@ -426,10 +426,10 @@ export default function UserManagement() {
       <ActionConfirmationDialog
         open={confirmDialog.open}
         onOpenChange={(open) => setConfirmDialog((prev) => ({ ...prev, open }))}
-        title={confirmDialog.currentStatus ? "Khóa tài khoản?" : "Mở khóa tài khoản?"}
-        description={`Bạn có chắc chắn muốn ${confirmDialog.currentStatus ? "khóa" : "mở khóa"} tài khoản của người dùng "${confirmDialog.userName}" không?`}
-        confirmText={confirmDialog.currentStatus ? "Khóa" : "Mở khóa"}
-        cancelText="Hủy"
+        title={confirmDialog.currentStatus ? "Lock Account?" : "Unlock Account?"}
+        description={`Are you sure you want to ${confirmDialog.currentStatus ? "lock" : "unlock"} the account of user "${confirmDialog.userName}" ?`}
+        confirmText={confirmDialog.currentStatus ? "Lock" : "Unlock"}
+        cancelText="Cancel"
         variant={confirmDialog.currentStatus ? "destructive" : "default"}
         icon={confirmDialog.currentStatus ? <Lock className="w-5 h-5" /> : <Unlock className="w-5 h-5" />}
         onConfirm={handleConfirmToggleStatus}

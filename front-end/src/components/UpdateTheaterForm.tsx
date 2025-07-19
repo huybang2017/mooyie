@@ -64,33 +64,33 @@ export function UpdateTheaterForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!theater) {
-      toast.error("Không tìm thấy thông tin rạp chiếu");
+      toast.error("Theater information not found");
       return;
     }
     if (!formData.name?.trim()) {
-      toast.error("Vui lòng nhập tên rạp chiếu");
+      toast.error("Please enter the theater name");
       return;
     }
     if (!formData.location?.trim()) {
-      toast.error("Vui lòng nhập địa chỉ rạp chiếu");
+      toast.error("Please enter the theater address");
       return;
     }
     if (!formData.brand?.trim()) {
-      toast.error("Vui lòng nhập thương hiệu");
+      toast.error("Please enter the brand");
       return;
     }
     if (!formData.status) {
-      toast.error("Vui lòng chọn trạng thái");
+      toast.error("Please select a status");
       return;
     }
     setLoading(true);
     try {
       await dispatch(updateTheaterThunk({ id: theater.id, data: formData })).unwrap();
-      toast.success("Cập nhật rạp chiếu thành công");
+      toast.success("Theater updated successfully");
       onOpenChange(false);
       onSuccess?.();
     } catch (error: any) {
-      toast.error(error || "Có lỗi xảy ra khi cập nhật rạp chiếu");
+      toast.error(error || "An error occurred while updating the theater");
     } finally {
       setLoading(false);
     }

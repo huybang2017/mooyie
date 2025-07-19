@@ -12,7 +12,7 @@ interface RoleGuardProps {
 const RoleGuard: React.FC<RoleGuardProps> = ({
   children,
   requiredRoles = [],
-  redirectTo = "/unauthorized",
+  redirectTo = "/login",
 }) => {
   const dispatch = useAppDispatch();
   const { accessToken, user, loading, error } = useAppSelector(

@@ -15,22 +15,22 @@ const BookingDetail = () => {
   }, [dispatch, id]);
 
   if (loading) {
-    return <div className="text-center">Đang tải dữ liệu đặt vé...</div>;
+    return <div className="text-center">Loading booking data...</div>;
   }
 
   if (!bookingDetail) {
     return (
-      <div className="text-center text-red-500">Không tìm thấy đặt vé</div>
+      <div className="text-center text-red-500">Booking not found</div>
     );
   }
 
-  const movieTitle = bookingDetail.showtime?.movie?.title || "Không rõ";
+  const movieTitle = bookingDetail.showtime?.movie?.title || "Unknown";
   const showtimeDate = bookingDetail.showtime?.time?.[0]?.start;
   const formattedDate = showtimeDate
-    ? new Date(showtimeDate).toLocaleString("vi-VN")
-    : "Không rõ";
+    ? new Date(showtimeDate).toLocaleString("en-US")
+    : "Unknown";
 
-  // Nếu seats là chuỗi JSON thì parse
+  // If seats is a JSON string, parse
   let seats: any[] = [];
   try {
     seats = Array.isArray(bookingDetail.seats)
@@ -42,9 +42,9 @@ const BookingDetail = () => {
 
   const formattedSeats = seats.length
     ? seats.map((seat) => `${seat.row ?? "?"}${seat.number ?? "?"}`).join(", ")
-    : "Không có thông tin ghế";
+    : "No seat information";
 
-  const formattedPrice = `${bookingDetail.totalPrice.toLocaleString("vi-VN")}₫`;
+  const formattedPrice = `${bookingDetail.totalPrice.toLocaleString("en-US")}$`;
 
   const statusLabel = bookingDetail.status;
   const statusColor =

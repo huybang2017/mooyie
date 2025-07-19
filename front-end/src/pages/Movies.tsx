@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -22,13 +22,17 @@ import { Star } from "lucide-react";
 const Movies = () => {
   const dispatch = useAppDispatch();
   const { movies, loading, error } = useAppSelector((state) => state.movie);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
   const limit = 18;
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedGenre, setSelectedGenre] = useState("all");
-  const [selectedStatus, setSelectedStatus] = useState("all");
-  const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
+  // Read filters from URL
+  const searchTerm = searchParams.get("search") || "";
+  const selectedGenre = searchParams.get("genre") || "all";
+  const selectedStatus = searchParams.get("status") || "all";
+  const currentPage = Number(searchParams.get("page") || 1);
+
+  const [searchInput, setSearchInput] = useState(searchTerm);
+  const [debouncedSearchTerm] = useDebounce(searchInput, 500);
   const [averageRatings, setAverageRatings] = useState<{
     [movieId: string]: number;
   }>({});
@@ -46,27 +50,31 @@ const Movies = () => {
     "Animation",
   ];
 
+  // Update search param when search input changes
   useEffect(() => {
-    setCurrentPage(1);
-  }, [debouncedSearchTerm, selectedGenre, selectedStatus]);
+    if (debouncedSearchTerm !== searchTerm) {
+      setSearchParams({
+        ...Object.fromEntries(searchParams),
+        search: debouncedSearchTerm,
+        page: "1",
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearchTerm]);
 
+  // Fetch movies when params change
   useEffect(() => {
     dispatch(
       fetchMoviesThunk({
         page: currentPage,
         limit,
-        title: debouncedSearchTerm || undefined,
+        title: searchTerm || undefined,
         genre: selectedGenre !== "all" ? selectedGenre : undefined,
         status: selectedStatus !== "all" ? selectedStatus : undefined,
       })
     );
-  }, [
-    dispatch,
-    currentPage,
-    debouncedSearchTerm,
-    selectedGenre,
-    selectedStatus,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, currentPage, searchTerm, selectedGenre, selectedStatus]);
 
   useEffect(() => {
     if (movies?.data) {
@@ -93,15 +101,16 @@ const Movies = () => {
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
+      setSearchParams({
+        ...Object.fromEntries(searchParams),
+        page: String(page),
+      });
     }
   };
 
   const handleClearFilters = () => {
-    setSearchTerm("");
-    setSelectedGenre("all");
-    setSelectedStatus("all");
-    setCurrentPage(1);
+    setSearchParams({ page: "1" });
+    setSearchInput("");
   };
 
   const hasActiveFilters =
@@ -124,23 +133,23 @@ const Movies = () => {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Filter className="h-5 w-5" />
-            <span>Bộ lọc</span>
+            <span>Filters</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
             <div className="space-y-2">
-              <Label htmlFor="search-movie">Tìm kiếm phim</Label>
+              <Label htmlFor="search-movie">Search Movies</Label>
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="search-movie"
-                  placeholder="Nhập tên phim..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Enter movie name..."
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
                   className="pl-10"
                 />
-                {searchTerm && searchTerm !== debouncedSearchTerm && (
+                {searchInput && searchInput !== debouncedSearchTerm && (
                   <div className="absolute right-3 top-3">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600 dark:border-green-400"></div>
                   </div>
@@ -150,13 +159,22 @@ const Movies = () => {
 
             {/* Genre filter */}
             <div className="space-y-2">
-              <Label htmlFor="filter-genre">Thể loại</Label>
-              <Select value={selectedGenre} onValueChange={setSelectedGenre}>
+              <Label htmlFor="filter-genre">Genre</Label>
+              <Select
+                value={selectedGenre}
+                onValueChange={(val) => {
+                  setSearchParams({
+                    ...Object.fromEntries(searchParams),
+                    genre: val,
+                    page: "1",
+                  });
+                }}
+              >
                 <SelectTrigger>
-                  <SelectValue placeholder="Tất cả thể loại" />
+                  <SelectValue placeholder="All genres" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tất cả thể loại</SelectItem>
+                  <SelectItem value="all">All genres</SelectItem>
                   {availableGenres.map((genre) => (
                     <SelectItem key={genre} value={genre}>
                       {genre}
@@ -168,16 +186,25 @@ const Movies = () => {
 
             {/* Status filter */}
             <div className="space-y-2">
-              <Label htmlFor="filter-status">Trạng thái</Label>
-              <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+              <Label htmlFor="filter-status">Status</Label>
+              <Select
+                value={selectedStatus}
+                onValueChange={(val) => {
+                  setSearchParams({
+                    ...Object.fromEntries(searchParams),
+                    status: val,
+                    page: "1",
+                  });
+                }}
+              >
                 <SelectTrigger>
-                  <SelectValue placeholder="Tất cả trạng thái" />
+                  <SelectValue placeholder="All statuses" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tất cả trạng thái</SelectItem>
-                  <SelectItem value="coming_soon">Sắp chiếu</SelectItem>
-                  <SelectItem value="now_showing">Đang chiếu</SelectItem>
-                  <SelectItem value="ended">Đã kết thúc</SelectItem>
+                  <SelectItem value="all">All statuses</SelectItem>
+                  <SelectItem value="coming_soon">Coming Soon</SelectItem>
+                  <SelectItem value="now_showing">Now Showing</SelectItem>
+                  <SelectItem value="ended">Ended</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -190,7 +217,7 @@ const Movies = () => {
                 className="w-full"
               >
                 <X className="h-4 w-4 mr-2" />
-                Xóa bộ lọc
+                Clear Filters
               </Button>
             </div>
           </div>
@@ -199,7 +226,7 @@ const Movies = () => {
 
       {movies && (
         <div className="text-sm text-muted-foreground">
-          Hiển thị {movies.data.length} trong tổng số {movies.total} phim
+          Displaying {movies.data.length} out of {movies.total} movies
         </div>
       )}
 
@@ -208,7 +235,7 @@ const Movies = () => {
           <div className="flex items-center space-x-2">
             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600 dark:border-green-400"></div>
             <span className="text-sm text-neutral-600 dark:text-neutral-300">
-              Đang tải...
+              Loading...
             </span>
           </div>
         </div>
@@ -227,7 +254,7 @@ const Movies = () => {
                         variant="secondary"
                         className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
                       >
-                        Sắp chiếu
+                        Coming Soon
                       </Badge>
                     )}
                     {movie.status === "now_showing" && (
@@ -235,7 +262,7 @@ const Movies = () => {
                         variant="secondary"
                         className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
                       >
-                        Đang chiếu
+                        Now Showing
                       </Badge>
                     )}
                     {movie.status === "ended" && (

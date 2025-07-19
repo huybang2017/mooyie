@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -6,13 +6,24 @@ import { FilterMovieDto } from 'src/movie/dto/filter-movie.dto';
 import { PaginationMovieDto } from 'src/movie/dto/pagination-movie.dto';
 import { Prisma } from 'generated/prisma';
 import { paginate } from 'src/utils/helper/paginate';
+import { NotificationService } from 'src/notification/notification.service';
 
 @Injectable()
 export class MovieService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    @Inject(forwardRef(() => NotificationService))
+    private notificationService: NotificationService,
+  ) {}
 
-  create(dto: CreateMovieDto) {
-    return this.prisma.movie.create({ data: dto });
+  async create(dto: CreateMovieDto) {
+    const movie = await this.prisma.movie.create({ data: dto });
+    // Send real-time notification to all users
+    await this.notificationService.sendToAll(
+      `A new movie "${movie.title}" is now available!`,
+      'new_movie',
+    );
+    return movie;
   }
 
   async findAll(filter: FilterMovieDto, pagination: PaginationMovieDto) {

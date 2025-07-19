@@ -24,6 +24,10 @@ import {
 } from "@/components/ui/sheet";
 import { MenuIcon, UserIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { NotificationBell } from "@/components/ToastNotification";
+import { useEffect, useState } from "react";
+import { notificationService } from "@/services/notification-service";
+import type { Notification } from "@/services/notification-service";
 
 const navLinks = [
   { to: "/", label: "Home" },
@@ -36,10 +40,71 @@ const authLinks = [
 ];
 
 const Layout = () => {
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, user, accessToken } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  // Fetch notification history when user logs in
+  useEffect(() => {
+    if (isAuthenticated && user?.id && accessToken) {
+      notificationService.fetchNotifications(accessToken)
+        .then((data) => {
+          setNotifications((prev) => {
+            // Merge and deduplicate by id
+            const all = [...data, ...prev];
+            const unique = all.reduce((acc: Notification[], curr) => {
+              if (!acc.some((n) => n.id === curr.id)) acc.push(curr);
+              return acc;
+            }, []);
+            // Sort by createdAt desc
+            return unique.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+          });
+        })
+        .catch(() => setNotifications([]));
+    } else {
+      setNotifications([]);
+    }
+  }, [isAuthenticated, user?.id, accessToken]);
+
+  // Real-time notification
+  useEffect(() => {
+    if (isAuthenticated && user?.id) {
+      notificationService.connect(user.id, (data) => {
+        setNotifications((prev) => {
+          // Deduplicate by id
+          if (!data.id) return prev;
+          if (prev.some((n) => n.id === data.id)) return prev;
+          return [
+            {
+              id: data.id,
+              message: data.message,
+              type: data.type,
+              isRead: false,
+              createdAt: data.createdAt || new Date().toISOString(),
+            },
+            ...prev,
+          ];
+        });
+      });
+    } else {
+      notificationService.disconnect();
+    }
+    return () => {
+      notificationService.disconnect();
+    };
+  }, [isAuthenticated, user?.id]);
+
+  const handleClickNotification = (n: Notification) => {
+    setNotifications((prev) =>
+      prev.map((item) =>
+        item.id === n.id ? { ...item, isRead: true } : item
+      )
+    );
+    // You can add navigation or modal logic here
+  };
 
   const handleLogout = () => {
     dispatch(logout());
@@ -49,7 +114,7 @@ const Layout = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
       <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <Link to="/" className="text-xl font-bold tracking-tight">
@@ -82,7 +147,12 @@ const Layout = () => {
           {/* Right actions */}
           <div className="flex items-center gap-2">
             <ModeToggle />
-
+            {isAuthenticated && user?.id && (
+              <NotificationBell
+                notifications={notifications}
+                onClickNotification={handleClickNotification}
+              />
+            )}
             {/* Auth dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -112,7 +182,6 @@ const Layout = () => {
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
-
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="md:hidden">
@@ -145,9 +214,17 @@ const Layout = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 flex-1">
         <Outlet />
       </main>
+      <footer className="border-t bg-background/80 backdrop-blur mt-auto">
+        <div className="container mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-primary">Mooyie</span>
+            <span>&copy; {new Date().getFullYear()} All rights reserved.</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

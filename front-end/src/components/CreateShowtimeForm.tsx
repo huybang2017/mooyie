@@ -94,19 +94,19 @@ export function CreateShowtimeForm({ onSuccess }: CreateShowtimeFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.movieId.trim()) {
-      toast.error("Vui lòng chọn phim");
+      toast.error("Please select a movie");
       return;
     }
     if (!formData.theaterId.trim()) {
-      toast.error("Vui lòng chọn rạp chiếu");
+      toast.error("Please select a theater");
       return;
     }
     if (!formData.roomId.trim()) {
-      toast.error("Vui lòng chọn phòng chiếu");
+      toast.error("Please select a room");
       return;
     }
     if (!formData.startTimes.length || formData.startTimes.some((t) => !t.trim())) {
-      toast.error("Vui lòng nhập ít nhất một thời gian chiếu hợp lệ");
+      toast.error("Please enter at least one valid showtime");
       return;
     }
     // Send startTimes array to backend
@@ -118,7 +118,7 @@ export function CreateShowtimeForm({ onSuccess }: CreateShowtimeFormProps) {
     setLoading(true);
     try {
       await dispatch(createShowtimeThunk(createShowtimeData)).unwrap();
-      toast.success("Tạo lịch chiếu mới thành công");
+      toast.success("Showtime created successfully");
       setFormData({
         movieId: "",
         theaterId: "",
@@ -128,7 +128,7 @@ export function CreateShowtimeForm({ onSuccess }: CreateShowtimeFormProps) {
       setOpen(false);
       onSuccess?.();
     } catch (error: any) {
-      toast.error(error || "Có lỗi xảy ra khi tạo lịch chiếu");
+      toast.error(error || "An error occurred while creating the showtime");
     } finally {
       setLoading(false);
     }
@@ -139,26 +139,26 @@ export function CreateShowtimeForm({ onSuccess }: CreateShowtimeFormProps) {
       <DialogTrigger asChild>
         <Button>
           <Plus className="h-4 w-4 mr-2" />
-          Thêm lịch chiếu mới
+          Add new showtime
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Thêm lịch chiếu mới</DialogTitle>
+          <DialogTitle>Add new showtime</DialogTitle>
           <DialogDescription>
-            Điền thông tin lịch chiếu mới vào form bên dưới
+            Fill in the showtime information in the form below
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="movieId">Phim *</Label>
+              <Label htmlFor="movieId">Movie *</Label>
               <Select
                 value={formData.movieId}
                 onValueChange={(value) => handleInputChange("movieId", value)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Chọn phim" />
+                  <SelectValue placeholder="Select movie" />
                 </SelectTrigger>
                 <SelectContent>
                   {adminMovies?.data?.map((movie) => (
@@ -170,13 +170,13 @@ export function CreateShowtimeForm({ onSuccess }: CreateShowtimeFormProps) {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="theaterId">Rạp chiếu *</Label>
+              <Label htmlFor="theaterId">Theater *</Label>
               <Select
                 value={formData.theaterId}
                 onValueChange={(value) => handleInputChange("theaterId", value)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Chọn rạp" />
+                  <SelectValue placeholder="Select theater" />
                 </SelectTrigger>
                 <SelectContent>
                   {adminTheaters?.data?.map((theater) => (
@@ -190,14 +190,14 @@ export function CreateShowtimeForm({ onSuccess }: CreateShowtimeFormProps) {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="roomId">Phòng chiếu *</Label>
+              <Label htmlFor="roomId">Room *</Label>
               <Select
                 value={formData.roomId}
                 onValueChange={(value) => handleInputChange("roomId", value)}
                 disabled={!formData.theaterId}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Chọn phòng" />
+                  <SelectValue placeholder="Select room" />
                 </SelectTrigger>
                 <SelectContent>
                   {rooms?.map((room) => (
@@ -209,7 +209,7 @@ export function CreateShowtimeForm({ onSuccess }: CreateShowtimeFormProps) {
               </Select>
             </div>
             <div className="space-y-2 col-span-2">
-              <Label>Thời gian chiếu *</Label>
+              <Label>Showtime *</Label>
               {formData.startTimes.map((startTime, idx) => (
                 <div key={idx} className="flex items-center gap-2 mb-2">
                   <Input
@@ -249,16 +249,16 @@ export function CreateShowtimeForm({ onSuccess }: CreateShowtimeFormProps) {
               onClick={() => setOpen(false)}
               disabled={loading}
             >
-              Hủy
+              Cancel
             </Button>
             <Button type="submit" disabled={loading}>
               {loading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Đang tạo...
+                  Creating...
                 </>
               ) : (
-                "Tạo lịch chiếu"
+                "Create showtime"
               )}
             </Button>
           </DialogFooter>

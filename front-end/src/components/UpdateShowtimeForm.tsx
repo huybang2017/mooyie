@@ -137,26 +137,26 @@ export function UpdateShowtimeForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!showtime) {
-      toast.error("Không tìm thấy lịch chiếu");
+      toast.error("Showtime not found");
       return;
     }
     if (!(formData.movieId ?? "").trim()) {
-      toast.error("Vui lòng chọn phim");
+      toast.error("Please select a movie");
       return;
     }
     if (!(formData.theaterId ?? "").trim()) {
-      toast.error("Vui lòng chọn rạp chiếu");
+      toast.error("Please select a theater");
       return;
     }
     if (!(formData.roomId ?? "").trim()) {
-      toast.error("Vui lòng chọn phòng chiếu");
+      toast.error("Please select a room");
       return;
     }
     if (
       !formData.startTimes.length ||
       formData.startTimes.some((t) => !t.trim())
     ) {
-      toast.error("Vui lòng nhập ít nhất một thời gian chiếu hợp lệ");
+      toast.error("Please enter at least one valid showtime");
       return;
     }
     // Send startTimes array and isActive to backend
@@ -171,11 +171,11 @@ export function UpdateShowtimeForm({
       await dispatch(
         updateShowtimeThunk({ id: showtime.id, data: updateShowtimeData })
       ).unwrap();
-      toast.success("Cập nhật lịch chiếu thành công");
+      toast.success("Showtime updated successfully");
       onOpenChange(false);
       onSuccess?.();
     } catch (error: any) {
-      toast.error(error || "Có lỗi xảy ra khi cập nhật lịch chiếu");
+      toast.error(error || "An error occurred while updating the showtime");
     } finally {
       setLoading(false);
     }

@@ -37,8 +37,12 @@ export function LoginForm({
     e.preventDefault();
     const result = await dispatch(login(form));
     if (login.fulfilled.match(result)) {
-      toast.success("Đăng nhập thành công!");
+      toast.success("Login successful!");
+      if (result.payload.user?.role === "ADMIN") {
+        navigate("/admin");
+      } else {
       navigate("/");
+      }
     }
   };
 
@@ -46,10 +50,8 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
-          <CardDescription>
-            Enter your email below to login to your account
-          </CardDescription>
+          <CardTitle>Sign in to your account</CardTitle>
+          <CardDescription>Enter your email and password to login</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
@@ -90,7 +92,7 @@ export function LoginForm({
 
               <div className="flex flex-col gap-3">
                 <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Logging in..." : "Login"}
+                  {loading ? "Signing in..." : "Sign In"}
                 </Button>
               </div>
             </div>

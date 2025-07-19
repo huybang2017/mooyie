@@ -19,7 +19,7 @@ import {
 } from "@/store/slices/bookingSlice";
 import { toast } from "sonner";
 import { bookingWebSocket } from "@/services/booking-websocket";
-import type { Booking, Seat } from "@/services/type";
+import type { Booking } from "@/services/type";
 import QRCode from "react-qr-code";
 
 const statusColor = {
@@ -31,11 +31,27 @@ const statusColor = {
 };
 
 const statusLabel = {
-  PENDING: "Đang chờ",
-  CONFIRMED: "Đã xác nhận",
-  CANCELED: "Đã hủy",
-  USED: "Đã sử dụng",
-  EXPIRED: "Hết hạn",
+  PENDING: "Pending",
+  CONFIRMED: "Confirmed",
+  CANCELED: "Canceled",
+  USED: "Used",
+  EXPIRED: "Expired",
+};
+
+const getSeatString = (seats: any) => {
+  let seatList: any[] = [];
+  try {
+    seatList = Array.isArray(seats)
+      ? seats
+      : typeof seats === "string"
+      ? JSON.parse(seats)
+      : [];
+  } catch {
+    seatList = [];
+  }
+  return seatList.length
+    ? seatList.map((s) => `${s.row ?? "?"}${s.number ?? "?"}`).join(", ")
+    : "N/A";
 };
 
 const Bookings = () => {
@@ -65,41 +81,41 @@ const Bookings = () => {
           data.bookingStatus === "confirmed" &&
           data.paymentStatus === "paid"
         ) {
-          toast.success("Thanh toán thành công! Vé đã được xác nhận.");
+          toast.success("Payment successful! Ticket confirmed.");
         }
         if (
           data.bookingStatus === "cancel" &&
           data.paymentStatus === "failed"
         ) {
-          toast.error("Thanh toán thất bại hoặc hết thời gian. Vé đã bị hủy.");
+          toast.error("Payment failed or timed out. Ticket cancelled.");
         }
       });
 
       // Set up event listeners for real-time updates
       bookingWebSocket.onBookingPaid((data) => {
         console.log("Booking paid:", data);
-        toast.success("Thanh toán thành công! Vé đã được xác nhận.");
+        toast.success("Payment successful! Ticket confirmed.");
         // Refresh bookings
         dispatch(getUserBookingsThunk());
       });
 
       bookingWebSocket.onBookingFailed((data) => {
         console.log("Booking failed:", data);
-        toast.error("Thanh toán thất bại. Vé đã bị hủy.");
+        toast.error("Payment failed. Ticket cancelled.");
         // Refresh bookings
         dispatch(getUserBookingsThunk());
       });
 
       bookingWebSocket.onBookingTimeout((data) => {
         console.log("Booking timeout:", data);
-        toast.error("Hết thời gian thanh toán. Vé đã bị hủy.");
+        toast.error("Payment timed out. Ticket cancelled.");
         // Refresh bookings
         dispatch(getUserBookingsThunk());
       });
 
       bookingWebSocket.onBookingExpired((data) => {
         console.log("Booking expired:", data);
-        toast.warning("Vé đã hết hạn.");
+        toast.warning("Ticket expired.");
         // Refresh bookings
         dispatch(getUserBookingsThunk());
       });
@@ -116,12 +132,12 @@ const Bookings = () => {
       setCancelingBookings((prev) => new Set(prev).add(bookingId));
 
       await dispatch(cancelBookingThunk(bookingId)).unwrap();
-      toast.success("Hủy vé thành công!");
+      toast.success("Ticket cancelled successfully!");
 
       // Refresh bookings
       dispatch(getUserBookingsThunk());
     } catch (error: any) {
-      toast.error(error || "Không thể hủy vé");
+      toast.error(error || "Could not cancel ticket");
     } finally {
       setCancelingBookings((prev) => {
         const newSet = new Set(prev);
@@ -164,7 +180,7 @@ const Bookings = () => {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-4 text-lg">Đang tải danh sách vé...</p>
+          <p className="mt-4 text-lg">Loading your tickets...</p>
         </div>
       </div>
     );
@@ -172,16 +188,17 @@ const Bookings = () => {
 
   return (
     <div className="mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Vé của tôi</h1>
+      <h1 className="text-3xl font-bold mb-6">My Tickets</h1>
 
       {userBookings.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <div className="text-center">
               <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Chưa có vé nào</h3>
+              <h3 className="text-lg font-semibold mb-2">No tickets yet</h3>
               <p className="text-muted-foreground">
-                Bạn chưa đặt vé nào. Hãy chọn phim và đặt vé ngay!
+                You have not booked any tickets yet. Choose a movie and book
+                now!
               </p>
             </div>
           </CardContent>
@@ -198,7 +215,7 @@ const Bookings = () => {
                   <p className="text-sm text-muted-foreground">
                     {booking.showtime?.time?.[0]?.start
                       ? new Date(booking.showtime.time[0].start).toLocaleString(
-                          "vi-VN",
+                          "en-US",
                           {
                             dateStyle: "medium",
                             timeStyle: "short",
@@ -232,15 +249,15 @@ const Bookings = () => {
                     <div className="flex items-center gap-2">
                       <CreditCard className="w-4 h-4 text-muted-foreground" />
                       <span className="text-sm">
-                        {booking.totalPrice.toLocaleString()} VNĐ
+                        {booking.totalPrice.toLocaleString()} VND
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-muted-foreground" />
                       <span className="text-sm">
-                        Đặt ngày:{" "}
+                        Booked on:{" "}
                         {new Date(booking.createdAt).toLocaleDateString(
-                          "vi-VN"
+                          "en-US"
                         )}
                       </span>
                     </div>
@@ -248,32 +265,17 @@ const Bookings = () => {
 
                   <div className="space-y-2">
                     <div>
-                      <h4 className="font-medium text-sm mb-1">Ghế đã đặt:</h4>
+                      <h4 className="font-medium text-sm mb-1">
+                        Seats booked:
+                      </h4>
                       <div className="flex flex-wrap gap-1">
-                        {Array.isArray(booking.seats) ? (
-                          booking.seats.map((seat: Seat, index: number) => (
-                            <Badge
-                              key={index}
-                              variant="outline"
-                              className="text-xs"
-                            >
-                              {seat.row}
-                              {seat.number}
-                            </Badge>
-                          ))
-                        ) : (
-                          <span className="text-sm text-muted-foreground">
-                            N/A
-                          </span>
-                        )}
+                        {getSeatString(booking.seats)}
                       </div>
                     </div>
 
                     {booking.payment && (
                       <div>
-                        <h4 className="font-medium text-sm mb-1">
-                          Thanh toán:
-                        </h4>
+                        <h4 className="font-medium text-sm mb-1">Payment:</h4>
                         <div className="flex items-center gap-2">
                           <Badge
                             variant={
@@ -289,7 +291,7 @@ const Bookings = () => {
                             <span className="text-xs text-muted-foreground">
                               {new Date(
                                 booking.payment.paidAt
-                              ).toLocaleDateString("vi-VN")}
+                              ).toLocaleDateString("en-US")}
                             </span>
                           )}
                         </div>
@@ -302,7 +304,7 @@ const Bookings = () => {
 
                 <div className="flex justify-between items-center flex-wrap gap-4">
                   <div className="text-sm text-muted-foreground">
-                    Mã vé:
+                    Ticket code:
                     <div className="mt-2">
                       <QRCode value={booking.id} size={80} />
                     </div>
@@ -318,12 +320,12 @@ const Bookings = () => {
                       {cancelingBookings.has(booking.id) ? (
                         <>
                           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
-                          Đang hủy...
+                          Cancelling...
                         </>
                       ) : (
                         <>
                           <XCircle className="w-4 h-4 mr-2" />
-                          Hủy vé
+                          Cancel ticket
                         </>
                       )}
                     </Button>
@@ -332,7 +334,8 @@ const Bookings = () => {
                   {!canCancelBooking(booking) &&
                     booking.status === "CONFIRMED" && (
                       <div className="text-xs text-muted-foreground">
-                        Chỉ có thể hủy vé trong vòng 24h sau khi đặt
+                        You can only cancel tickets within 24 hours after
+                        booking
                       </div>
                     )}
                 </div>

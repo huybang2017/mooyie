@@ -143,20 +143,20 @@ export default function ShowtimeManagement() {
   const handleDeleteShowtime = async (showtime: Showtime) => {
     try {
       await dispatch(deleteShowtimeThunk(showtime.id)).unwrap();
-      toast.success("Xóa lịch chiếu thành công");
+      toast.success("Showtime deleted successfully");
       handleRefresh();
     } catch (error: any) {
-      toast.error(error || "Có lỗi xảy ra khi xóa lịch chiếu");
+      toast.error(error || "Error deleting showtime");
     }
   };
 
   const handleCreateSuccess = () => {
-    toast.success("Tạo lịch chiếu thành công");
+    toast.success("Showtime created successfully");
     handleRefresh();
   };
 
   const handleUpdateSuccess = () => {
-    toast.success("Cập nhật lịch chiếu thành công");
+    toast.success("Showtime updated successfully");
     setIsUpdateDialogOpen(false);
     setEditingShowtime(null);
     handleRefresh();
@@ -170,11 +170,11 @@ export default function ShowtimeManagement() {
   const getStatusBadge = (status: boolean) => {
     return status ? (
       <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
-        Đang chiếu
+        Active
       </Badge>
     ) : (
       <Badge className="bg-neutral-100 text-neutral-800 hover:bg-neutral-100">
-        Đã hoàn thành
+        Inactive
       </Badge>
     );
   };
@@ -183,7 +183,7 @@ export default function ShowtimeManagement() {
     return (
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-center h-64">
-          <div className="text-lg">Đang tải dữ liệu...</div>
+          <div className="text-lg">Loading data...</div>
         </div>
       </div>
     );
@@ -201,14 +201,14 @@ export default function ShowtimeManagement() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Quản lý lịch chiếu</h1>
+          <h1 className="text-3xl font-bold">Showtime Management</h1>
           <p className="text-muted-foreground">
-            Quản lý lịch chiếu phim và thông tin suất chiếu
+            Manage showtimes and screening information
           </p>
         </div>
         <div className="flex space-x-2">
           <Button variant="outline" onClick={handleRefresh}>
-            Làm mới
+            Refresh
           </Button>
           <CreateShowtimeForm onSuccess={handleCreateSuccess} />
         </div>
@@ -219,19 +219,19 @@ export default function ShowtimeManagement() {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Filter className="h-5 w-5" />
-            <span>Bộ lọc</span>
+            <span>Filters</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
             {/* Movie name search filter */}
             <div className="space-y-2">
-              <Label htmlFor="filter-movie">Phim</Label>
+              <Label htmlFor="filter-movie">Movie</Label>
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="filter-movie"
-                  placeholder="Tìm theo tên phim..."
+                  placeholder="Search by movie name..."
                   value={movieSearch}
                   onChange={(e) => handleMovieSearchChange(e.target.value)}
                   className="pl-10"
@@ -245,21 +245,21 @@ export default function ShowtimeManagement() {
             </div>
             {/* Status filter */}
             <div className="space-y-2">
-              <Label htmlFor="filter-status">Trạng thái</Label>
+              <Label htmlFor="filter-status">Status</Label>
               <Select value={selectedStatus} onValueChange={handleStatusChange}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Tất cả trạng thái" />
+                  <SelectValue placeholder="All status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tất cả trạng thái</SelectItem>
-                  <SelectItem value="active">Đang chiếu</SelectItem>
-                  <SelectItem value="inactive">Đã hoàn thành</SelectItem>
+                  <SelectItem value="all">All status</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             {/* Time filter */}
             <div className="space-y-2">
-              <Label htmlFor="filter-datetime">Thời gian chiếu</Label>
+              <Label htmlFor="filter-datetime">Showtime Date & Time</Label>
               <Input
                 id="filter-datetime"
                 type="datetime-local"
@@ -274,7 +274,7 @@ export default function ShowtimeManagement() {
                 onClick={handleClearFilters}
                 className="w-full"
               >
-                Xóa bộ lọc
+                Clear Filters
               </Button>
             </div>
           </div>
@@ -284,9 +284,9 @@ export default function ShowtimeManagement() {
       {/* Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Danh sách lịch chiếu</CardTitle>
+          <CardTitle>Showtime List</CardTitle>
           <CardDescription>
-            Hiển thị {showtimes.length} trong tổng số {totalItems} lịch chiếu
+            Displaying {showtimes.length} out of {totalItems} showtimes
           </CardDescription>
         </CardHeader>
         <CardContent className="relative">
@@ -295,7 +295,7 @@ export default function ShowtimeManagement() {
               <div className="flex items-center space-x-2">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600 dark:border-green-400"></div>
                 <span className="text-sm text-neutral-600 dark:text-neutral-300">
-                  Đang tải...
+                  Loading...
                 </span>
               </div>
             </div>
@@ -303,12 +303,12 @@ export default function ShowtimeManagement() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Phim</TableHead>
-                <TableHead>Rạp & Phòng</TableHead>
-                <TableHead>Ngày & Giờ</TableHead>
-                <TableHead>Ghế</TableHead>
-                <TableHead>Trạng thái</TableHead>
-                <TableHead>Thao tác</TableHead>
+                <TableHead>Movie</TableHead>
+                <TableHead>Theater & Room</TableHead>
+                <TableHead>Date & Time</TableHead>
+                <TableHead>Seats</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -350,23 +350,23 @@ export default function ShowtimeManagement() {
                             {showtime.time &&
                               showtime.time[0] &&
                               new Date(showtime.time[0].start).toLocaleString(
-                                "vi-VN"
+                                "en-US"
                               )}
                           </div>
                           <div className="text-sm text-muted-foreground">
                             {showtime.time &&
                               showtime.time[0] &&
                               new Date(showtime.time[0].end).toLocaleString(
-                                "vi-VN"
+                                "en-US"
                               )}
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="text-sm">
-                          <div>{showtime.room?.seatCount || 0} ghế</div>
+                          <div>{showtime.room?.seatCount || 0} seats</div>
                           <div className="text-muted-foreground">
-                            {showtime.room?.seats?.length || 0} ghế có sẵn
+                            {showtime.room?.seats?.length || 0} available seats
                           </div>
                         </div>
                       </TableCell>
@@ -387,9 +387,9 @@ export default function ShowtimeManagement() {
           {/* Pagination */}
           <div className="flex items-center justify-between space-x-2 py-4">
             <div className="text-sm text-muted-foreground">
-              Hiển thị {(currentPage - 1) * itemsPerPage + 1} đến{" "}
-              {Math.min(currentPage * itemsPerPage, totalItems)} trong{" "}
-              {totalItems} kết quả
+              Displaying {(currentPage - 1) * itemsPerPage + 1} to{" "}
+              {Math.min(currentPage * itemsPerPage, totalItems)} out of{" "}
+              {totalItems} results
             </div>
             <div className="flex items-center space-x-2">
               <Button
@@ -398,10 +398,10 @@ export default function ShowtimeManagement() {
                 onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
               >
-                Trước
+                Previous
               </Button>
               <div className="text-sm">
-                Trang {currentPage} / {totalPages}
+                Page {currentPage} / {totalPages}
               </div>
               <Button
                 variant="outline"
@@ -411,7 +411,7 @@ export default function ShowtimeManagement() {
                 }
                 disabled={currentPage === totalPages}
               >
-                Sau
+                Next
               </Button>
             </div>
           </div>
@@ -422,49 +422,49 @@ export default function ShowtimeManagement() {
       <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
         <DialogContent className="min-w-7xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Chi tiết lịch chiếu</DialogTitle>
+            <DialogTitle>Showtime Details</DialogTitle>
             <DialogDescription>
-              Thông tin chi tiết về lịch chiếu và giá vé từng ghế
+              Detailed information about the showtime and ticket prices per seat
             </DialogDescription>
           </DialogHeader>
           {selectedShowtime && (
             <div className="space-y-6">
-              {/* Thông tin cơ bản */}
+              {/* Basic Information */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="space-y-3">
                   <h3 className="text-lg font-semibold border-b pb-2">
-                    Thông tin phim
+                    Movie Information
                   </h3>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="font-medium">Tên phim:</span>
+                      <span className="font-medium">Movie Name:</span>
                       <span>{selectedShowtime.movie?.title}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="font-medium">Thể loại:</span>
+                      <span className="font-medium">Genre:</span>
                       <span>{selectedShowtime.movie?.genre}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="font-medium">Thời lượng:</span>
-                      <span>{selectedShowtime.movie?.duration} phút</span>
+                      <span className="font-medium">Duration:</span>
+                      <span>{selectedShowtime.movie?.duration} minutes</span>
                     </div>
                   </div>
                 </div>
                 <div className="space-y-3">
                   <h3 className="text-lg font-semibold border-b pb-2">
-                    Thông tin rạp
+                    Theater Information
                   </h3>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="font-medium">Rạp:</span>
+                      <span className="font-medium">Theater:</span>
                       <span>{selectedShowtime.room?.theater?.name}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="font-medium">Phòng:</span>
+                      <span className="font-medium">Room:</span>
                       <span>{selectedShowtime.room?.name}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="font-medium">Địa chỉ:</span>
+                      <span className="font-medium">Address:</span>
                       <span className="text-right max-w-xs">
                         {selectedShowtime.room?.theater?.location}
                       </span>
@@ -473,10 +473,10 @@ export default function ShowtimeManagement() {
                 </div>
               </div>
 
-              {/* Thông tin thời gian */}
+              {/* Showtime Information */}
               <div className="space-y-3">
                 <h3 className="text-lg font-semibold border-b pb-2">
-                  Thời gian chiếu
+                  Showtime Details
                 </h3>
                 <div className="space-y-2 text-sm">
                   {selectedShowtime.time &&
@@ -490,15 +490,15 @@ export default function ShowtimeManagement() {
                           className="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-3"
                         >
                           <div className="flex justify-between">
-                            <span className="font-medium">Bắt đầu:</span>
+                            <span className="font-medium">Start:</span>
                             <span>
-                              {new Date(timeSlot.start).toLocaleString("vi-VN")}
+                              {new Date(timeSlot.start).toLocaleString("en-US")}
                             </span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="font-medium">Kết thúc:</span>
+                            <span className="font-medium">End:</span>
                             <span>
-                              {new Date(timeSlot.end).toLocaleString("vi-VN")}
+                              {new Date(timeSlot.end).toLocaleString("en-US")}
                             </span>
                           </div>
                         </div>
@@ -507,10 +507,10 @@ export default function ShowtimeManagement() {
                 </div>
               </div>
 
-              {/* Danh sách ghế và giá vé */}
+              {/* Seat list and ticket price */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold border-b pb-2">
-                  Danh sách ghế và giá vé
+                  Seat List & Ticket Price
                 </h3>
                 <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 max-h-96 overflow-y-auto">
                   {selectedShowtime.room?.seats?.map((seat: any) => (
@@ -520,21 +520,21 @@ export default function ShowtimeManagement() {
                     >
                       <div className="text-center space-y-1">
                         <div className="font-medium text-xs">
-                          Ghế {seat.row}
+                          Seat {seat.row}
                           {seat.number}
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {seat.type === "REGULAR" ? "Thường" : "VIP"}
+                          {seat.type === "REGULAR" ? "Regular" : "VIP"}
                         </div>
                         <div className="font-semibold text-green-600 text-xs">
-                          {seat.price.toLocaleString("vi-VN")} VNĐ
+                          {seat.price.toLocaleString()} VND
                         </div>
                       </div>
                     </div>
                   ))}
                 </div>
                 <div className="text-sm text-muted-foreground pt-2 border-t">
-                  Tổng cộng: {selectedShowtime.room?.seats?.length || 0} ghế
+                  Total: {selectedShowtime.room?.seats?.length || 0} seats
                 </div>
               </div>
             </div>
@@ -544,7 +544,7 @@ export default function ShowtimeManagement() {
               variant="outline"
               onClick={() => setIsDetailDialogOpen(false)}
             >
-              Đóng
+              Close
             </Button>
           </DialogFooter>
         </DialogContent>

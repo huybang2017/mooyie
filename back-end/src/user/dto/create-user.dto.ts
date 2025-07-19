@@ -8,18 +8,18 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {
-  @ApiProperty({ example: 'Nguyen Van A', description: 'Tên người dùng' })
+  @ApiProperty({ example: 'John Doe', description: 'User name' })
   @IsString()
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({ example: 'user@example.com', description: 'Email người dùng' })
+  @ApiProperty({ example: 'user@example.com', description: 'User email' })
   @IsEmail()
   email: string;
 
   @ApiProperty({
     example: 'password123',
-    description: 'Mật khẩu người dùng (ít nhất 6 ký tự)',
+    description: 'User password (at least 6 characters)',
   })
   @IsString()
   @MinLength(6)
@@ -27,14 +27,14 @@ export class CreateUserDto {
 
   @ApiProperty({
     example: '0987654321',
-    description: 'Số điện thoại người dùng',
+    description: 'User phone number',
   })
   @IsString()
   phone: string;
 
   @ApiProperty({
     example: 'https://i.imgur.com/avatar.jpg',
-    description: 'Link ảnh đại diện',
+    description: 'Avatar image link',
   })
   @IsString()
   @IsOptional()
