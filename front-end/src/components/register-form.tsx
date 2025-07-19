@@ -40,7 +40,7 @@ export function RegisterForm({
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-      toast.error("Mật khẩu không khớp");
+      toast.error("Passwords do not match");
       return;
     }
 
@@ -54,7 +54,7 @@ export function RegisterForm({
     );
 
     if (register.fulfilled.match(result)) {
-      toast.success("Đăng ký thành công!");
+      toast.success("Registration successful!");
       navigate("/");
     } else {
       toast.error(result.payload as string);
@@ -65,18 +65,18 @@ export function RegisterForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle>Tạo tài khoản mới</CardTitle>
-          <CardDescription>Điền thông tin bên dưới để đăng ký</CardDescription>
+          <CardTitle>Create a new account</CardTitle>
+          <CardDescription>Fill in the information below to register</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
-                <Label htmlFor="name">Họ và tên</Label>
+                <Label htmlFor="name">Full Name</Label>
                 <Input
                   id="name"
                   type="text"
-                  placeholder="Nguyễn Văn A"
+                  placeholder="John Doe"
                   required
                   value={formData.name}
                   onChange={handleChange}
@@ -94,7 +94,7 @@ export function RegisterForm({
                 />
               </div>
               <div className="grid gap-3">
-                <Label htmlFor="phone">Số điện thoại</Label>
+                <Label htmlFor="phone">Phone Number</Label>
                 <Input
                   id="phone"
                   type="tel"
@@ -105,7 +105,7 @@ export function RegisterForm({
                 />
               </div>
               <div className="grid gap-3">
-                <Label htmlFor="password">Mật khẩu</Label>
+                <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
                   type="password"
@@ -115,7 +115,7 @@ export function RegisterForm({
                 />
               </div>
               <div className="grid gap-3">
-                <Label htmlFor="confirmPassword">Nhập lại mật khẩu</Label>
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
                 <Input
                   id="confirmPassword"
                   type="password"

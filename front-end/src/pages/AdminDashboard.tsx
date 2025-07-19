@@ -46,7 +46,7 @@ const AdminDashboard = () => {
           <div className="flex items-center space-x-2">
             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600 dark:border-green-400"></div>
             <span className="text-sm text-neutral-600 dark:text-neutral-300">
-              Đang tải...
+              Loading...
             </span>
           </div>
         </div>
@@ -78,46 +78,46 @@ const AdminDashboard = () => {
 
   const statsCards = [
     {
-      title: "Tổng Số Phim",
+      title: "Total Movies",
       value: totalMovies,
       icon: <span className="inline-block w-4 h-4 bg-blue-500 rounded-full" />, 
       growth: movieGrowth,
-      description: "Phim đang hoạt động",
+      description: "Movies in operation",
     },
     {
-      title: "Tổng Lịch Chiếu",
+      title: "Total Showtimes",
       value: totalShowtimes,
       icon: <span className="inline-block w-4 h-4 bg-green-500 rounded-full" />, 
       growth: showtimeGrowth,
-      description: "Lịch chiếu đã lên lịch",
+      description: "Showtimes scheduled",
     },
     {
-      title: "Vé Đã Bán",
+      title: "Tickets Sold",
       value: totalBookings,
       icon: <span className="inline-block w-4 h-4 bg-yellow-500 rounded-full" />, 
       growth: bookingGrowth,
-      description: "Tổng số đặt vé",
+      description: "Total bookings",
     },
     {
-      title: "Tổng Doanh Thu",
+      title: "Total Revenue",
       value: `${totalRevenue.toLocaleString()}đ`,
       icon: <span className="inline-block w-4 h-4 bg-purple-500 rounded-full" />, 
       growth: revenueGrowth,
-      description: "Tổng doanh thu tạo ra",
+      description: "Total revenue generated",
     },
     {
-      title: "Bình Luận Người Dùng",
+      title: "User Comments",
       value: totalComments,
       icon: <span className="inline-block w-4 h-4 bg-pink-500 rounded-full" />, 
       growth: commentGrowth,
-      description: "Đánh giá và bình luận",
+      description: "Reviews and comments",
     },
     {
-      title: "Người Dùng Đăng Ký",
+      title: "Registered Users",
       value: totalUsers,
       icon: <span className="inline-block w-4 h-4 bg-gray-500 rounded-full" />, 
       growth: userGrowth,
-      description: "Tổng người dùng đăng ký",
+      description: "Total registered users",
     },
   ];
 
@@ -128,7 +128,7 @@ const AdminDashboard = () => {
           <div className="flex items-center space-x-2">
             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600 dark:border-green-400"></div>
             <span className="text-sm text-neutral-600 dark:text-neutral-300">
-              Đang tải...
+              Loading...
             </span>
           </div>
         </div>
@@ -136,16 +136,16 @@ const AdminDashboard = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
-            Bảng Điều Khiển Admin
+            Admin Dashboard
           </h1>
           <p className="text-muted-foreground">
-            Tổng quan hệ thống quản lý rạp chiếu phim
+            Overview of the cinema management system
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          <Badge variant="secondary">Trực tuyến</Badge>
+          <Badge variant="secondary">Online</Badge>
           <span className="text-sm text-muted-foreground">
-            Cập nhật lần cuối: {new Date().toLocaleString("vi-VN")}
+            Last updated: {new Date().toLocaleString("en-US")}
           </span>
         </div>
       </div>
@@ -182,7 +182,7 @@ const AdminDashboard = () => {
                     {stat.growth}%
                   </span>
                   <span className="text-xs text-muted-foreground ml-1">
-                    so với tháng trước
+                    compared to last month
                   </span>
                 </div>
               </CardContent>
@@ -194,40 +194,40 @@ const AdminDashboard = () => {
       {/* Charts and Tables */}
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="overview">Tổng Quan</TabsTrigger>
-          <TabsTrigger value="revenue">Doanh Thu</TabsTrigger>
-          <TabsTrigger value="bookings">Đặt Vé Gần Đây</TabsTrigger>
-          <TabsTrigger value="comments">Bình Luận Gần Đây</TabsTrigger>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="revenue">Revenue</TabsTrigger>
+          <TabsTrigger value="bookings">Recent Bookings</TabsTrigger>
+          <TabsTrigger value="comments">Recent Comments</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <Card>
               <CardHeader>
-                <CardTitle>Tổng Quan Doanh Thu</CardTitle>
-                <CardDescription>Xu hướng doanh thu hàng tháng</CardDescription>
+                <CardTitle>Total Revenue Overview</CardTitle>
+                <CardDescription>Monthly revenue trend</CardDescription>
               </CardHeader>
               <CardContent>
                 <ChartAreaInteractive
                   data={revenueChart?.data || []}
                   valueKey="revenue"
                   labelKey="month"
-                  title="Doanh thu theo tháng"
+                  title="Revenue by Month"
                 />
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle>Bán Vé</CardTitle>
-                <CardDescription>Xu hướng bán vé hàng tháng</CardDescription>
+                <CardTitle>Ticket Sales</CardTitle>
+                <CardDescription>Monthly ticket sales trend</CardDescription>
               </CardHeader>
               <CardContent>
                 <ChartAreaInteractive
                   data={revenueChart?.data || []}
                   valueKey="tickets"
                   labelKey="month"
-                  title="Số vé bán theo tháng"
+                  title="Ticket Sales by Month"
                 />
               </CardContent>
             </Card>
@@ -237,8 +237,8 @@ const AdminDashboard = () => {
         <TabsContent value="revenue" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Phân Tích Doanh Thu</CardTitle>
-              <CardDescription>Chi tiết doanh thu và xu hướng</CardDescription>
+              <CardTitle>Revenue Analysis</CardTitle>
+              <CardDescription>Detailed revenue and trends</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4 md:grid-cols-3">
@@ -247,7 +247,7 @@ const AdminDashboard = () => {
                     {revenueAnalytics?.totalRevenue?.toLocaleString() || 0}đ
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Tổng Doanh Thu
+                    Total Revenue
                   </p>
                 </div>
                 <div className="text-center">
@@ -257,7 +257,7 @@ const AdminDashboard = () => {
                     đ
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Giá Vé Trung Bình
+                    Average Ticket Price
                   </p>
                 </div>
                 <div className="text-center">
@@ -265,7 +265,7 @@ const AdminDashboard = () => {
                     {revenueAnalytics?.growthRate || 0}%
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Tỷ Lệ Tăng Trưởng
+                    Growth Rate
                   </p>
                 </div>
               </div>
@@ -276,8 +276,8 @@ const AdminDashboard = () => {
         <TabsContent value="bookings" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Đặt Vé Gần Đây</CardTitle>
-              <CardDescription>Hoạt động đặt vé mới nhất</CardDescription>
+              <CardTitle>Recent Bookings</CardTitle>
+              <CardDescription>Latest booking activity</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -297,7 +297,7 @@ const AdminDashboard = () => {
                             )}
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            Ghế: {booking.seats.join(", ")}
+                            Seats: {booking.seats.join(", ")}
                           </p>
                         </div>
                       </div>
@@ -314,15 +314,15 @@ const AdminDashboard = () => {
                           className="mt-1"
                         >
                           {booking.status === "CONFIRMED"
-                            ? "Đã xác nhận"
-                            : "Đang chờ"}
+                            ? "Confirmed"
+                            : "Pending"}
                         </Badge>
                       </div>
                     </div>
                   ))
                 ) : (
                   <div className="text-center text-muted-foreground">
-                    Không có dữ liệu đặt vé gần đây.
+                    No recent bookings data.
                   </div>
                 )}
               </div>
@@ -333,9 +333,9 @@ const AdminDashboard = () => {
         <TabsContent value="comments" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Bình Luận Gần Đây</CardTitle>
+              <CardTitle>Recent Comments</CardTitle>
               <CardDescription>
-                Đánh giá và phản hồi mới nhất từ người dùng
+                Latest reviews and feedback from users
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -371,7 +371,7 @@ const AdminDashboard = () => {
                   ))
                 ) : (
                   <div className="text-center text-muted-foreground">
-                    Không có bình luận gần đây.
+                    No recent comments.
                   </div>
                 )}
                 <div className="text-center pt-4">
@@ -379,7 +379,7 @@ const AdminDashboard = () => {
                     {recentComments?.averageRating?.toFixed(1) || "0.0"}
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Điểm Đánh Giá Trung Bình
+                    Average Rating
                   </p>
                 </div>
               </div>

@@ -154,31 +154,31 @@ export default function BookingManagement() {
       case BookingStatus.PENDING:
         return (
           <Badge className="bg-yellow-100 text-yellow-800">
-            <Clock className="w-4 h-4 mr-1" /> Đang chờ
+            <Clock className="w-4 h-4 mr-1" /> Pending
           </Badge>
         );
       case BookingStatus.CONFIRMED:
         return (
           <Badge className="bg-green-100 text-green-800 ">
-            <CheckCircle2 className="w-4 h-4 mr-1" /> Đã xác nhận
+            <CheckCircle2 className="w-4 h-4 mr-1" /> Confirmed
           </Badge>
         );
       case BookingStatus.CANCELED:
         return (
           <Badge className="bg-red-100 text-red-800 ">
-            <XCircle className="w-4 h-4 mr-1" /> Đã hủy
+            <XCircle className="w-4 h-4 mr-1" /> Canceled
           </Badge>
         );
       case BookingStatus.USED:
         return (
           <Badge className="bg-blue-100 text-blue-800 ">
-            <UserCheck className="w-4 h-4 mr-1" /> Đã sử dụng
+            <UserCheck className="w-4 h-4 mr-1" /> Used
           </Badge>
         );
       case BookingStatus.EXPIRED:
         return (
           <Badge className="bg-gray-100 text-gray-800 ">
-            <AlarmClock className="w-4 h-4 mr-1" /> Hết hạn
+            <AlarmClock className="w-4 h-4 mr-1" /> Expired
           </Badge>
         );
       default:
@@ -302,12 +302,17 @@ export default function BookingManagement() {
 
   return (
     <div className="space-y-6 p-6">
-      <div className="flex items-center justify-between">
+      <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Quản lý đặt vé</h1>
+          <h1 className="text-3xl font-bold">Booking Management</h1>
           <p className="text-muted-foreground">
-            Quản lý danh sách đặt vé và thông tin đặt vé
+            Manage all bookings and ticket information
           </p>
+        </div>
+        <div className="flex space-x-2">
+          <Button variant="outline" onClick={() => dispatch(fetchAdminBookingsThunk({ page: currentPage, limit: itemsPerPage }))}>
+            Refresh
+          </Button>
         </div>
       </div>
 
@@ -315,19 +320,19 @@ export default function BookingManagement() {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Filter className="h-5 w-5" />
-            <span>Bộ lọc</span>
+            <span>Filters</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
             {/* Tìm kiếm khách hàng */}
             <div className="space-y-2">
-              <Label htmlFor="search">Tìm kiếm khách hàng</Label>
+              <Label htmlFor="search">Search by customer name</Label>
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="search"
-                  placeholder="Tìm theo tên khách"
+                  placeholder="Search by customer name..."
                   value={filters.search}
                   onChange={(e) => {
                     setFilters((prev) => ({ ...prev, search: e.target.value }));
@@ -344,12 +349,12 @@ export default function BookingManagement() {
             </div>
             {/* Movie name search */}
             <div className="space-y-2">
-              <Label htmlFor="movieName-search">Tìm kiếm phim</Label>
+              <Label htmlFor="movieName-search">Search by movie name</Label>
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="movieName-search"
-                  placeholder="Tìm theo tên phim..."
+                  placeholder="Search by movie name..."
                   value={filters.movieName}
                   onChange={(e) => {
                     setFilters((prev) => ({
@@ -369,7 +374,7 @@ export default function BookingManagement() {
             </div>
             {/* Rạp chiếu */}
             <div className="space-y-2">
-              <Label htmlFor="theater-filter">Rạp chiếu</Label>
+              <Label htmlFor="theater-filter">Theater</Label>
               <Select
                 value={filters.theater}
                 onValueChange={(v) => {
@@ -378,10 +383,10 @@ export default function BookingManagement() {
                 }}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Tất cả rạp" />
+                  <SelectValue placeholder="All theaters" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tất cả rạp</SelectItem>
+                  <SelectItem value="all">All theaters</SelectItem>
                   {theaters.map((theater) => (
                     <SelectItem key={theater} value={theater}>
                       {theater}
@@ -392,7 +397,7 @@ export default function BookingManagement() {
             </div>
             {/* Trạng thái */}
             <div className="space-y-2">
-              <Label htmlFor="status-filter">Trạng thái</Label>
+              <Label htmlFor="status-filter">Status</Label>
               <Select
                 value={filters.status}
                 onValueChange={(v) => {
@@ -401,10 +406,10 @@ export default function BookingManagement() {
                 }}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Tất cả trạng thái" />
+                  <SelectValue placeholder="All statuses" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tất cả trạng thái</SelectItem>
+                  <SelectItem value="all">All statuses</SelectItem>
                   {statuses.map((status) => (
                     <SelectItem key={status.value} value={status.value}>
                       {status.label}
@@ -428,7 +433,7 @@ export default function BookingManagement() {
                 }}
                 className="w-full"
               >
-                Xóa bộ lọc
+                Clear Filters
               </Button>
             </div>
           </div>
@@ -437,13 +442,13 @@ export default function BookingManagement() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Danh sách đặt vé</CardTitle>
+          <CardTitle>Booking List</CardTitle>
           <CardDescription>
             {adminBookings.total <= itemsPerPage
-              ? `Hiển thị ${adminBookings.total} trong tổng số ${adminBookings.total} đặt vé`
-              : `Hiển thị ${startIndex + 1} đến ${endIndex} trong ${
+              ? `Displaying ${adminBookings.total} out of ${adminBookings.total} bookings`
+              : `Displaying ${startIndex + 1} to ${endIndex} out of ${
                   adminBookings.total
-                } đặt vé`}
+                } bookings`}
           </CardDescription>
         </CardHeader>
         <CardContent className="relative">
@@ -452,7 +457,7 @@ export default function BookingManagement() {
               <div className="flex items-center space-x-2">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600 dark:border-green-400"></div>
                 <span className="text-sm text-neutral-600 dark:text-neutral-300">
-                  Đang tải...
+                  Loading...
                 </span>
               </div>
             </div>
@@ -460,13 +465,13 @@ export default function BookingManagement() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Mã booking</TableHead>
-                <TableHead>Thông tin phim</TableHead>
-                <TableHead>Khách hàng</TableHead>
-                <TableHead>Suất chiếu</TableHead>
-                <TableHead>Ghế & Giá</TableHead>
-                <TableHead>Trạng thái</TableHead>
-                <TableHead className="text-right">Xem</TableHead>
+                <TableHead>Booking ID</TableHead>
+                <TableHead>Movie Details</TableHead>
+                <TableHead>Customer</TableHead>
+                <TableHead>Showtime</TableHead>
+                <TableHead>Seats & Price</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">View</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -540,25 +545,21 @@ export default function BookingManagement() {
                               ).toLocaleString("vi-VN")}
                           </div>
                           <div className="text-muted-foreground">
-                            Đặt:{" "}
-                            {new Date(booking.createdAt).toLocaleDateString(
-                              "vi-VN"
-                            )}
+                            Booked: {new Date(booking.createdAt).toLocaleDateString("en-US")}
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="text-sm">
                           <div className="font-medium">
-                            Ghế{" "}
-                            {Array.isArray(booking.seats)
+                            Seat {Array.isArray(booking.seats)
                               ? booking.seats
                                   .map((s: Seat) => `${s.row}${s.number}`)
                                   .join(", ")
                               : ""}
                           </div>
                           <div className="text-muted-foreground">
-                            {booking.totalPrice.toLocaleString()} VNĐ
+                            {booking.totalPrice.toLocaleString()} VND
                           </div>
                         </div>
                       </TableCell>
@@ -594,8 +595,7 @@ export default function BookingManagement() {
           </Table>
           <div className="flex items-center justify-between space-x-2 py-4">
             <div className="text-sm text-muted-foreground">
-              Hiển thị {startIndex + 1} đến {endIndex} trong{" "}
-              {adminBookings.total} kết quả
+              Displaying {startIndex + 1} to {endIndex} out of {adminBookings.total} results
             </div>
             <div className="flex items-center space-x-2">
               <Button
@@ -604,10 +604,10 @@ export default function BookingManagement() {
                 onClick={() => setCurrentPage(currentPageDisplay - 1)}
                 disabled={currentPageDisplay === 1}
               >
-                Trước
+                Previous
               </Button>
               <div className="text-sm">
-                Trang {currentPageDisplay} / {totalPages}
+                Page {currentPageDisplay} / {totalPages}
               </div>
               <Button
                 variant="outline"
@@ -615,7 +615,7 @@ export default function BookingManagement() {
                 onClick={() => setCurrentPage(currentPageDisplay + 1)}
                 disabled={currentPageDisplay === totalPages}
               >
-                Sau
+                Next
               </Button>
             </div>
           </div>
@@ -625,30 +625,30 @@ export default function BookingManagement() {
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Chi tiết đặt vé</DialogTitle>
+            <DialogTitle>Booking Details</DialogTitle>
           </DialogHeader>
           {detailBooking && (
             <div className="space-y-6">
               {/* Thông tin phim */}
               <div>
                 <div className="font-semibold text-lg mb-2 flex items-center gap-2">
-                  🎬 Thông tin phim
+                  🎬 Movie Details
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <span className="font-medium">Tên phim:</span>{" "}
+                    <span className="font-medium">Movie Name:</span>{" "}
                     {detailBooking.showtime?.movie?.title}
                   </div>
                   <div>
-                    <span className="font-medium">Rạp:</span>{" "}
+                    <span className="font-medium">Theater:</span>{" "}
                     {detailBooking.showtime?.room?.theater?.name}
                   </div>
                   <div>
-                    <span className="font-medium">Phòng:</span>{" "}
+                    <span className="font-medium">Room:</span>{" "}
                     {detailBooking.showtime?.room?.name}
                   </div>
                   <div>
-                    <span className="font-medium">Suất chiếu:</span>{" "}
+                    <span className="font-medium">Showtime:</span>{" "}
                     {detailBooking.showtime?.time &&
                       detailBooking.showtime?.time[0] &&
                       new Date(
@@ -660,11 +660,11 @@ export default function BookingManagement() {
               {/* Thông tin khách hàng */}
               <div>
                 <div className="font-semibold text-lg mb-2 flex items-center gap-2">
-                  👤 Thông tin khách hàng
+                  👤 Customer Details
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <span className="font-medium">Tên:</span>{" "}
+                    <span className="font-medium">Name:</span>{" "}
                     {detailBooking.user?.name}
                   </div>
                   <div>
@@ -672,11 +672,11 @@ export default function BookingManagement() {
                     {detailBooking.user?.email}
                   </div>
                   <div>
-                    <span className="font-medium">Số điện thoại:</span>{" "}
+                    <span className="font-medium">Phone:</span>{" "}
                     {detailBooking.user?.phone}
                   </div>
                   <div>
-                    <span className="font-medium">Vai trò:</span>{" "}
+                    <span className="font-medium">Role:</span>{" "}
                     {detailBooking.user?.role}
                   </div>
                 </div>
@@ -684,19 +684,19 @@ export default function BookingManagement() {
               {/* Thông tin đặt vé */}
               <div>
                 <div className="font-semibold text-lg mb-2 flex items-center gap-2">
-                  🎟️ Thông tin đặt vé
+                  🎟️ Booking Details
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <span className="font-medium">Mã booking:</span>{" "}
+                    <span className="font-medium">Booking ID:</span>{" "}
                     {detailBooking.id}
                   </div>
                   <div>
-                    <span className="font-medium">Ngày đặt:</span>{" "}
+                    <span className="font-medium">Booking Date:</span>{" "}
                     {new Date(detailBooking.createdAt).toLocaleString("vi-VN")}
                   </div>
                   <div className="col-span-2">
-                    <span className="font-medium">Ghế:</span>{" "}
+                    <span className="font-medium">Seats:</span>{" "}
                     {Array.isArray(detailBooking.seats)
                       ? detailBooking.seats
                           .map((s: Seat) => `${s.row}${s.number}`)
@@ -704,13 +704,13 @@ export default function BookingManagement() {
                       : ""}
                   </div>
                   <div>
-                    <span className="font-medium">Tổng tiền:</span>{" "}
+                    <span className="font-medium">Total Price:</span>{" "}
                     <span className="text-primary font-semibold">
-                      {detailBooking.totalPrice.toLocaleString()} VNĐ
+                      {detailBooking.totalPrice.toLocaleString()} VND
                     </span>
                   </div>
                   <div>
-                    <span className="font-medium">Trạng thái:</span>{" "}
+                    <span className="font-medium">Status:</span>{" "}
                     {getStatusBadge(detailBooking.status as BookingStatus)}
                   </div>
                 </div>
@@ -719,11 +719,11 @@ export default function BookingManagement() {
               {detailBooking.payment && (
                 <div>
                   <div className="font-semibold text-lg mb-2 flex items-center gap-2">
-                    💳 Thanh toán
+                    💳 Payment Details
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <span className="font-medium">Trạng thái:</span>{" "}
+                      <span className="font-medium">Status:</span>{" "}
                       <span
                         className={
                           detailBooking.payment.status === "PAID"
@@ -735,15 +735,15 @@ export default function BookingManagement() {
                       </span>
                     </div>
                     <div>
-                      <span className="font-medium">Số tiền:</span>{" "}
-                      {detailBooking.payment.amount.toLocaleString()} VNĐ
+                      <span className="font-medium">Amount:</span>{" "}
+                      {detailBooking.payment.amount.toLocaleString()} VND
                     </div>
                     <div>
-                      <span className="font-medium">Mã thanh toán:</span>{" "}
+                      <span className="font-medium">Payment ID:</span>{" "}
                       {detailBooking.payment.stripePaymentId}
                     </div>
                     <div>
-                      <span className="font-medium">Thời gian thanh toán:</span>{" "}
+                      <span className="font-medium">Payment Date:</span>{" "}
                       {detailBooking.payment.paidAt &&
                         new Date(detailBooking.payment.paidAt).toLocaleString(
                           "vi-VN"

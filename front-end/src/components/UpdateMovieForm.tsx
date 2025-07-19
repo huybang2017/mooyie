@@ -89,44 +89,44 @@ export function UpdateMovieForm({
     e.preventDefault();
     
     if (!movie) {
-      toast.error("Không tìm thấy thông tin phim");
+      toast.error("Movie information not found");
       return;
     }
 
     // Validation
     if (!formData.title?.trim()) {
-      toast.error("Vui lòng nhập tên phim");
+      toast.error("Please enter the movie title");
       return;
     }
 
     if (!formData.genre?.trim()) {
-      toast.error("Vui lòng chọn thể loại phim");
+      toast.error("Please select the movie genre");
       return;
     }
 
     if (!formData.duration || formData.duration <= 0) {
-      toast.error("Thời lượng phim phải lớn hơn 0");
+      toast.error("Movie duration must be greater than 0");
       return;
     }
 
     if (!formData.description?.trim()) {
-      toast.error("Vui lòng nhập mô tả phim");
+      toast.error("Please enter the movie description");
       return;
     }
 
     if (!formData.image?.trim()) {
-      toast.error("Vui lòng nhập URL ảnh phim");
+      toast.error("Please enter the movie image URL");
       return;
     }
 
     setLoading(true);
     try {
       await dispatch(updateMovieThunk({ id: movie.id, data: formData })).unwrap();
-      toast.success("Cập nhật phim thành công");
+      toast.success("Movie updated successfully");
       onOpenChange(false);
       onSuccess?.();
     } catch (error: any) {
-      toast.error(error || "Có lỗi xảy ra khi cập nhật phim");
+      toast.error(error || "An error occurred while updating the movie");
     } finally {
       setLoading(false);
     }

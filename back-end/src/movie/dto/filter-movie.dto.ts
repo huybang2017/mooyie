@@ -2,13 +2,13 @@ import { IsOptional, IsString } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class FilterMovieDto {
-  @ApiPropertyOptional({ description: 'Lọc theo thể loại', example: 'Action' })
+  @ApiPropertyOptional({ description: 'Filter by genre', example: 'Action' })
   @IsOptional()
   @IsString()
   genre?: string;
 
   @ApiPropertyOptional({
-    description: 'Lọc theo tên phim',
+    description: 'Filter by movie title',
     example: 'Inception',
   })
   @IsOptional()
@@ -16,7 +16,7 @@ export class FilterMovieDto {
   title?: string;
 
   @ApiPropertyOptional({
-    description: 'Lọc theo trạng thái phim',
+    description: 'Filter by movie status',
     example: 'now_showing',
   })
   @IsOptional()

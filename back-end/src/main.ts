@@ -29,14 +29,14 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('MOOYIE API')
-    .setDescription('Tài liệu Swagger cho  SERVER')
+    .setDescription('Swagger documentation for the SERVER')
     .setVersion('1.0')
     .addBearerAuth(
       {
         type: 'http',
         scheme: 'bearer',
         bearerFormat: 'JWT',
-        description: 'Nhập access token vào đây',
+        description: 'Enter your access token here',
       },
       'access-token',
     )
@@ -52,4 +52,5 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 3000);
 }
+
 bootstrap();

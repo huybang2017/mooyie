@@ -19,6 +19,7 @@ import { PaymentModule } from './payment/payment.module';
 import { CommentModule } from './comment/comment.module';
 import { DashboardModule } from 'src/dashboard/dashboard.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     CommentModule,
     DashboardModule,
     ScheduleModule.forRoot(),
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

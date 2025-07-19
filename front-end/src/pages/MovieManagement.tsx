@@ -196,18 +196,18 @@ const MovieManagement = () => {
 
     try {
       await dispatch(deleteMovieThunk(deletingMovie.id)).unwrap();
-      toast.success("Ẩn phim thành công");
+      toast.success("Movie hidden successfully");
       setIsDeleteDialogOpen(false);
       setDeletingMovie(null);
       handleRefresh();
     } catch (error: any) {
-      toast.error(error || "Có lỗi xảy ra khi xóa phim");
+      toast.error(error || "Error deleting movie");
     }
   };
 
   const handleBulkAction = (action: "delete" | "update") => {
     if (selectedMovies.length === 0) {
-      toast.error("Vui lòng chọn ít nhất một phim");
+      toast.error("Please select at least one movie");
       return;
     }
     setBulkAction(action);
@@ -223,18 +223,18 @@ const MovieManagement = () => {
           for (const movie of selectedMovies) {
             await dispatch(deleteMovieThunk(movie.id)).unwrap();
           }
-          toast.success(`Đã xóa ${selectedMovies.length} phim thành công`);
+          toast.success(`Deleted ${selectedMovies.length} movies successfully`);
           break;
         case "update":
           // Implement bulk update (placeholder)
-          toast.success(`Đã cập nhật ${selectedMovies.length} phim thành công`);
+          toast.success(`Updated ${selectedMovies.length} movies successfully`);
           break;
       }
       setSelectedMovies([]);
       setIsBulkActionDialogOpen(false);
       handleRefresh();
     } catch (error: any) {
-      toast.error(error || "Có lỗi xảy ra khi thực hiện hành động");
+      toast.error(error || "Error performing action");
     } finally {
       setIsLoadingBulkAction(false);
     }
@@ -243,7 +243,7 @@ const MovieManagement = () => {
   const handleCopyLink = (movie: any) => {
     const url = `${window.location.origin}/movies/${movie.id}`;
     navigator.clipboard.writeText(url);
-    toast.success("Đã sao chép link phim");
+    toast.success("Movie link copied");
   };
 
   const openDetailDialog = (movie: any) => {
@@ -308,19 +308,19 @@ const MovieManagement = () => {
       case "now_showing":
         return (
           <Badge className="bg-green-100 text-green-800 hover:bg-green-100 dark:bg-green-900 dark:text-green-200">
-            Đang chiếu
+            Now Showing
           </Badge>
         );
       case "coming_soon":
         return (
           <Badge className="bg-green-100 text-green-800 hover:bg-green-100 dark:bg-green-900 dark:text-green-200">
-            Sắp chiếu
+            Coming Soon
           </Badge>
         );
       case "ended":
         return (
           <Badge className="bg-red-100 text-red-800 hover:bg-red-100 dark:bg-red-900 dark:text-red-200">
-            Đã kết thúc
+            Ended
           </Badge>
         );
       default:
@@ -333,18 +333,18 @@ const MovieManagement = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Quản lý phim</h1>
+          <h1 className="text-3xl font-bold">Movie Management</h1>
           <p className="text-muted-foreground">
-            Quản lý danh sách phim và thông tin chi tiết
+            Manage the list of movies and detailed information
           </p>
         </div>
         <div className="flex space-x-2">
           <Button variant="outline" onClick={handleRefresh}>
-            Làm mới
+            Refresh
           </Button>
           <CreateMovieForm
             onSuccess={() => {
-              toast.success("Tạo phim thành công");
+              toast.success("Movie created successfully");
               handleRefresh();
             }}
           />
@@ -358,7 +358,7 @@ const MovieManagement = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <Badge variant="secondary">
-                  {selectedMovies.length} phim đã chọn
+                  {selectedMovies.length} movies selected
                 </Badge>
               </div>
               <div className="flex space-x-2">
@@ -369,7 +369,7 @@ const MovieManagement = () => {
                   disabled={loading}
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
-                  Xóa hàng loạt
+                  Delete bulk
                 </Button>
               </div>
             </div>
@@ -382,18 +382,18 @@ const MovieManagement = () => {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Filter className="h-5 w-5" />
-            <span>Bộ lọc</span>
+            <span>Filters</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="search">Tìm kiếm</Label>
+              <Label htmlFor="search">Search</Label>
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="search"
-                  placeholder="Tìm theo tên hoặc mô tả..."
+                  placeholder="Search by name or description..."
                   value={searchTerm}
                   onChange={(e) => handleSearchChange(e.target.value)}
                   className="pl-10"
@@ -406,7 +406,7 @@ const MovieManagement = () => {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="genre-filter">Thể loại</Label>
+              <Label htmlFor="genre-filter">Genre</Label>
               <Select
                 value={selectedGenre}
                 onValueChange={(value) => {
@@ -415,10 +415,10 @@ const MovieManagement = () => {
                 }}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Tất cả thể loại" />
+                  <SelectValue placeholder="All genres" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tất cả thể loại</SelectItem>
+                  <SelectItem value="all">All genres</SelectItem>
                   {genres
                     .filter((genre) => genre !== "")
                     .map((genre) => (
@@ -430,7 +430,7 @@ const MovieManagement = () => {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="status-filter">Trạng thái</Label>
+              <Label htmlFor="status-filter">Status</Label>
               <Select
                 value={selectedStatus}
                 onValueChange={(value) => {
@@ -439,10 +439,10 @@ const MovieManagement = () => {
                 }}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Tất cả trạng thái" />
+                  <SelectValue placeholder="All statuses" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tất cả trạng thái</SelectItem>
+                  <SelectItem value="all">All statuses</SelectItem>
                   {statuses.map((status) => (
                     <SelectItem key={status} value={status}>
                       {status}
@@ -462,7 +462,7 @@ const MovieManagement = () => {
                 }}
                 className="w-full"
               >
-                Xóa bộ lọc
+                Clear filters
               </Button>
             </div>
           </div>
@@ -472,9 +472,9 @@ const MovieManagement = () => {
       {/* Movie Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Danh sách phim</CardTitle>
+          <CardTitle>Movie List</CardTitle>
           <CardDescription>
-            Hiển thị {movies.length} trong tổng số {totalItems} phim
+            Displaying {movies.length} out of {totalItems} movies
           </CardDescription>
         </CardHeader>
         <CardContent className="relative">
@@ -483,7 +483,7 @@ const MovieManagement = () => {
               <div className="flex items-center space-x-2">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600 dark:border-green-400"></div>
                 <span className="text-sm text-neutral-600 dark:text-neutral-300">
-                  Đang tải...
+                  Loading...
                 </span>
               </div>
             </div>
@@ -498,14 +498,14 @@ const MovieManagement = () => {
                   />
                 </TableHead>
                 <TableHead>Poster</TableHead>
-                <TableHead>Tên phim</TableHead>
-                <TableHead>Thể loại</TableHead>
-                <TableHead>Thời lượng</TableHead>
-                <TableHead>Đánh giá</TableHead>
+                <TableHead>Movie Name</TableHead>
+                <TableHead>Genre</TableHead>
+                <TableHead>Duration</TableHead>
+                <TableHead>Rating</TableHead>
                 <TableHead>Trailer</TableHead>
-                <TableHead>Trạng thái</TableHead>
-                <TableHead>Đặt vé</TableHead>
-                <TableHead>Thao tác</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Bookings</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -543,7 +543,7 @@ const MovieManagement = () => {
                     <div className="flex items-center space-x-1">
                       <Clock className="h-4 w-4 text-neutral-600 dark:text-neutral-400" />
                       <span className="text-neutral-900 dark:text-neutral-100">
-                        {movie.duration} phút
+                        {movie.duration} minutes
                       </span>
                     </div>
                   </TableCell>
@@ -567,11 +567,11 @@ const MovieManagement = () => {
                         rel="noopener noreferrer"
                         className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 text-sm underline"
                       >
-                        Xem trailer
+                        View trailer
                       </a>
                     ) : (
                       <span className="text-neutral-500 dark:text-neutral-400 text-sm">
-                        Không có
+                        No trailer
                       </span>
                     )}
                   </TableCell>
@@ -587,10 +587,10 @@ const MovieManagement = () => {
                   <TableCell>
                     <div className="text-sm">
                       <div className="text-neutral-900 dark:text-neutral-100">
-                        {movie.showtimes?.length || 0} suất chiếu
+                        {movie.showtimes?.length || 0} showtimes
                       </div>
                       <div className="text-muted-foreground">
-                        {movie.bookmarks?.length || 0} bookmark
+                        {movie.bookmarks?.length || 0} bookmarks
                       </div>
                     </div>
                   </TableCell>
@@ -611,7 +611,7 @@ const MovieManagement = () => {
           {/* Pagination */}
           <div className="flex items-center justify-between space-x-2 py-4">
             <div className="text-sm text-muted-foreground">
-              Hiển thị {movies.length} trong tổng số {totalItems} kết quả
+              Displaying {movies.length} out of {totalItems} results
             </div>
             <div className="flex items-center space-x-2">
               <Button
@@ -620,10 +620,10 @@ const MovieManagement = () => {
                 onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                 disabled={!hasPreviousPage || loading}
               >
-                Trước
+                Previous
               </Button>
               <div className="text-sm">
-                Trang {currentPageFromApi} / {totalPages}
+                Page {currentPageFromApi} / {totalPages}
               </div>
               <Button
                 variant="outline"
@@ -633,7 +633,7 @@ const MovieManagement = () => {
                 }
                 disabled={!hasNextPage || loading}
               >
-                Sau
+                Next
               </Button>
             </div>
           </div>
@@ -644,9 +644,9 @@ const MovieManagement = () => {
       <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
         <DialogContent className="min-w-7xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Chi tiết phim</DialogTitle>
+            <DialogTitle>Movie Details</DialogTitle>
             <DialogDescription>
-              Thông tin chi tiết về phim và các dữ liệu liên quan
+              Detailed information about the movie and related data
             </DialogDescription>
           </DialogHeader>
 
@@ -686,7 +686,7 @@ const MovieManagement = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <Label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                        Thể loại
+                        Genre
                       </Label>
                       <p className="text-neutral-900 dark:text-neutral-100">
                         {selectedMovie.genre}
@@ -694,15 +694,15 @@ const MovieManagement = () => {
                     </div>
                     <div>
                       <Label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                        Thời lượng
+                        Duration
                       </Label>
                       <p className="text-neutral-900 dark:text-neutral-100">
-                        {selectedMovie.duration} phút
+                        {selectedMovie.duration} minutes
                       </p>
                     </div>
                     <div>
                       <Label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                        Ngày tạo
+                        Created Date
                       </Label>
                       <p className="text-neutral-900 dark:text-neutral-100">
                         {new Date(selectedMovie.createdAt).toLocaleDateString(
@@ -712,7 +712,7 @@ const MovieManagement = () => {
                     </div>
                     <div>
                       <Label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                        Trạng thái
+                        Status
                       </Label>
                       <p className="text-neutral-900 dark:text-neutral-100 capitalize">
                         {selectedMovie.status || "active"}
@@ -720,7 +720,7 @@ const MovieManagement = () => {
                     </div>
                     <div>
                       <Label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                        Đánh giá trung bình
+                        Average Rating
                       </Label>
                       <div className="flex items-center space-x-2">
                         <div className="flex items-center space-x-1">
@@ -747,7 +747,7 @@ const MovieManagement = () => {
                           /5
                         </span>
                         <span className="text-sm text-neutral-500 dark:text-neutral-400">
-                          ({selectedMovie.comments?.length || 0} đánh giá)
+                          ({selectedMovie.comments?.length || 0} reviews)
                         </span>
                       </div>
                     </div>
@@ -763,10 +763,10 @@ const MovieManagement = () => {
                             rel="noopener noreferrer"
                             className="text-green-600 dark:text-green-400 hover:underline"
                           >
-                            Xem trailer
+                            View trailer
                           </a>
                         ) : (
-                          "Không có trailer"
+                          "No trailer"
                         )}
                       </p>
                     </div>
@@ -774,10 +774,10 @@ const MovieManagement = () => {
 
                   <div>
                     <Label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                      Mô tả
+                      Description
                     </Label>
                     <p className="text-neutral-900 dark:text-neutral-100 mt-1 leading-relaxed">
-                      {selectedMovie.description || "Không có mô tả"}
+                      {selectedMovie.description || "No description"}
                     </p>
                   </div>
                 </div>
@@ -791,7 +791,7 @@ const MovieManagement = () => {
                       <Clock className="h-5 w-5 text-green-600 dark:text-green-400" />
                       <div>
                         <p className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
-                          Suất chiếu
+                          Showtimes
                         </p>
                         <p className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
                           {selectedMovie.showtimes?.length || 0}
@@ -807,13 +807,13 @@ const MovieManagement = () => {
                       <Star className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
                       <div>
                         <p className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
-                          Đánh giá
+                          Rating
                         </p>
                         <p className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
                           {calculateAverageRating(selectedMovie.comments || [])}
                         </p>
                         <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                          {selectedMovie.comments?.length || 0} bình luận
+                          {selectedMovie.comments?.length || 0} comments
                         </p>
                       </div>
                     </div>
@@ -826,7 +826,7 @@ const MovieManagement = () => {
                       <Bookmark className="h-5 w-5 text-red-600 dark:text-red-400" />
                       <div>
                         <p className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
-                          Bookmark
+                          Bookmarks
                         </p>
                         <p className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
                           {selectedMovie.bookmarks?.length || 0}
@@ -842,7 +842,7 @@ const MovieManagement = () => {
                       <Calendar className="h-5 w-5 text-green-600 dark:text-green-400" />
                       <div>
                         <p className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
-                          Ngày tạo
+                          Created Date
                         </p>
                         <p className="text-sm font-bold text-neutral-900 dark:text-neutral-100">
                           {new Date(selectedMovie.createdAt).toLocaleDateString(
@@ -859,10 +859,10 @@ const MovieManagement = () => {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
-                    Suất chiếu
+                    Showtimes
                   </h3>
                   <Badge variant="outline">
-                    {selectedMovie.showtimes?.length || 0} suất
+                    {selectedMovie.showtimes?.length || 0} showtimes
                   </Badge>
                 </div>
 
@@ -876,16 +876,16 @@ const MovieManagement = () => {
                             <div className="flex items-center justify-between">
                               <div className="space-y-1">
                                 <p className="font-medium text-neutral-900 dark:text-neutral-100">
-                                  Phòng: {showtime.room?.name || "N/A"}
+                                  Room: {showtime.room?.name || "N/A"}
                                 </p>
                                 <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                                  Rạp: {showtime.room?.theater?.name || "N/A"}
+                                  Theater: {showtime.room?.theater?.name || "N/A"}
                                 </p>
                                 <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                                  Trạng thái:{" "}
+                                  Status:{" "}
                                   {showtime.isActive
-                                    ? "Hoạt động"
-                                    : "Không hoạt động"}
+                                    ? "Active"
+                                    : "Inactive"}
                                 </p>
                               </div>
                               <div className="text-right">
@@ -900,8 +900,8 @@ const MovieManagement = () => {
                                   }
                                 >
                                   {showtime.isActive
-                                    ? "Hoạt động"
-                                    : "Không hoạt động"}
+                                    ? "Active"
+                                    : "Inactive"}
                                 </Badge>
                               </div>
                             </div>
@@ -914,7 +914,7 @@ const MovieManagement = () => {
                   <Card>
                     <CardContent className="p-6 text-center">
                       <p className="text-neutral-500 dark:text-neutral-400">
-                        Chưa có suất chiếu nào
+                        No showtimes yet
                       </p>
                     </CardContent>
                   </Card>
@@ -925,10 +925,10 @@ const MovieManagement = () => {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
-                    Đánh giá & Bình luận
+                    Reviews & Comments
                   </h3>
                   <Badge variant="outline">
-                    {selectedMovie.comments?.length || 0} bình luận
+                    {selectedMovie.comments?.length || 0} comments
                   </Badge>
                 </div>
 
@@ -949,7 +949,7 @@ const MovieManagement = () => {
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center space-x-2 mb-1">
                                   <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
-                                    {comment.user?.name || "Người dùng"}
+                                    {comment.user?.name || "User"}
                                   </p>
                                   <div className="flex items-center space-x-1">
                                     {[...Array(5)].map((_, i) => (
@@ -986,7 +986,7 @@ const MovieManagement = () => {
                   <Card>
                     <CardContent className="p-6 text-center">
                       <p className="text-neutral-500 dark:text-neutral-400">
-                        Chưa có bình luận nào
+                        No comments yet
                       </p>
                     </CardContent>
                   </Card>
@@ -1000,7 +1000,7 @@ const MovieManagement = () => {
                     Bookmarks
                   </h3>
                   <Badge variant="outline">
-                    {selectedMovie.bookmarks?.length || 0} bookmark
+                    {selectedMovie.bookmarks?.length || 0} bookmarks
                   </Badge>
                 </div>
 
@@ -1037,7 +1037,7 @@ const MovieManagement = () => {
                   <Card>
                     <CardContent className="p-6 text-center">
                       <p className="text-neutral-500 dark:text-neutral-400">
-                        Chưa có bookmark nào
+                        No bookmarks yet
                       </p>
                     </CardContent>
                   </Card>
@@ -1051,7 +1051,7 @@ const MovieManagement = () => {
               variant="outline"
               onClick={() => setIsDetailDialogOpen(false)}
             >
-              Đóng
+              Close
             </Button>
             {selectedMovie && (
               <Button
@@ -1060,7 +1060,7 @@ const MovieManagement = () => {
                   openUpdateDialog(selectedMovie);
                 }}
               >
-                Chỉnh sửa phim
+                Edit Movie
               </Button>
             )}
           </DialogFooter>
@@ -1075,7 +1075,7 @@ const MovieManagement = () => {
         onSuccess={() => {
           setIsUpdateDialogOpen(false);
           setEditingMovie(null);
-          toast.success("Cập nhật phim thành công");
+          toast.success("Movie updated successfully");
           handleRefresh();
         }}
       />
@@ -1084,9 +1084,9 @@ const MovieManagement = () => {
       <ActionConfirmationDialog
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
-        title="Xác nhận xóa phim"
-        description={`Bạn có chắc chắn muốn xóa phim "${deletingMovie?.title}"? Hành động này không thể hoàn tác.`}
-        confirmText="Xóa phim"
+        title="Confirm Movie Deletion"
+        description={`Are you sure you want to delete movie "${deletingMovie?.title}"? This action cannot be undone.`}
+        confirmText="Delete Movie"
         variant="destructive"
         icon={<Trash2 className="h-5 w-5" />}
         onConfirm={confirmDeleteMovie}

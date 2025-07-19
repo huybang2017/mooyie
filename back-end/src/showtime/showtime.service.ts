@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject, forwardRef } from '@nestjs/common';
 import { CreateShowtimeDto } from './dto/create-showtime.dto';
 import { UpdateShowtimeDto } from './dto/update-showtime.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -7,10 +7,15 @@ import { FilterShowTimeDto } from 'src/showtime/dto/fitler-showtime.dto';
 import { PaginationShowtimeDto } from 'src/showtime/dto/pagination-showitme.dto';
 import { paginate } from 'src/utils/helper/paginate';
 import { FilterShowTimeByMovieDto } from 'src/showtime/dto/filter-showtime-movie.dto';
+import { NotificationService } from 'src/notification/notification.service';
 
 @Injectable()
 export class ShowtimeService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    @Inject(forwardRef(() => NotificationService))
+    private notificationService: NotificationService,
+  ) {}
 
   findAll() {
     return this.prisma.showtime.findMany({
@@ -126,7 +131,7 @@ export class ShowtimeService {
       throw new NotFoundException(`Room with id ${dto.roomId} not found`);
     }
 
-    return this.prisma.showtime.create({
+    const showtime = await this.prisma.showtime.create({
       data: {
         time: timeList,
         seats: [],
@@ -135,6 +140,12 @@ export class ShowtimeService {
         roomId: dto.roomId,
       },
     });
+    // Send real-time notification to all users
+    await this.notificationService.sendToAll(
+      `A new showtime for "${movie.title}" has been scheduled!`,
+      'new_showtime'
+    );
+    return showtime;
   }
 
   async update(id: string, dto: UpdateShowtimeDto) {

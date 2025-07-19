@@ -144,7 +144,6 @@ model Booking {
   showtime   Showtime @relation(fields: [showtimeId], references: [id])
 
   payment Payment?
-  history TicketHistory[]
 }
 
 model Payment {
@@ -191,14 +190,4 @@ model Notification {
 
   userId String
   user   User   @relation(fields: [userId], references: [id])
-}
-
-model TicketHistory {
-  id        String        @id @default(uuid())
-  status    BookingStatus
-  updatedAt DateTime      @default(now())
-  note      String?
-
-  bookingId String
-  booking   Booking @relation(fields: [bookingId], references: [id])
 }

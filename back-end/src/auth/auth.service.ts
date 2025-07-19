@@ -42,16 +42,16 @@ export class AuthService {
     const user = await this.userService.findUserByEmail(loginDto.email);
 
     if (!user) {
-      throw new ForbiddenException('Email không tồn tại.');
+      throw new ForbiddenException('Email does not exist.');
     }
 
     if (user.status === false) {
-      throw new ForbiddenException('Tài khoản của bạn đã bị vô hiệu hóa.');
+      throw new ForbiddenException('Your account has been disabled.');
     }
 
     const isPasswordValid = await compare(loginDto.password, user.password);
     if (!isPasswordValid) {
-      throw new ForbiddenException('Mật khẩu không đúng.');
+      throw new ForbiddenException('Incorrect password.');
     }
 
     const payload: JwtPayload = {

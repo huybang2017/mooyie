@@ -46,30 +46,30 @@ export function CreateTheaterForm({ onSuccess }: CreateTheaterFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim()) {
-      toast.error("Vui lòng nhập tên rạp chiếu");
+      toast.error("Please enter the theater name");
       return;
     }
     if (!formData.location.trim()) {
-      toast.error("Vui lòng nhập địa chỉ rạp chiếu");
+      toast.error("Please enter the theater address");
       return;
     }
     if (!formData.brand.trim()) {
-      toast.error("Vui lòng nhập thương hiệu");
+      toast.error("Please enter the brand");
       return;
     }
     if (!formData.status) {
-      toast.error("Vui lòng chọn trạng thái");
+      toast.error("Please select a status");
       return;
     }
     setLoading(true);
     try {
       await dispatch(createTheaterThunk(formData)).unwrap();
-      toast.success("Tạo rạp chiếu mới thành công");
+      toast.success("Theater created successfully");
       setFormData({ name: "", location: "", brand: "", brandLogo: "", status: "active" });
       setOpen(false);
       onSuccess?.();
     } catch (error: any) {
-      toast.error(error || "Có lỗi xảy ra khi tạo rạp chiếu");
+      toast.error(error || "An error occurred while creating the theater");
     } finally {
       setLoading(false);
     }
@@ -80,59 +80,59 @@ export function CreateTheaterForm({ onSuccess }: CreateTheaterFormProps) {
       <DialogTrigger asChild>
         <Button>
           <Plus className="h-4 w-4 mr-2" />
-          Thêm rạp chiếu
+          Add theater
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Thêm rạp chiếu mới</DialogTitle>
+          <DialogTitle>Add new theater</DialogTitle>
           <DialogDescription>
-            Điền thông tin rạp chiếu mới vào form bên dưới
+            Fill in the theater information in the form below
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2 col-span-2">
-              <Label htmlFor="name">Tên rạp chiếu *</Label>
+              <Label htmlFor="name">Theater name *</Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
-                placeholder="Nhập tên rạp chiếu"
+                placeholder="Enter theater name"
                 required
               />
             </div>
             <div className="space-y-2 col-span-2">
-              <Label htmlFor="location">Địa chỉ *</Label>
+              <Label htmlFor="location">Address *</Label>
               <Input
                 id="location"
                 value={formData.location}
                 onChange={(e) => handleInputChange("location", e.target.value)}
-                placeholder="Nhập địa chỉ rạp chiếu"
+                placeholder="Enter theater address"
                 required
               />
             </div>
             <div className="space-y-2 col-span-2">
-              <Label htmlFor="brand">Thương hiệu *</Label>
+              <Label htmlFor="brand">Brand *</Label>
               <Input
                 id="brand"
                 value={formData.brand}
                 onChange={(e) => handleInputChange("brand", e.target.value)}
-                placeholder="Nhập thương hiệu"
+                placeholder="Enter brand"
                 required
               />
             </div>
             <div className="space-y-2 col-span-2">
-              <Label htmlFor="brandLogo">Logo thương hiệu (URL)</Label>
+              <Label htmlFor="brandLogo">Brand logo (URL)</Label>
               <Input
                 id="brandLogo"
                 value={formData.brandLogo}
                 onChange={(e) => handleInputChange("brandLogo", e.target.value)}
-                placeholder="Nhập URL logo (tùy chọn)"
+                placeholder="Enter brand logo URL (optional)"
               />
             </div>
             <div className="space-y-2 col-span-2">
-              <Label htmlFor="status">Trạng thái *</Label>
+              <Label htmlFor="status">Status *</Label>
               <select
                 id="status"
                 value={formData.status}
@@ -140,18 +140,18 @@ export function CreateTheaterForm({ onSuccess }: CreateTheaterFormProps) {
                 className="w-full border rounded px-3 py-2"
                 required
               >
-                <option value="active">Hoạt động</option>
-                <option value="inactive">Ngừng hoạt động</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
               </select>
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" type="button" onClick={() => setOpen(false)}>
-              Hủy
+              Cancel
             </Button>
             <Button type="submit" disabled={loading}>
               {loading ? <Loader2 className="animate-spin h-4 w-4 mr-2" /> : null}
-              Thêm rạp chiếu
+              Add theater
             </Button>
           </DialogFooter>
         </form>

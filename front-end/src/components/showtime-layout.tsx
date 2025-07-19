@@ -265,13 +265,13 @@ export default function ShowtimeLayout({ showtimes }: ShowtimeLayoutProps) {
               const selectedTheaterName = selectedTheater || '';
               
               if (selectedTheater && selectedDateLabel) {
-                return `Không có lịch chiếu cho rạp ${selectedTheaterName} vào ${selectedDateLabel}`;
+                return `No showtimes for theater ${selectedTheaterName} on ${selectedDateLabel}`;
               } else if (selectedTheater) {
-                return `Không có lịch chiếu cho rạp ${selectedTheaterName}`;
+                return `No showtimes for theater ${selectedTheaterName}`;
               } else if (selectedDateLabel) {
-                return `Không có lịch chiếu vào ${selectedDateLabel}`;
+                return `No showtimes on ${selectedDateLabel}`;
               } else {
-                return "Không có lịch chiếu nào";
+                return "No showtimes available";
               }
             })()}
           </p>

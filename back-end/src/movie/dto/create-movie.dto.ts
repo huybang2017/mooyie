@@ -12,26 +12,26 @@ import { Transform } from 'class-transformer';
 import { MovieStatus } from 'generated/prisma';
 
 export class CreateMovieDto {
-  @ApiProperty({ description: 'Tên phim', example: 'Avengers: Endgame' })
+  @ApiProperty({ description: 'Movie title', example: 'Avengers: Endgame' })
   @IsString()
   @Length(1, 100)
   @Transform(({ value }: { value: string }) => value?.trim())
   title: string;
 
-  @ApiProperty({ description: 'Thể loại phim', example: 'Action' })
+  @ApiProperty({ description: 'Movie genre', example: 'Action' })
   @IsString()
   @Length(1, 50)
   @Transform(({ value }: { value: string }) => value?.trim())
   genre: string;
 
-  @ApiProperty({ description: 'Thời lượng phim (phút)', example: 120 })
+  @ApiProperty({ description: 'Movie duration (minutes)', example: 120 })
   @IsInt()
   @Min(1)
   @Max(500)
   duration: number;
 
   @ApiProperty({
-    description: 'Mô tả phim',
+    description: 'Movie description',
     example: 'A superhero movie about saving the universe...',
   })
   @IsString()
@@ -40,7 +40,7 @@ export class CreateMovieDto {
   description: string;
 
   @ApiProperty({
-    description: 'Ảnh đại diện phim',
+    description: 'Movie poster image',
     example: 'https://example.com/image.jpg',
   })
   @IsString()
@@ -48,7 +48,7 @@ export class CreateMovieDto {
   image: string;
 
   @ApiProperty({
-    description: 'Link trailer phim (tùy chọn)',
+    description: 'Movie trailer link (optional)',
     example: 'https://youtube.com/watch?v=abc123',
     required: false,
   })
@@ -58,7 +58,7 @@ export class CreateMovieDto {
   trailer_url?: string;
 
   @ApiProperty({
-    description: 'Trạng thái phim',
+    description: 'Movie status',
     example: 'coming_soon',
     enum: MovieStatus,
     default: MovieStatus.coming_soon,
